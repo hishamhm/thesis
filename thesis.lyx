@@ -1,0 +1,8586 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass extbook
+\begin_preamble
+
+\def\dstart{\hbox to \hsize{\vrule depth 4pt\hrulefill\vrule depth 4pt}}
+\def\dend{\hbox to \hsize{\vrule height 4pt\hrulefill\vrule height 4pt}}
+\end_preamble
+\options hyphens
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type numerical
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{titlepage}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+
+\shape smallcaps
+\size larger
+PUC-Rio
+\shape default
+\size default
+
+\begin_inset VSpace 0.5cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+
+\shape smallcaps
+\size large
+Departamento de Informática
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset VSpace 0.5cm
+\end_inset
+
+
+\shape smallcaps
+\size large
+PhD Thesis
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset VSpace 0.5cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0.2ex"
+width "100col%"
+height "0.5mm"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset VSpace 2mm
+\end_inset
+
+
+\series bold
+\size huge
+Dataflow Semantics for End-User
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+
+\series bold
+\size huge
+Programmable Applications
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0.2ex"
+width "100col%"
+height "0.5mm"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset VSpace 0.5cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="2">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "50col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\size large
+\emph on
+Author:
+\end_layout
+
+\begin_layout Plain Layout
+
+\size large
+Hisham Hashem Muhammad
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "40col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align right
+
+\size large
+\emph on
+Advisor:
+\emph default
+
+\begin_inset Newline newline
+\end_inset
+
+Roberto Ierusalimschy
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset VSpace 5cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+
+\size large
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+January 19th, 2016
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{titlepage}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+This page intentionally contains only this sentence.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter*
+Abstract
+\end_layout
+
+\begin_layout Standard
+End-user programming refers to programming performed by end-users who are
+ not professionals in software development but are specialists in other
+ domains.
+ Scripting is a way to add programmability as an advanced, peripheral feature
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+to applications
+\end_layout
+
+\end_inset
+
+.
+ Another alternative is to make an end-user language central to the application'
+s UI, as is the case with spreadsheet formulas: programming becomes indistinguis
+hable from using the application proper.
+ Scripting has evolved from ad hoc "little languages" into reusable embeddable
+ languages, which benefit from the advances of programming language research.
+ The state of UI-level end-user programming languages, however, lags behind:
+ those are still developed ad hoc and tied to their domains.
+ We claim that end-user languages should also be developed constructing
+ domain-specific UIs on top of reusable core semantics, much like scripting
+ is now done presenting domain-specific abstractions of top of reusable
+ scripting languages.
+ In this work, we model the semantics of existing end-user programming languages
+ of different domains, such as spreadsheets and multimedia, aiming to better
+ understand their commonalities and shortcomings.
+ Based on this understanding, our goal is to propose a semantics for a reusable
+ dataflow engine, on top of which different end-user programmable environments
+ can be devised.
+ Our work is in the context of dataflow languages, a paradigm representative
+ of a number of applications where end-user programmability takes center
+ stage.
+\end_layout
+
+\begin_layout Chapter
+Introduction
+\end_layout
+
+\begin_layout Section
+Motivation
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+End-user programming
+\emph default
+ is a term that refers to programming activities performed by end-users,
+ who are not specialists in professional software development but are specialist
+s in other domains, in the context of software developed for their domain
+ of interest 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Burnett2014EUD"
+
+\end_inset
+
+.
+ Early focus of end-user programming was in 
+\emph on
+scripting
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Ousterhout:1998:SHP:619027.620930"
+
+\end_inset
+
+: embedding a programming language into an application so that users can
+ write programs that drive the application, or at least parts of it.
+ Some examples are Visual Basic for Applications in the Microsoft Office
+ productivity suite and AutoLISP in AutoCAD.
+ However, most end-user programming happens using languages not regarded
+ by their users as programming languages proper, such as spreadsheets and
+ graphical node editors 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "MyersReport1992LDUI"
+
+\end_inset
+
+.
+ For this reason, the latter term 
+\begin_inset Quotes eld
+\end_inset
+
+end-user development
+\begin_inset Quotes erd
+\end_inset
+
+ took over, which avoids having to answer the question of what is and what
+ isn't programming.
+\end_layout
+
+\begin_layout Standard
+Still, those languages are indeed domain-specific languages (DSLs), even
+ if they often have restricted expressivity and if their syntaxes (often
+ a mix of textual elements and graphics) do not make it clear that they
+ are programming languages.
+ In particular, there are applications where the language becomes indistinguisha
+ble from the user interface (UI), and using the software means using the
+ language.
+ Examples of scenarios where this happens are spreadsheets such as Excel
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Nardi1993"
+
+\end_inset
+
+, where using the spreadsheet means using the formula language, and the
+ node graph environment of Pure Data, a multimedia application developed
+ primarily for music 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PuckettePd"
+
+\end_inset
+
+.
+ Here, we will call these languages 
+\emph on
+UI-level languages
+\emph default
+: programming languages that are apparent to the user as the main UI of
+ the application (not to be confused with languages for constructing GUIs).
+\end_layout
+
+\begin_layout Standard
+There is, therefore, a spectrum of possibilities on how deeply to integrate
+ programmability into end-user applications.
+ It can range from being an optional feature for advanced users, as is often
+ the case with scripting, to being at the core of the application experience,
+ as is the case with UI-level languages.
+\end_layout
+
+\begin_layout Standard
+The programming language community has given much attention to the scripting
+ end of the spectrum of end-user programming.
+ Scripting in applications has evolved through three stages:
+\end_layout
+
+\begin_layout Itemize
+The first stage was the use of so-called 
+\begin_inset Quotes eld
+\end_inset
+
+little languages
+\begin_inset Quotes erd
+\end_inset
+
+ of the 1970s and 1980s 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bentley:1986:little"
+
+\end_inset
+
+ — examples are small single-purpose languages such as 
+\family typewriter
+eqn
+\family default
+ and 
+\family typewriter
+pic
+\family default
+ in Unix 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Dougherty1987unix"
+
+\end_inset
+
+, and SCUMM for scripting adventure-style games 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Originally created by Lucasfilm Games as 
+\begin_inset Quotes eld
+\end_inset
+
+Script Creation Utility for 
+\emph on
+Maniac Mansion
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ to be used in a single game; later used in dozens of games, licensed to
+ several companies and even reimplemented as a free-software engine (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.scummvm.org
+\end_layout
+
+\end_inset
+
+).
+ This illustrates the 
+\begin_inset Quotes eld
+\end_inset
+
+accidental
+\begin_inset Quotes erd
+\end_inset
+
+ nature of scripting languages from that era.
+\end_layout
+
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Itemize
+Then, powerful domain-specific languages emerged, such as GraForth, WordBasic
+ in Microsoft Word and AutoLISP in AutoCAD — these languages often adapted
+ the design of existing general-purpose programming languages, producing
+ application-specific dialects;
+\end_layout
+
+\begin_layout Itemize
+Finally, once scripting was identified as a general style of programming
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Ousterhout:1998:SHP:619027.620930"
+
+\end_inset
+
+, we saw the introduction of general-purpose scripting languages such as
+ Tcl, Python and Lua — these languages have embeddable implementations,
+ allowing them to be linked as libraries and reused in many applications.
+ Some of these languages became popular in particular domains in spite of
+ not having been specifically designed for those fields: several graphics
+ programs use Python as a scripting language, and Lua is particularly successful
+ in the game industry.
+\end_layout
+
+\begin_layout Standard
+The UI end of the spectrum, however, lags behind.
+ The state of end-user UI-level languages now is similar to that of scripting
+ languages in the 1980s: most applications develop their own custom 
+\begin_inset Quotes eld
+\end_inset
+
+little languages
+\begin_inset Quotes erd
+\end_inset
+
+ for end-user programming, tightly coupled to their UIs.
+ At best, ideas are reused from similar efforts, as evidenced by several
+ visual programming languages inspired by Scratch (Stencyl, AppInventor,
+ Snap, Pocket Code), the various node/graph editors in multimedia applications
+ (Nuke, Max/MSP, Blender, Rhino 3D, Antimony, Unreal Engine), and the formula
+ languages for different spreadsheets.
+\end_layout
+
+\begin_layout Standard
+The semantics of these UI-level languages, in particular, are often ill-specifie
+d.
+ This has wide-ranging consequences, affecting both users and developers.
+ Users are struck by subtle incompatibilities even when different applications
+ share the same basic metaphors, as is the case with different spreadsheet
+ applications.
+ Developers end up 
+\begin_inset Quotes eld
+\end_inset
+
+reinventing the wheel
+\begin_inset Quotes erd
+\end_inset
+
+, producing designs that are not informed by PL research, often subject
+ to pitfalls that could have been avoided had the language been designed
+ based on established grounds.
+\end_layout
+
+\begin_layout Section
+Problem statement
+\end_layout
+
+\begin_layout Standard
+While nowadays scripting is integrated into applications by reusing proven
+ embeddable languages which benefit from the advances of programming language
+ research, end-user UI-level languages are still developed ad hoc, often
+ by developers who are specialists in the domain of the application (e.g.
+ computer graphics, music, statistics, finance), but not in language design
+ and implementation.
+ This distinction manifests itself in many ways, ranging from unclear semantics
+ and little possibility of knowledge reuse from the part of users, down
+ to lack of application interoperability and performance issues.
+ Programming language research is brought to the fold afterwards, when trying
+ to find ways to integrate missing functionality or trying to fix issues
+ with the design or implementation 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Jones03User-centred,DinamicaVM"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+By focusing on the presentation and direct manipulation of data, many UI-level
+ languages adopt to some extent the dataflow paradigm 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Johnston:2004:ADP:1013208.1013209"
+
+\end_inset
+
+, as it seems a natural fit for programmatic manipulation of data in user
+ interfaces.
+ Thus, the problem domain we focus our attention on is that of dataflow
+ UI-level languages, as these are representative of a number of languages
+ where end-user programmability takes center stage, and the problem we address
+ in particular is that of ad hoc semantics in dataflow programmable UIs.
+\end_layout
+
+\begin_layout Standard
+We identify the need for UI-level dataflow languages to go through a similar
+ movement that occurred with scripting languages.
+ Scripting languages evolved from ad hoc languages into standard reusable
+ languages that integrate properly: they can be embedded in an application
+ and can be extended with constructs for dealing with the application's
+ domain.
+\end_layout
+
+\begin_layout Standard
+This research attempts to provide developers of end-user programmable applicatio
+ns with a semantics for dataflow, designed for integrating between a program's
+ interface and its underlying back-end.
+ The research question, therefore, is this: 
+\emph on
+if dataflow languages in end-user applications were designed for reuse in
+ different applications, what would their semantics be like?
+\end_layout
+
+\begin_layout Standard
+We begin with a background review of the fields of end-user programming
+ and dataflow languages in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Background"
+
+\end_inset
+
+.
+ Then, we sharpen our focus to define dataflow UI-level languages in Chapter
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Understanding-dataflow"
+
+\end_inset
+
+, which is the class of languages we will be working from there on.
+ We analyze existing UI-level dataflow languages, and produce semantics
+ for a number of them, understanding their features and shortcomings.
+ These are presented as case studies in Chapters 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Pure-Data"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Spreadsheets"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:LabVIEW"
+
+\end_inset
+
+.
+ Informed by the design of those existing application-specific languages,
+ we propose in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:A-Dataflow-Engine"
+
+\end_inset
+
+ a semantics for an embeddable and reusable dataflow UI-level language.
+ Finally, in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Conclusion"
+
+\end_inset
+
+ we present the conclusion, in which we review our contributions.
+\end_layout
+
+\begin_layout Chapter
+Background
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Background"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+End-user programming
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+End-user programming
+\emph default
+ is a term that describes the involvement of users in the addition of functional
+ity to their applications via programming 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Burnett2014EUD"
+
+\end_inset
+
+.
+ For this to be possible, applications have to be designed with programmability
+ in mind: they should allow new functionality to be built based on the combinati
+on of existing ones, and there has to be linguistic support in the application
+ so that the user may express this new functionality.
+\end_layout
+
+\begin_layout Standard
+Depending on the application's design, end-user programming may take a 
+\emph on
+peripheral
+\emph default
+ or a 
+\emph on
+central
+\emph default
+ role in its use.
+ Examples of peripheral support for end-user programming are macro recorders
+ and embedded scripting languages.
+ Macro recording allows the user to automate sequences of steps, but offers
+ little in the way of abstraction.
+ Embedded scripting languages offer a programmable view to the application,
+ by extending the application with the full power of a Turing-complete programmi
+ng language.
+ Still, we categorize these features as peripheral to the user of the applicatio
+n, because most users can produce content in the application while ignoring
+ its programmable aspects.
+\end_layout
+
+\begin_layout Standard
+A prominent example of an application where end-user programming takes a
+ central role is the spreadsheet.
+ It has an open-ended design in which users can create new solutions for
+ their domains, expressed as calculations in the spreadsheet formula language.
+ Programming is central in the sense that the programmable aspect of the
+ application, the formula language, is unavoidable for any use beyond entering
+ constants into cells: using the formula language is equivalent to using
+ the spreadsheet.
+ For advanced uses, spreadsheets also offer scripting support: 
+\begin_inset Quotes eld
+\end_inset
+
+macros
+\begin_inset Quotes erd
+\end_inset
+
+, in spreadsheet parlance, are extension functions implemented as scripts.
+ These extended functions can then be used in the formula language.
+\end_layout
+
+\begin_layout Standard
+A three-layer general architecture like this, with an end-user language
+ on top, a scripting language in the middle, and the core implementation
+ of the application at the bottom, is a common pattern we identify in several
+ successful examples of applications where end-user programming is the central
+ form of interaction.
+\end_layout
+
+\begin_layout Standard
+In 
+\begin_inset Quotes eld
+\end_inset
+
+A Small Matter of Programming
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Nardi1993"
+
+\end_inset
+
+, Bonnie Nardi reports on studies that identified three types of people
+ who are engaged in programming at different levels: the 
+\emph on
+end-user
+\emph default
+, who may be a sophisticated user in their own domain but who does not particula
+rly care about programming and just wants to use the computer as a tool
+ to solve problems from their domain; the 
+\emph on
+domain developer
+\emph default
+ (called a 
+\begin_inset Quotes eld
+\end_inset
+
+local developer
+\begin_inset Quotes erd
+\end_inset
+
+ in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Nardi:1991:TLN:122825.122820"
+
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+translator
+\begin_inset Quotes erd
+\end_inset
+
+ in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Mackay:1990:PSC:99332.99356"
+
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+tinkerer
+\begin_inset Quotes erd
+\end_inset
+
+ in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "MacLean:1990:USP:97243.97271"
+
+\end_inset
+
+), who started as an end-user but acquired an appreciation towards programming
+ and is therefore more predisposed to dive into the possibilities offered
+ by a programmable system; and finally, the professional, who had formal
+ training in programming.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Three-layers"
+
+\end_inset
+
+ maps these kinds of users to examples of three-language architectures used
+ by end-user-programmable applications.
+\end_layout
+
+\begin_layout Standard
+The existence of different roles among a community of users continues to
+ be observed 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "draxler2011managing"
+
+\end_inset
+
+, and the alignment between these three different user profiles and three
+ architectural layers does not seem to be coincidental.
+ We believe that this three-tier architecture is necessary in end-user programma
+ble applications that feature programmability as a central feature in their
+ design.
+ The main user-facing language should be closer to the domain abstractions
+ than a full-fledged general-purpose scripting language: while a language
+ like Python is appropriate for scripting a 3D editor like Blender, a Python
+ command line would never be appropriate as the editor's primary interface.
+ The scripting language exists, thus, as a feature that provides support
+ for when the user's goals outgrow the possibilities of the UI-level language.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Expandir um pouco --R
+\end_layout
+
+\end_inset
+
+Scripting allows advanced users (or even programming professionals) to provide
+ extensions to the UI-level language when needed, such as adding custom
+ functions to a spreadsheet's formula language, or designing richer game
+ interactions than those available out-of-the-box in a game level editor.
+ This is, in a sense, an alternative look at the role of scripting.
+ Ever since Ousterhout's seminal paper 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Ousterhout:1998:SHP:619027.620930"
+
+\end_inset
+
+, scripting languages are primarily regarded in relation to the core application
+s that sit below them: they are regarded as higher-level alternatives to
+ system programming languages, and as 
+\begin_inset Quotes eld
+\end_inset
+
+glue
+\begin_inset Quotes erd
+\end_inset
+
+ languages that connect lower-level components.
+ Here, we focus on higher-level programmability of applications.
+ In this context, scripting exists to serve the needs of the end-user language
+ that sits above it, providing unconstrained, Turing-complete extensibility
+ to a UI-level language that remains focused on domain-specific elements.
+ While a scripting language for a 3D editor may deal in terms of typical
+ programmer constructs such as records, lists and associative arrays, its
+ end-user UI-level language should deal in terms of domain constructs such
+ as 3D objects, textures and lighting sources.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="6">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\emph on
+End user
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+formulas
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+macro recorder
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+node editor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+Unix shell
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+level editor
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\emph on
+Domain dev
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+macros
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+textual macros
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+scripting
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+shell script
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+game scripting
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\emph on
+Core app
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+spreadsheet
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+word processor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+3D app
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+C utilities
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+video game
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Three-layers"
+
+\end_inset
+
+Nardi's three types of programmers and three-layer architectures in end-user
+ programmable systems
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Dataflow languages
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+Dataflow
+\begin_inset Quotes erd
+\end_inset
+
+ in an umbrella term that refers to computation evaluation dictated by the
+ flow of data, the relationship between inputs and outputs in the program,
+ rather than explicit programmer-dictated flow of control.
+ The term 
+\begin_inset Quotes eld
+\end_inset
+
+dataflow language
+\begin_inset Quotes erd
+\end_inset
+
+ has been used to refer to various families of languages over time.
+ We review some of these languages here to get an outlook of what we mean
+ by the term.
+\end_layout
+
+\begin_layout Standard
+Dataflow programs correspond to directed graphs, where nodes are operations
+ on data.
+ Operations have inputs (incoming edges receiving data) and outputs (outgoing
+ edges sending data).
+ An operation executes when all its inputs receive data.
+ The operation computes its function, and then 
+\begin_inset Quotes eld
+\end_inset
+
+fires
+\begin_inset Quotes erd
+\end_inset
+
+ the result through one or more outputs, making data available to other
+ nodes.
+ The order of evaluation, thus, depends exclusively on the flow of data,
+ hence the name.
+ In contrast, control-flow
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+We use 
+\begin_inset Quotes eld
+\end_inset
+
+dataflow
+\begin_inset Quotes erd
+\end_inset
+
+ spelled without a hyphen as this is an established term in the literature
+ to refer to a particular class of languages; 
+\begin_inset Quotes eld
+\end_inset
+
+control-flow
+\begin_inset Quotes erd
+\end_inset
+
+, on ther other hand, is hyphenated as it refers merely to the notion of
+ a flow of control.
+\end_layout
+
+\end_inset
+
+ oriented languages are those that feature explicit sequencing constructs
+ written by the programmer: all imperative languages fall in this group.
+ In a pure dataflow language, evaluation order is implicit and arbitrary,
+ and there is full referential transparency.
+ Purely functional languages certainly fit this description.
+ What came to be known as the dataflow paradigm, however, is a particular
+ style of representing these data relationships, in particular the focus
+ on the flow of data, and how to represent it in the face of iteration or
+ recursion.
+ In any case, just like not all functional languages are pure, neither are
+ all dataflow languages.
+\end_layout
+
+\begin_layout Standard
+Early history of dataflow languages is closely tied to that of dataflow
+ computers.
+ In the 1970s, dataflow hardware architectures, with large number of processing
+ elements interconnected to form dataflow graphs, were considered as an
+ alternative to the von Neumann model 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Whiting:1994:HDL:612489.612574"
+
+\end_inset
+
+.
+ Given that the dataflow model would be inherently parallel in its design,
+ it was hoped that this would overcome the difficulties of writing concurrent
+ software and the CPU-memory bottleneck in Von Neumann machines.
+ Programming dataflow computers required new languages, as it was particuarly
+ hard to map traditional imperative languages to these architectures efficiently.
+ 
+\end_layout
+
+\begin_layout Standard
+The motivations of the many dataflow languages created over the years, both
+ textual and graphical, varied widely.
+ In 1973, Kosinski presented DFL 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Kosinski:1973:DFL:390014.808289"
+
+\end_inset
+
+, a graphical language for operating systems programming, and he motivated
+ the dataflow approach by requirements of paralellism and modularity.
+ Lucid 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Ashcroft:1977:LNL:359636.359715"
+
+\end_inset
+
+ is an early example of a textual dataflow language, with a stated goal
+ of making a language amenable to proof reasoning that remained friendly
+ to imperative programmers.
+ Their approach was to make a functional-style language that included iteration
+ constructs.
+ Programs are written in single-assignment style; in iterations, variable
+ updates are written as 
+\family typewriter
+\series bold
+next
+\series default
+ 
+\emph on
+var
+\emph default
+ = 
+\emph on
+exp
+\family default
+\emph default
+, where occurrences of variable 
+\family typewriter
+\emph on
+var
+\family default
+\emph default
+ in expression 
+\family typewriter
+\emph on
+exp
+\family default
+\emph default
+ represent its value in in the previous iteration.
+ Since the 1990s, the focus of dataflow languages moved away from performance
+ and paralellism and into software engineering territory, with a particular
+ growth in the field of dataflow visual programming languages 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Johnston:2004:ADP:1013208.1013209"
+
+\end_inset
+
+, of which the most prominent example in the industry is LabVIEW 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "labview"
+
+\end_inset
+
+, a commercial application for industrial automation first released in 1986
+ and marketed to this day, where the graphical language is tightly integrated
+ with the development and execution environment.
+ More recently, research on dataflow shifted its focus once again towards
+ parallelism 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Lin2008Parameterized,Gupta:2011:DES:2155620.2155628,Gantel2011dataflowReconfigurable,Barkati:2013:SPA:2543581.2543591"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+A field that is closely related to dataflow languages is that of constraint-base
+d systems, but as we will see, these concepts are not equivalent and it
+ is important to establish the distinction here.
+ Constraints allow the specification of relationships between values — for
+ example, one may specify the equation 
+\family typewriter
+9*C = 5*(F - 32)
+\family default
+ about variables 
+\family typewriter
+C
+\family default
+ and 
+\family typewriter
+F
+\family default
+ representing a temperature in Celsius and Fahrenheit, and if either 
+\family typewriter
+C
+\family default
+ or 
+\family typewriter
+F
+\family default
+ is updated to a new value, the other one is recomputed so that the equation
+ of the constraint continues to hold.
+ Constraint systems can be classified as one-way or multi-way: one-way constrain
+ts are systems where each value is defined by one equation, so that constraints
+ can be solved by propagation as performed by spreadsheet recalculation;
+ multi-way constraints are those where any variable of an equation can trigger
+ an update and where the constraints for a variable can be expressed via
+ a system of equations 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Sannella:1993:MVO:153493.153498"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+One-way constraints are a restricted case of multi-way constraints; traditionall
+y, dataflow systems can be seen as an example of one-way constraint systems
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Demetrescu:2014:RIP:2688877.2623200"
+
+\end_inset
+
+.
+ For this reason, the term 
+\begin_inset Quotes eld
+\end_inset
+
+constraint system
+\begin_inset Quotes erd
+\end_inset
+
+ is more often understood to refer to systems based on multi-way constraints:
+ in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Abelson1996SICP"
+
+\end_inset
+
+, for example, it is stated that 
+\begin_inset Quotes eld
+\end_inset
+
+nondirectionality of computation is the distinguishing feature of constraint-bas
+ed systems
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The power of a multi-way constraint system depends on the power of the
+ solver used to satisfy its systems of equations.
+ For example, Cassowary 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Badros:2001:CLA:504704.504705"
+
+\end_inset
+
+ is a widely used constraint solver supporting linear equations and inequalities.
+ Since we want to focus on core language semantics rather than solver algorithms
+, our work will restrict itself to traditional dataflow languages, or, in
+ other words, those with one-way constraints only.
+ From a dataflow point of view, a constraint update is a modification of
+ the structure of the dataflow graph.
+\end_layout
+
+\begin_layout Chapter
+Dataflow UI-level languages
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Understanding-dataflow"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: Rewrite
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Application
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Field
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Modeling phase
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Pure Data
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+music, multimedia
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+done: modeled
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Excel
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+spreadsheet
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+in progress: modeling
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+LabVIEW
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+industrial automation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+in progress: study
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Blender
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3D graphics
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+candidate
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Grasshopper
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3D modeling
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+candidate
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nuke
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+video editing
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+candidate
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Progress-of-study"
+
+\end_inset
+
+Progress of study of dataflow UI-level languages, in which their semantics
+ are modeled in Haskell.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+We are performing an ongoing work of formalization of the semantics of a
+ series of relevant dataflow-based end-user applications.
+ The idea here is not to produce a complete specification of each language,
+ but to capture the notable features of their semantics.
+ Examples of aspects to be compared in this analysis are: whether the language
+ is purely declarative; whether time affects the flow graph; presence of
+ constructs for looping and recursion; support for abstraction.
+ We aim to understand what is the required functionality expected by application
+s for dataflow-based interfaces and how different languages solve similar
+ problems.
+ Also, we aim to be able to reason on the designs of those languages under
+ similar terms.
+ The progress of this study is outlined in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Progress-of-study"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+We are modeling the semantics of those languages by implementing interpreters
+ for them in Haskell, written in the style of structural operational semantics.
+ Each interpreter is written as a set of evaluation functions, one for each
+ language construct.
+ As a whole, this set serves as a specification of the language being interprete
+d.
+ These functions take as inputs the current state of the execution environment
+ and a language construct to be evaluated, and return the new state of the
+ environment after evaluation of the construct.
+\end_layout
+
+\begin_layout Plain Layout
+This study has two goals: identifying what are the common patterns that
+ are present, in order to assess to which extent those languages are 
+\begin_inset Quotes eld
+\end_inset
+
+variations on a theme
+\begin_inset Quotes erd
+\end_inset
+
+; and pinpointing aspects where their ad hoc designs show.
+ As we investigate those languages, some of these design issues have already
+ surfaced.
+ We illustrate these preliminary results below.
+\end_layout
+
+\begin_layout Plain Layout
+It is worth pointing out that we do not claim that dataflow languages are
+ the best model of programmable interaction for all kinds of end-user applicatio
+ns.
+ For example, applications employing a storytelling paradigm 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Leshed:2008:CAS:1357054.1357323,Monteiro:2013:GBF:2577101.2577124"
+
+\end_inset
+
+ benefit from a control-oriented model.
+ We are also not covering languages which combine data and control-flow
+ graphs, such as Blueprints
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://docs.unrealengine.com/latest/INT/Engine/Blueprints/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, the graphical language used in the Unreal game engine.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Case study: Pure Data
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Pure-Data"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+descrever PD no início
+\end_layout
+
+\end_inset
+
+Pure Data 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PuckettePd"
+
+\end_inset
+
+ (abbreviated as Pd) is a graphical language originally designed for music
+ and later expanded for multimedia in general via extension packages.
+ It is widely used in the computer music community 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Burlet:2015:ESE:2820518.2820554"
+
+\end_inset
+
+, and is the free software successor of the successful commercial product
+ Max/MSP
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://cycling74.com/products/max/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, created by the same author.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+semântica do PD (o texto está lá, espalhado)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Pure Data, a program, called a 
+\begin_inset Quotes eld
+\end_inset
+
+patch
+\begin_inset Quotes erd
+\end_inset
+
+ in Pd jargon 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In this section, terms in Pd jargon are presented in quotes.
+\end_layout
+
+\end_inset
+
+, is represented as a graph of nodes (operations) and edges (the flow of
+ data between them).
+ Data flowing between nodes may be either discrete messages (numbers, strings,
+ or lists of these base types) or audio data.
+ Pure Data has two modes of execution, an 
+\begin_inset Quotes eld
+\end_inset
+
+edit mode
+\begin_inset Quotes erd
+\end_inset
+
+ in which the graph can be edited, and a 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+ in which the DSP (Digital Signal Processing) engine runs.
+\end_layout
+
+\begin_layout Standard
+Nodes in Pure Data have 
+\begin_inset Quotes eld
+\end_inset
+
+creation arguments
+\begin_inset Quotes erd
+\end_inset
+
+, input ports (
+\begin_inset Quotes eld
+\end_inset
+
+inlets
+\begin_inset Quotes erd
+\end_inset
+
+) and output ports (
+\begin_inset Quotes eld
+\end_inset
+
+outlets
+\begin_inset Quotes erd
+\end_inset
+
+).
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+creation arguments
+\begin_inset Quotes erd
+\end_inset
+
+ are the initial contents of nodes, given by the programmer during 
+\begin_inset Quotes eld
+\end_inset
+
+edit mode
+\begin_inset Quotes erd
+\end_inset
+
+ via a simple textual language.
+ A node is of one these types:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+atom box
+\begin_inset Quotes erd
+\end_inset
+
+ - represents a value which can be edited by the user while in 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+; editing the value (typing a new number or via the mouse scroll wheel)
+ sends the updated value through its output port;
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+message box
+\begin_inset Quotes erd
+\end_inset
+
+ - can be clicked by the user while in 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+, producing one or more messages;
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+graphical objects
+\begin_inset Quotes erd
+\end_inset
+
+ - receive data and represent it visually, for example, as a plot;
+\end_layout
+
+\begin_layout Itemize
+plain 
+\begin_inset Quotes eld
+\end_inset
+
+objects
+\begin_inset Quotes erd
+\end_inset
+
+ - represent Pd functions.
+ There are two kinds of Pd functions: those that operate on discrete messages
+ only, and those that operate on audio streams (denoted with a 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+~
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ suffix in their names); accordingly, inlets and outlets are also identified
+ as handling messages, audio or both.
+ An object implementing an audio-processing function may have both message
+ and audio inlets and outlets.
+ A non-audio object may only send and receive messages.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../proposta_hisham/puredata.png
+	width 60col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:puredata"
+
+\end_inset
+
+The demo for the oscillator node 
+\family typewriter
+osc~
+\family default
+, from the Pure Data documentation.
+ Thin lines are message connections, bold lines are audio connections; their
+ types are determined by their outlets.
+ Boxes with a slanted top-right corner are atom boxes, editable in 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+; boxes with a recessed right side are clickable message boxes.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+
+\size scriptsize
+ 1  PdPatch 10 (Seq.fromList [
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+ 2   PdAtomBox [PdFlt 0] [PdCtlIn True "bang"] [PdCtlOut "float"],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+ 3   PdObj     [PdSymbol "osc~", PdFlt gsh]
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+ 4               [PdCtlIn True "float", PdCtlIn True "float"] [PdSgnOut],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+ 5   PdMsgBox  [PdCommand PdToOut [PdTAtom (PdFlt 0.5), PdTAtom (PdFlt 1000)]]
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+ 6               [PdCtlIn True "bang"] [PdCtlOut "list"],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+ 7   PdMsgBox  [PdCommand PdToOut [PdTAtom (PdFlt 0), PdTAtom (PdFlt 100)]]
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+ 8               [PdCtlIn True "bang"] [PdCtlOut "list"],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+ 9   PdObj     [PdSymbol "line~"]
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+10               [PdCtlIn True "list", PdCtlIn False "float"] [PdSgnOut],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+11   PdObj     [PdSymbol "*~"] [PdSgnIn 0, PdSgnIn 0] [PdSgnOut],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+12   PdObj     [PdSymbol "dac~"] [PdSgnIn 0] [],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+13   PdObj     [PdSymbol "r", PdSymbol "metroToggle"] [] [PdCtlOut "bang"],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+14   PdObj     [PdSymbol "metro", PdFlt 500] [PdCtlIn True "bang"] [PdCtlOut
+ "bang"],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+15   PdObj     [PdSymbol "tabwrite~", PdSymbol "array99"] [PdCtlIn True
+ "signal"] [],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+16   PdGObj    [PdSymbol "array99"] [] [],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+17   PdMsgBox  [PdCommand (PdReceiver "metroToggle") [PdTAtom (PdFlt 1.0)]]
+ [] [],
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+18   PdMsgBox  [PdCommand (PdReceiver "metroToggle") [PdTAtom (PdFlt 0.0)]]
+ [] []
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+19 ]) (Seq.fromList [
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+20   PdConnection (0, 0) (1, 0), -- 0 -> osc~
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+21   PdConnection (1, 0) (5, 0), -- osc~ -> *~
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+22   PdConnection (1, 0) (9, 0), -- osc~ -> tabwrite~
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+23   PdConnection (7, 0) (8, 0), -- r -> metro
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+24   PdConnection (8, 0) (9, 0), -- metro -> tabwrite~
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+25   PdConnection (2, 0) (4, 0), -- 0.1 100 -> line~
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+26   PdConnection (3, 0) (4, 0), -- 0 100 -> line~
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+27   PdConnection (4, 0) (5, 1), -- line~ -> *~
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+28   PdConnection (5, 0) (6, 0)  -- *~ -> dac~
+\end_layout
+
+\begin_layout LyX-Code
+
+\size scriptsize
+29 ]) [1, 4, 5, 9, 6] -- topological sort of audio connections
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:puredata-hs"
+
+\end_inset
+
+Haskell representation of the graph depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:puredata"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Execution in Pure Data is synchronous.
+ The tree of DSP nodes is processed periodically, updating their buffers
+ and propagating audio data.
+ A complete propagation of audio is called a 
+\begin_inset Quotes eld
+\end_inset
+
+DSP tick
+\begin_inset Quotes erd
+\end_inset
+
+, during which only audio nodes are processed.
+ When an input or timing event happens, the entire cascade of messages produced
+ is processed in sequence, before the next DSP tick 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PuckettePd"
+
+\end_inset
+
+.
+ This means that excessive processing of messages may produce noticeable
+ audio drop-outs, but the audio buffer with a user-specified size mitigates
+ this.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+? --R
+\end_layout
+
+\end_inset
+
+Pd graphs may contain cycles: loops in the audio processing chain are detected
+ and propagation is halted.
+ The flow of messages may also produce infinite loops, but being dynamic
+ they cannot be detected a priori: those are caught during 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+, reporting a stack overflow.
+ 
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:puredata"
+
+\end_inset
+
+ gives an example of a Pure Data patch.
+ This program produces a 1000Hz sine wave (the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+osc~ 1000
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ object), which has its amplitude multiplied (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+*~
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) according to a linear function (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+line~
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) prior to be sent to the DSP output (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+dac~
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+).
+ The sine wave is also sampled at a rate of 500Hz (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+metro 500
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) into a visual representation (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+tabwrite~ array99
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+).
+ The user may interact with the program by setting a new frequency to the
+ oscillator (typing in new values in the atom box that initially contains
+ 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+0
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+), by clicking the message boxes that reconfigure the linear function (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+0 100
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+, which will configure 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+line~
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ to produce a slope from its current value to 0 over the course of 100ms,
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+0.1 1000
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+, which will cause the value to slide to 0.1 over 1s) or by toggling the
+ tabulation of the graph (message boxes 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+metroToggle 0
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+metroToggle 1
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+, which sends the value 0 or 1 to the 
+\begin_inset Quotes eld
+\end_inset
+
+receiver
+\begin_inset Quotes erd
+\end_inset
+
+ object with that name, declared as 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+r metroToggle
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+The system of messaging via named receivers allows the program to send data
+ between nodes that are not explicitly linked via connections.
+ The relationship between a message and a receiver can be thought of as
+ an implicit edge in the dataflow graph.
+ Since the textual language of messages supports variable arguments fed
+ via input ports, receiver destinations can change during execution: this
+ makes the dataflow graph, in effect, dynamic.
+ This, however, is limited to discrete messages.
+ The flow of audio data cannot be re-routed while in 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+, but disconnections can be simulated multiplying a signal by 0.
+\end_layout
+
+\begin_layout Standard
+To avoid triggering functions with multiple arguments many times, as the
+ input arguments arrive through different paths of the graph, Pure Data
+ has the notion of 
+\begin_inset Quotes eld
+\end_inset
+
+hot
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+cold
+\begin_inset Quotes erd
+\end_inset
+
+ input ports.
+ Only the hot input port triggers recalculation; data arriving to cold input
+ ports stays buffered there and is only consumed when a hot input port is
+ triggered.
+ This allows, for example, to create a 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+float
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ node that increments its value every time it is triggered, by sending its
+ output to an increment node (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
++ 1
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) and sending the result back via a secondary, cold inlet.
+ This will 
+\emph on
+not
+\emph default
+ create an infinite loop, because the result of the increment will only
+ be consumed next time the hot inlet of the node is triggered.
+\end_layout
+
+\begin_layout Standard
+Due to the way Pure Data handles messages, for some node types the order
+ in which connections are performed in its interface can change the semantics
+ of the resulting graph, so that two visually identical graphs can produce
+ different results, depending on the order in which the lines between nodes
+ were drawn in the UI.
+ This behavior is documented as a possible user pitfall in the documentation
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PuckettePd"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+o que é modelado
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We produced an executable model of the core semantics of Pure Data 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PuckettePd,Zmolnig2014pd"
+
+\end_inset
+
+ in Haskell 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Available at 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/hishamhm/puredata
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, which includes stateful nodes for multiple data types, message-based and
+ stream-based connectors, identifier-based message passing (functioning
+ in practice like dynamic message-based connectors) and an intra-node expression
+ language for message objects.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+como é modelado, isto é, o que o modelo faz
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Our model implements a simulation of the 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+, in which the graph is fixed and input events are fed into it.
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+In our model, the DSP engine is always on, so the 
+\family typewriter
+pd dsp
+\family default
+ command as seen in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:puredata"
+
+\end_inset
+
+ is not represented.
+\end_layout
+
+\end_inset
+
+ The model implements this as a main function called 
+\family typewriter
+run
+\family default
+ which receives a data structure representing the patch and a list of timestampe
+d input events.
+ It produces a trace of the internal states of each node and the generated
+ outputs at each time tick.
+ Two lists of outputs are produced: textual data representing the output
+ of the Pd console (which can be written to using the Pd function 
+\family typewriter
+print
+\family default
+), and numeric values representing audio data that would be sent to the
+ sound card
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Our model is precise enough so that these numeric values can be actually
+ converted to sound file format and played back.
+ Our repository includes a script that performs this conversion and a sample
+ audio file it produced.
+\end_layout
+
+\end_inset
+
+.
+ Our model replicates the synchronous behavior of Pure Data: for each tick
+ it performs one full cascade of message propagation and one step of the
+ entire DSP processing tree.
+ For simplicity, it does not perform loop detection of messages.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+O código que você mostra é basicamente um "data description", não reflete
+ a semântica.
+ Não sei se vale a pena gastar tanto tempo descrevendo a figura 4, na verdade
+ não sei nem se precisa ter a figura 4.
+ Podia apenas dar uma descrição bem mais alto nível, dizendo que criamos
+ uma estrutura de dados representando um grafo, com uma lista ordenada de
+ nós e uma lista ordenada de arestas, etc.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Em compensação, a descrição da semântica do programa (o que ele faz) devia
+ ser bastante ampliada.
+ (Atualmente é quase que só as quatro linhas do 2o par.
+ pág.
+ 11.) [Figure 4 depicts...]
+\end_layout
+
+\end_inset
+
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:puredata-hs"
+
+\end_inset
+
+ depicts the Haskell representation of the patch from Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:puredata"
+
+\end_inset
+
+.
+ A Pure Data program is represented with the 
+\family typewriter
+PdPatch
+\family default
+ data type in our model, which contains the DSP buffer size, a sequence
+ of nodes, a sequence of connections between nodes, and the pre-computed
+ topological sort of audio connections.
+\end_layout
+
+\begin_layout Standard
+Note that, in the case of the pitfall scenario we mentioned above, where
+ two visually identical graphs could have different semantics, these graphs
+ would not have identical representations in our model: a patch is represented
+ as an 
+\emph on
+ordered
+\emph default
+ sequence of connections.
+ Our model, therefore, makes evident a central mismatch between syntax and
+ semantics in Pure Data: the application displays programs as a graph (a
+ set of edges and a set of vertices) but its deterministic semantics depends
+ on ordered representations of both edges and vertices.
+\end_layout
+
+\begin_layout Chapter
+Case study: spreadsheets
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Spreadsheets"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Popularity
+\end_layout
+
+\end_inset
+
+The spreadsheet is arguably the most successful end-user programmable applicatio
+n 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Scaffidi:2005:ENE:1092357.1092394"
+
+\end_inset
+
+.
+ Microsoft Excel is the most successful product of this kind, as part of
+ Microsoft Office, a productivity suite with over 1.2 billion users 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Microsoft2014ByTheNumbers"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The importance of this class of applications as well as concerns with the
+ reliability of spreadsheets produced by users
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Losses caused by spreadsheet errors are calculated in the scale of millions
+ of dollars 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Sakal2012StrategicManagement"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ have inspired academic work in areas such as debugging 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Barowy:2014:CDD:2660193.2660207"
+
+\end_inset
+
+, testing 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Carver:2006:EET:1159733.1159775"
+
+\end_inset
+
+ and expressivity 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Jones03User-centred"
+
+\end_inset
+
+ of spreadsheets.
+ Often, these works involve modeling the spreadsheet application in order
+ to reason about it.
+ Formal models of spreadsheets applied to research work usually simplify
+ considerably their semantics of execution, assuming a model of computation
+ with no specifications for error conditions and without advanced features
+ such as indirect references 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Abraham:2006:TIS:1140335.1140346,Cunha:2009:SRD:1480945.1480972"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Real-world spreadsheets, however, are nothing but simple.
+ Their design has evolved over the years, but to this day, spreadsheets
+ follow the design paradigm of VisiCalc, created in 1979 for the Apple II.
+ The user interface of a spreadsheet is dominated by a grid view, inspired
+ by physical paper spreadsheets.
+ Each cell of this grid presents a value, which may be calculated by a formula,
+ which may reference values calculated by other cells.
+ In the 1980s and 1990s several applications competed for this market, of
+ which VisiCalc failed to maintain dominance.
+ Lotus 1-2-3, Quattro Pro, Multiplan and Excel all introduced new features,
+ such as instant recalculation, formula auto-fill (where the user can produce
+ new formulas by dragging the cursor from one cell, producing formulas in
+ new cells following a predictable pattern), multiple worksheets, and so
+ on.
+ As they adopted each other's features, the design of spreadsheet applications
+ coalesced to that of Excel today, and by the 2000s the competition among
+ proprietary spreadsheets was essentially over.
+ The only popular alternatives to Excel that emerged since then did not
+ gain adoption due to their feature set, but due to non-functional characteristi
+cs: LibreOffice Calc
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Originally StarCalc, a proprietary spreadsheet that was part of StarOffice,
+ a productivity suite developed in the 1990s by German company StarDivision.
+ This company was bought by Sun Microsystems, which open-sourced StarOffice
+ as OpenOffice.
+ LibreOffice emerged as a fork of OpenOffice after Oracle's acquisition
+ of Sun.
+\end_layout
+
+\end_inset
+
+ became the main free software spreadsheet; Google Sheets is the most popular
+ web-based spreadsheet.
+ For both products (and their users), compatibility with Excel is a major
+ concern.
+ Reproducing the semantics of Excel, therefore, ought to be considered a
+ major goal for these projects.
+\end_layout
+
+\begin_layout Standard
+For a long time, there was no specification whatsoever of the semantics
+ of Excel, or even of its file format.
+ It was only in 2006, 21 years after the initial release of Excel, that
+ a specification was published detailing its file format 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "ISO29500_OfficeOpenXML"
+
+\end_inset
+
+, due to political push towards open formats.
+ Its semantics, however, remain vague.
+ Unsurprisingly, as we will see below, these major competitors fail to implement
+ full compatibility with Excel's formula language.
+ Interestingly, even Excel Online
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Available at 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://office.live.com/start/Excel.aspx
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, also produced by Microsoft as a response to Google Sheets, fails to implement
+ the semantics of the formula language correctly.
+\end_layout
+
+\begin_layout Section
+The formula language
+\end_layout
+
+\begin_layout Standard
+We studied the formula language as implemented by five spreadsheet applications:
+\end_layout
+
+\begin_layout Itemize
+Microsoft Excel 2010, the spreadsheet market leader, matching the standardized
+ document for the .xlsx format 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "ISO29500_OfficeOpenXML"
+
+\end_inset
+
+, which is still current at the time of this writing;
+\end_layout
+
+\begin_layout Itemize
+LibreOffice Calc 5, the leading free software spreadsheet, whose behavior
+ also matches the latest specification documents for its file format 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "OASIS2011ODFFormula"
+
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Itemize
+Google Sheets, a prominent web-based spreadsheet; 
+\end_layout
+
+\begin_layout Itemize
+Microsoft Excel Online, Microsoft's own web-based version of Excel;
+\end_layout
+
+\begin_layout Itemize
+Microsoft Excel for Android version 16.0.7127.1010, Microsoft's mobile version
+ of Excel.
+\end_layout
+
+\begin_layout Standard
+All five implementations have incompatibilities to various levels, but they
+ are similar enough so that they can be understood as dialects of the same
+ language.
+ The exposition below presents this formula language as implemented by these
+ spreadsheets, discussing it from a programming language design perspective.
+ We focus primarily on Excel, since the other applications mostly follow
+ its design, but we highlight their variations whenever they appear.
+ In particular, Microsoft Excel for Android presents very close behavior
+ to that of Excel Online.
+ Whenever mobile Excel is not explicitly mentioned, the reader can assume
+ that its behavior matches that of Excel Online.
+\end_layout
+
+\begin_layout Standard
+Given both Google Sheets and Excel Online are server-based applications,
+ their behavior may change at any time, so all observations about them are
+ current at the time of writing.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+make screencasts
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Syntax
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Expression language, First-class functional language
+\end_layout
+
+\end_inset
+
+Nowadays, all spreadsheet products use roughly the same formula language:
+ the user of any spreadsheet user will be familiar with expressions such
+ as 
+\family typewriter
+=A5+SUM(B10:B20)
+\family default
+.
+ From a programming point of view, spreadheets have been described as a
+ 
+\begin_inset Quotes eld
+\end_inset
+
+first-order functional languages
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Abraham:2006:TIS:1140335.1140346"
+
+\end_inset
+
+.
+ The formula language is a language of expressions, with a number of predefined
+ operators, such as 
+\family typewriter
++
+\family default
+ (addition), 
+\family typewriter
+&
+\family default
+ (string concatenation), as well as a large number of built-in functions,
+ such as 
+\family typewriter
+SQRT
+\family default
+ and 
+\family typewriter
+SUM
+\family default
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Typical syntax
+\end_layout
+
+\end_inset
+
+At first glance, it is not unlike the sub-language of expressions with infix
+ operators and function calls contained in a number of programming languages.
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+English
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Portuguese
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Numbers
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+6.2831
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+6,2831
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Function names
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+SQRT(9)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+RAIZ(9)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Argument separators
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+SUM(6,0.2831)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+SOMA(6;0,2831)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Literal matrices
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+{1,2;3,4}
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+{1;2
+\backslash
+3;4}
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Function arguments
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+CELL("type",A1)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+CÉL("tipo",A1)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Syntactic-localization"
+
+\end_inset
+
+Syntactic changes in localized versions of Excel: all but the last one can
+ be automatically converted by the application.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The syntax of the language changes across translated versions of Excel.
+ The names of functions are localized: for example, 
+\family typewriter
+SUM()
+\family default
+ becomes 
+\family typewriter
+SOMA()
+\family default
+ in the Portuguese version.
+ Also, in many languages the comma is used as a decimal separator for numbers,
+ forcing other uses of commas to be replaced by semicolons, and semicolons
+ to be replaced by backslashes.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Syntactic-localization"
+
+\end_inset
+
+ lists those differences.
+ The application stores function names internally in English, so these and
+ other operator changes are automatically translated when a file by opened
+ in another version of Excel.
+ This automatic conversion, unfortunately, is not complete.
+ Some functions use a set of predefined strings as a kind of enumeration,
+ such as 
+\family typewriter
+CELL("type", A1)
+\family default
+.
+ These arguments were translated in localized versions of the functions,
+ and these break when loaded in a different language: a function written
+ in a Portuguese version of Excel as 
+\family typewriter
+CÉL("tipo", A1)
+\family default
+ becomes 
+\family typewriter
+CELL("tipo", A1)
+\family default
+ when loaded in an English version of Excel, which produces an error.
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+This does happen in practice: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.e-dicas.pt/2012/06/formula-de-excel-para-obter-nome-do.html
+\end_layout
+
+\end_inset
+
+; this site has a translator service for arguments of CELL and INFO: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://en.excel-translator.de/translator/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="5">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Microsoft
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+LO
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Google
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Excel
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Excel
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Calc
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sheets
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Online
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Refer to a sheet
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+Sheet2!B1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+Sheet2.B1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+Sheet2!B1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+Sheet2!B1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Array formulas
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+{=
+\family default
+\emph on
+fn
+\family typewriter
+\emph default
+}
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+{=
+\family default
+\emph on
+fn
+\family typewriter
+\emph default
+}
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+=ARRAYFORMULA(
+\family default
+\emph on
+fn
+\family typewriter
+\emph default
+)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N/A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nested arrays
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Error
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Error
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Flattened 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Error
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Some-syntactic-incompatibilities"
+
+\end_inset
+
+Some syntactic incompatibilities between spreadsheets
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Even at a syntactic level, we found that while the studied applications
+ have similar formula languages, they were all incompatible to each other.
+ The surface similarity is certainly meant to lower the learning curve for
+ users who are moving from one application to the other, but beyond the
+ basics, incompatibilities show.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Some-syntactic-incompatibilities"
+
+\end_inset
+
+ lists some of these incompatibilities.
+ It is notable that even though only a mere three features are listed, no
+ two columns in the table are alike.
+\end_layout
+
+\begin_layout Subsection
+Values and types
+\end_layout
+
+\begin_layout Standard
+The formula language is typed and it features scalar and matrix values.
+ Scalar values may be of type boolean, error, string or number.
+ Matrices are bidimensional, with unidimensional arrays as a particular
+ case, and may contain scalar values of heterogenous types, but matrices
+ cannot contain other matrices.
+ Google Sheets accepts nested matrix syntax, but matrices are in effect
+ flattened: 
+\family typewriter
+{1,{2,3},4}
+\family default
+ is syntactically valid but it is equivalent to 
+\family typewriter
+{1,2,3,4}
+\family default
+.
+ In all other three spreadsheets, nested matrix literals produce a syntax
+ error.
+\end_layout
+
+\begin_layout Standard
+The matrix notation with curly brackets can be only used to represent literals.
+ It is not a general matrix constructor, and can only contain scalar literals,
+ and not subexpressions: while 
+\family typewriter
+{1,2,3}
+\family default
+ is valid, both 
+\family typewriter
+{1+1}
+\family default
+ and 
+\family typewriter
+{A1}
+\family default
+ are not.
+\end_layout
+
+\begin_layout Standard
+Most contexts feature automatic coercions, but not all.
+ The expression 
+\family typewriter
+="1"+"2"
+\family default
+ returns the number 
+\family typewriter
+3
+\family default
+, as does 
+\family typewriter
+=SQRT("9")
+\family default
+.
+ But functions taking arrays of numbers, such as 
+\family typewriter
+SUM
+\family default
+, skip all string values.
+ Therefore, given cells A1 to A3 containing 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+2
+\family default
+ and 
+\family typewriter
+"100"
+\family default
+, we have that 
+\family typewriter
+=A1+A2+A3
+\family default
+ returns 
+\family typewriter
+103
+\family default
+, and 
+\family typewriter
+=SUM(A1:A3)
+\family default
+ returns 
+\family typewriter
+3
+\family default
+.
+ Oddly, it does coerce boolean values, so, replacing A1 with 
+\family typewriter
+TRUE
+\family default
+ in the previous example still yields the same results for both formulas.
+\end_layout
+
+\begin_layout Standard
+Formula expressions may contain and manipulate scalars and matrices, including
+ matrix literals, but cells can only represent scalar values.
+ Each cell in the grid may be either empty or have contents entered by the
+ user.
+ 
+\emph on
+Cell contents
+\emph default
+ may be either nothing, a formula or a scalar literal value entered (attempting
+ to enter a matrix literal causes it to be simply interpreted as a string).
+ A cell also has a result value, based on its contents.
+ 
+\emph on
+Cell values
+\emph default
+ may be either nothing (coerced to either 
+\family typewriter
+0
+\family default
+ or 
+\family typewriter
+""
+\family default
+ as necessary) or a scalar value produced from the calculation of the formula.
+ Cells may also have formatting metadata that are only relevant to the UI
+ presentation of values, but are not distinct types: for example, percentages
+ and dates are still values of type number; colors and fonts are also formatting
+ metadata of a cell.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="5">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Microsoft
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+LO
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Google
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Excel
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Excel
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Calc
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sheets
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Online
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+TYPE({1})
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+TYPE({1,1})
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+TYPE(1+{1,2})
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+TYPE({1,2}/0)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+16
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+64
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+TYPE(Z99)
+\family default
+\size default
+\emph on
+ (Empty)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+Err:502
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+TYPE(A1)
+\family default
+\size default
+\emph on
+ (Self)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+0 
+\family default
+\size default
+\emph on
+(Warning)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+Err:502
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+#REF!
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:TYPE-function"
+
+\end_inset
+
+Behavior of the 
+\family typewriter
+TYPE
+\family default
+ function in spreadsheets
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Whenever a scalar value is expected and a matrix value is given, the value
+ at position 
+\begin_inset Formula $(1,1)$
+\end_inset
+
+ of the matrix is returned.
+ The UI of a spreadsheet displays cell values by default.
+ Some functions, however, operate on cell contents — that is, there are
+ functions 
+\emph on
+f
+\emph default
+ so that 
+\emph on
+f
+\family typewriter
+\emph default
+(10)
+\family default
+ and 
+\emph on
+f
+\family typewriter
+\emph default
+(A1)
+\family default
+ with 
+\family typewriter
+A1=10
+\family default
+ produce different results.
+ An example is the function 
+\family typewriter
+TYPE
+\family default
+, which returns the data type of the cell contents as a number.
+ Given a cell as an argument, 
+\family typewriter
+TYPE
+\family default
+ returns 
+\family typewriter
+1
+\family default
+ if the cell contains a number literal, 
+\family typewriter
+2
+\family default
+ for strings and 
+\family typewriter
+4
+\family default
+ for booleans.
+ If the cell contains a formula, it returns 
+\family typewriter
+8
+\family default
+ regardless of the data type of the formula's result, unless the formula
+ results in an error, in which case it returns 
+\family typewriter
+16
+\family default
+, or if it contains a matrix literal, in which case it returns 
+\family typewriter
+64
+\family default
+ whether the expression results in an error or not.
+ When given an expression as an argument, 
+\family typewriter
+TYPE
+\family default
+ returns the type of the value of the evaluated expression.
+ This complicated behavior, which is not implemented consistently among
+ spreadsheets (Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:TYPE-function"
+
+\end_inset
+
+ shows some incompatibilities), illustrates how poorly data types are presented
+ to users in spreadsheets.
+\end_layout
+
+\begin_layout Standard
+Errors are propagated as the formula is evaluated from left to right.
+ This behavior is relevant to language compatibility since errors can be
+ detected by functions such as 
+\family typewriter
+ISNA()
+\family default
+, which returns 
+\family typewriter
+TRUE
+\family default
+ for 
+\family typewriter
+#N/A
+\family default
+ and 
+\family typewriter
+FALSE
+\family default
+ for any other error or non-error values.
+ Given cells 
+\family typewriter
+A1
+\family default
+ containing 
+\family typewriter
+=1/0
+\family default
+ (evaluates to 
+\family typewriter
+#DIV/0
+\family default
+) and 
+\family typewriter
+A2
+\family default
+ containing 
+\family typewriter
+#N/A
+\family default
+, 
+\family typewriter
+ISNA(A1+A2)
+\family default
+ evaluates to 
+\family typewriter
+FALSE
+\family default
+ and 
+\family typewriter
+ISNA(A2+A1)
+\family default
+ evaluates to 
+\family typewriter
+TRUE
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Our study of the semantics of Excel has uncovered other oddities: built-in
+ functions 
+\family typewriter
+IF()
+\family default
+ and 
+\family typewriter
+CHOOSE()
+\family default
+ are evaluated lazily (
+\family typewriter
+IF(1<2, 10, 0/0)
+\family default
+ returns 
+\family typewriter
+10
+\family default
+ and 
+\family typewriter
+0/0
+\family default
+ is never evaluated), but functions 
+\family typewriter
+AND()
+\family default
+ and 
+\family typewriter
+OR()
+\family default
+ are not.
+ These two functions do not perform short-circuiting: 
+\family typewriter
+OR(TRUE, 10)
+\family default
+ returns 
+\family typewriter
+TRUE
+\family default
+ but 
+\family typewriter
+OR(TRUE, 0/0)
+\family default
+ returns 
+\family typewriter
+#DIV/0!
+\family default
+, an error value.
+ To check that the evaluation disciplines of 
+\family typewriter
+IF
+\family default
+ and 
+\family typewriter
+AND
+\family default
+/
+\family typewriter
+OR
+\family default
+ are indeed different, we escaped the purely functional formula language
+ by writing a BASIC macro that produces a side-effect, popping up a dialog
+ box.
+ In both Excel and LibreOffice, the spreadsheets supporting BASIC macros,
+ 
+\family typewriter
+OR(TRUE, PopDialogBox())
+\family default
+ pops a dialog box but 
+\family typewriter
+IF(1<2, 10, PopDialogBox())
+\family default
+ does not.
+ Google Sheets supports JavaScript macros, and while its API explicitly
+ blocks IO side-effects such as dialog boxes in formula macros, we were
+ able to reproduce this test by writing a recursive function that causes
+ a stack overflow, with similar results.
+ Excel Online does not support running macros of any kind.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Array-formulas"
+
+\end_inset
+
+Array formulas
+\end_layout
+
+\begin_layout Standard
+Array formulas are a powerful feature: they implement a separate evaluation
+ model for formulas, and have been used to demonstrate that spreadsheets
+ can model relational algebra 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Tyszkiewicz:2010:SRD:1807167.1807191"
+
+\end_inset
+
+.
+ Still, they are usually disregarded when discussing the semantics of spreadshee
+ts, and do not feature on any of the works cited above.
+ The Excel documentation is vague when explaining their evaluation logic,
+ resorting to examples 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Microsoft2016ArrayFormulas"
+
+\end_inset
+
+.
+ In fact, in the standardization process of spreadsheet file formats, the
+ complete specification of formula evaluation was a contention issue: the
+ draft specification of the OASIS OpenFormula did not specify formula evaluation
+, which led a Microsoft Office team member to raise issues about it 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Jones2005formulas"
+
+\end_inset
+
+.
+ However, Microsoft's own specification did not fully specify formula evaluation
+ at the time either , and even the following draft of OpenFormula did not
+ specify array formulas 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "OASIS2006OpenFormulaDraft"
+
+\end_inset
+
+.
+ Eventually, specification of array formulas were included in both OASIS
+ ODF 1.2 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "OASIS2011ODFFormula"
+
+\end_inset
+
+ and Microsoft Office Open XML 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "ISO29500_OfficeOpenXML"
+
+\end_inset
+
+, but even then the specification was informal and mostly driven by examples,
+ in both documents.
+\end_layout
+
+\begin_layout Standard
+An array formula is a formula that is marked to be evaluated in a special
+ array-oriented evaluation model.
+ In Excel and LibreOffice a formula is marked as an array formula by confirming
+ its entry pressing Ctrl+Shift+Enter, and the UI displays the formula enclosed
+ in brackets, as in 
+\family typewriter
+{=A1:B5+10}
+\family default
+; in Google Sheets, they use a function-style annotation, as in 
+\family typewriter
+=ARRAYFORMULA(A1:B5+10)
+\family default
+.
+ In the array formula evaluation mode, when ranges are given as arguments
+ to scalar operations (such as + in the above example), the range is decomposed
+ and the operation is performed for each element.
+ The results of an array formula, therefore, may extend to several cells.
+ Once the user enters an array formula, the required number of cells is
+ filled with the results, with the initial cell being the top-left entry
+ of the result matrix.
+\end_layout
+
+\begin_layout Standard
+For the array formula above, 
+\family typewriter
+{=A1:B5+10}
+\family default
+, the result is a matrix with two columns and five rows, in which each cell
+ is filled as if the range was substituted by a scalar corresponding to
+ the given offset in the range, such that, for each cell 
+\emph on
+(x, y)
+\emph default
+ of the resulting matrix, its value is equivalent to that of 
+\family typewriter
+=INDEX(A1:B5, 
+\family default
+\emph on
+x
+\family typewriter
+\emph default
+, 
+\family default
+\emph on
+y
+\family typewriter
+\emph default
+)+10
+\family default
+ (where 
+\family typewriter
+INDEX
+\family default
+ is the function that takes element in row x, column y of the given range).
+ This example belies the complexity in the evaluation of array formulas,
+ for a simple substitution of ranges for their elements is not sufficient.
+ When a function such as 
+\family typewriter
+SUM()
+\family default
+ expects an array argument, the full range is given to the function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="10" columns="6">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Microsoft
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+LO
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Google
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Excel
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Excel
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Calc
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sheets
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Online
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+SUM(SQRT({10,20}))
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+7.6344
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+3.1622
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+3.1622
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+7.6344
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+AF
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+7.6344
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+7.6344
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+7.6344
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+SUM(SQRT(A1:A2))
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+#VALUE!
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+#VALUE!
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+#VALUE!
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+#VALUE!
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+AF
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+7.6344
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+7.6344
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+7.6344
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+SUM(SQRT(INDIRECT({"A1","A2"}))
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+#VALUE!
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+3.1622
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+3.1622
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+#VALUE!
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+AF
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+#VALUE!
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+7.6344
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+3.1622
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="left" valignment="middle" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+SUM(INDIRECT({"A1","A2"})
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+10
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+AF
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+30
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Formula-evaluation-incompatibilities"
+
+\end_inset
+
+Formula evaluation incompatibilities between spreadsheets
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This showcases a behavior that is very different from that of most programming
+ languages: evaluation of sub-expressions is context-sensitive.
+ The way a sub-expression is evaluated may vary according to an enclosing
+ function call, perhaps several levels up in the syntax tree of the expression.
+ The expected types of arguments for built-in functions define whether expressio
+ns given to them will have scalar or matrix evaluation.
+ Within an array formula, for scalar arguments, arrays are destructured
+ so that a scalar element is given.
+\end_layout
+
+\begin_layout Standard
+The UI presentation of the array formula also influences the resulting values
+ of cells: an array formula is always entered over a rectangular group of
+ one or more cells.
+ This group has a user-defined size that may or may not match the size of
+ the matrix value of the array formula.
+ The default size of the cell group matches that of the matrix value, but
+ the cell group may be resized by the user by dragging the selection corner.
+ Growing the group beyond the size of the result matrix may result in cells
+ filled with 
+\family typewriter
+#N/A
+\family default
+; conversely, shrinking the cell group may hide parts of the result matrix.
+\end_layout
+
+\begin_layout Standard
+We say it 
+\begin_inset Quotes eld
+\end_inset
+
+may
+\begin_inset Quotes erd
+\end_inset
+
+ result in 
+\family typewriter
+#N/A
+\family default
+ because the precise semantics are a bit more complicated: if any of the
+ dimensions of the result matrix is 1, increasing the size of the cell group
+ in this dimension will produce repeated values in that dimension.
+ For example, if the array formula 
+\family typewriter
+={10,20}
+\family default
+ which produces a single-row matrix is inserted in a 
+\begin_inset Formula $3\times2$
+\end_inset
+
+-group 
+\family typewriter
+A1:B3
+\family default
+, then the row will be duplicated, and cells 
+\family typewriter
+A1:A3
+\family default
+ and 
+\family typewriter
+B1:B3
+\family default
+ will present the same contents, namely: 
+\family typewriter
+10
+\family default
+, 
+\family typewriter
+20
+\family default
+ and 
+\family typewriter
+#N/A
+\family default
+.
+ If the matrix representation of an array formula value is 
+\begin_inset Formula $1\times1$
+\end_inset
+
+ (which is also the case if the result value is not a matrix), all values
+ in its cell group will be identical.
+\end_layout
+
+\begin_layout Standard
+Array formulas are a niche feature: from the Enron corpus of 15935 industrial
+ spreadsheets used in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "AivaloglouXLGrammar2015"
+
+\end_inset
+
+, we independently assessed that 185 of them use array formulas (1.16%).
+ However, arrays are pervasive in Excel: ranges such as 
+\family typewriter
+A1:A5
+\family default
+ reference arrays of cells, and common functions such as 
+\family typewriter
+SUM()
+\family default
+ take arrays as arguments.
+ Functions that expect arrays as arguments evaluate these arguments in an
+ 
+\emph on
+array context
+\emph default
+, producing different values than arguments evaluated in a 
+\emph on
+scalar context
+\emph default
+.
+ In Excel, an array context of evaluation can produce iterated calculation
+ of scalar functions, like in the context of array formulas.
+ This is not implemented in LibreOffice or Google Sheets, which both reserve
+ iterated execution to array formulas.
+ Interestingly, Excel Online, which does not support array formulas, does
+ implement iterated execution in array contexts of plain formulas.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Formula-evaluation-incompatibilities"
+
+\end_inset
+
+ illustrates these incompatibilities (in the second column of this table,
+ F denotes plain formula mode, AF denotes array formula mode).
+ In the first two examples, the enclosing 
+\family typewriter
+SUM
+\family default
+ function imposes an array context over scalar function 
+\family typewriter
+SQRT
+\family default
+, triggering its iterated calculation in Excel and Excel Online plain formulas.
+ In the last two examples, assuming 
+\family typewriter
+A1
+\family default
+ and 
+\family typewriter
+A2
+\family default
+ contain 
+\family typewriter
+10
+\family default
+ and 
+\family typewriter
+20
+\family default
+, 
+\family typewriter
+INDIRECT({"A1","A2"})
+\family default
+ produces an array 
+\family typewriter
+{10,20}
+\family default
+ which is coerced to scalar 
+\family typewriter
+10
+\family default
+ in all modes except LibreOffice's array formula mode; in the third example,
+ Excel and Excel Online fail to propagate the array context in a doubly-nested
+ function.
+\end_layout
+
+\begin_layout Subsection
+Compatibility issues
+\end_layout
+
+\begin_layout Standard
+One might argue that these language issues present in formula languages
+ are due to specification blunders early in the history of spreadsheets,
+ forever preserved in the name of backwards compatibility.
+ But the insufficient concern with precise semantics of spreadsheets is
+ not only historical, as it manifests itself in compatibility issues between
+ modern variants, even by the same vendor.
+ Further, when evaluating the compatibility of various spreadsheet implementatio
+ns we need to define what is meant by compatibility.
+ When looking at spreadsheets as 
+\emph on
+documents
+\emph default
+, one tends to think about 
+\begin_inset Quotes eld
+\end_inset
+
+file format compatibility
+\begin_inset Quotes erd
+\end_inset
+
+: an application should be able to load a file and render it correctly.
+ This definition of compatibility is insufficient, as it does not account
+ the dynamic semantics of the language: how the state of the program changes
+ over time as the program executes.
+ When one looks at a spreadsheet as an 
+\emph on
+interactive program
+\emph default
+, then the newly-loaded document defines the initial state of the program
+ and further edits to cells are inputs that cause state updates.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="6">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Microsoft
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+LO
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Google
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Excel
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Excel
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Excel
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Calc
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sheets
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Online
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mobile
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+Err:522
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+#REF!
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+100
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+100
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+B1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+Err:522
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+#REF!
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size small
+0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+error dialog
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+no
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+no
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+no
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+yes
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Circular-references"
+
+\end_inset
+
+Behavior upon circular references, after the following sequence: B1 to 100,
+ A1 to =B1, B1 to =A1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Compatible languages should have equivalent dynamic semantics.
+ Under this definition, Excel, Excel Online and mobile Excel, all three
+ by Microsoft, are not compatible: there are identical sequences of formula
+ edits that one can perform over the same spreadsheet which lead to different
+ results in each program.
+ In other words, the dynamic semantics of their formula languages differ.
+ Case in point, all three variants of Excel have different behavior in face
+ of circular references.
+ In desktop and mobile Excel, the application pops a dialog warning the
+ user about the circular references; in the web-based version no such warning
+ is present.
+ More important, however, is the difference in produced values: when a user
+ produces a loop between two cells in desktop Excel, both cells instantly
+ produce error values; in Excel Online and mobile Excel, the most recently
+ updated cell produces the value zero and the other one retains its previous
+ value.
+ That such a striking difference in behavior has made it to production seems
+ to show that the UI was not treated as a well-defined language whose behavior
+ was meant to be duplicated.
+ While care has certainly been taken to ensure that Excel Online and mobile
+ have good compatibility with Excel, apparently this was taken to mean only
+ that they should load Excel files and produces identical 
+\emph on
+initial
+\emph default
+ results.
+ The behavior of Excel Online is especially worrying, as circular references
+ produce invalid values silently.
+\end_layout
+
+\begin_layout Section
+Interpreters modeling spreadsheet semantics
+\end_layout
+
+\begin_layout Standard
+In the same spirit of our modeling of Pure Data, we produced an executable
+ model of the core semantics of spreadsheets, implemented in Haskell 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Available at 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/hishamhm/spreadsheet
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout LyX-Code
+
+\size footnotesize
+data XlValue = XlNumber Double
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+             | XlString String
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+             | XlBoolean Bool
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+             | XlError String
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+             | XlMatrix [[XlValue]]
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+data XlAddr = XlAbs Int
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+            | XlRel Int
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+data XlRC = XlRC XlAddr XlAddr
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+data XlFormula = XlLit XlValue
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+               | XlFun String [XlFormula]
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+               | XlRef XlRC
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+               | XlRng XlRC XlRC
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+data XlCell = XlCell XlFormula
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+            | XlAFCell XlFormula (Int, Int)
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+type XlCells = Map.Map XlRC XlCell
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+data XlWorksheet = XlWorksheet XlCells
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+type XlValues = Map.Map XlRC XlValue
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+data XlEnv = XlEnv XlCells XlValues
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+data XlEvent = XlAddFormula XlRC XlFormula
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+             | XlAddArrayFormula XlRC XlRC XlFormula 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Xl-Data-types"
+
+\end_inset
+
+Data types used in all four spreadsheet interpreters
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The approach was to model not only the initial state of a spreadsheet (producing
+ the values of cells by recursively computing their formulas), but its 
+\emph on
+use
+\emph default
+ over time.
+ For this, we model the spreadsheet application as an interpreter
+\end_layout
+
+\begin_layout LyX-Code
+run :: XlWorksheet -> [XlEvent] -> XlEnv
+\end_layout
+
+\begin_layout Standard
+that takes as inputs an initial state and a list of events, and outputs
+ the resulting state of the environment.
+ The initial state is an empty spreadsheet.
+ In spreadsheets, a complete document is called a 
+\begin_inset Quotes eld
+\end_inset
+
+workbook
+\begin_inset Quotes erd
+\end_inset
+
+, that contains one or more 
+\begin_inset Quotes eld
+\end_inset
+
+worksheets
+\begin_inset Quotes erd
+\end_inset
+
+; in our model, we support a single worksheet, since this does not affect
+ the evaluation semantics.
+ It is represented via the 
+\family typewriter
+XlWorksheet
+\family default
+ type (depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Xl-Data-types"
+
+\end_inset
+
+).
+ Events are modeled as the 
+\family typewriter
+XlEvent
+\family default
+ type, containing cell addresses (
+\family typewriter
+XlRC
+\family default
+, for 
+\begin_inset Quotes eld
+\end_inset
+
+row-column
+\begin_inset Quotes erd
+\end_inset
+
+) and formulas (
+\family typewriter
+XlFormula
+\family default
+), representing user interaction editing cells.
+ The output is the resulting program environment (
+\family typewriter
+XlEnv
+\family default
+): the full set of cell contents (
+\family typewriter
+XlCells
+\family default
+) and cell values (
+\family typewriter
+XlValues
+\family default
+).
+ The execution of the interpreter iterates through the list of events, producing
+ a new XlEnv as each event is processed.
+ The formula that is edited is updated in the map of cell contents and the
+ necessary cell values are recomputed.
+ Our model supports both absolute and relative references (
+\family typewriter
+XlAbs
+\family default
+ and 
+\family typewriter
+XlRel
+\family default
+), since relative cells depict the relationship between the textual language
+ of formulas and their grid representation.
+\end_layout
+
+\begin_layout Standard
+We produced a series of incremental models of spreadsheet evaluation, ranging
+ from naive models to more precise ones:
+\end_layout
+
+\begin_layout Enumerate
+Basic evaluation of cells, with unspecified behavior for circular references
+ and other errors
+\end_layout
+
+\begin_layout Enumerate
+Interpreter 1 extended with correct semantics for circular and indirect
+ references
+\end_layout
+
+\begin_layout Enumerate
+Interpreter 2 extended with a form of array evaluation
+\end_layout
+
+\begin_layout Enumerate
+Interpreter 3 extended with implicit iteration in array formulas
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement t
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 1 
+\emph on
+run :: XlWorksheet -> [XlEvent] -> XlEnv
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 2 run sheet@(XlWorksheet cells) events =
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 3    foldl' runEvent (XlEnv cells Map.empty) events
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 4    where
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 5       
+\emph on
+runEvent :: XlEnv -> XlEvent -> XlEnv
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 6       runEvent env@(XlEnv cells values) event@(XlEvent rc newCell) =
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 7          let
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 8             (dependencyGraph, vertList, keyToVert) =
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 9                graphFromEdges (cellsToNodes cells)
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+10             
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+11             
+\emph on
+dependentsGraph :: Graph
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+12             dependentsGraph = transposeG dependencyGraph
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+13             
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+14             
+\emph on
+affectedNodes :: [Vertex]
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+15             affectedNodes =
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+16                case keyToVert rc of
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+17                   Just v  -> filter (
+\backslash
+e -> e /= v)
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+18                                     (reachable dependentsGraph v)
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+19                   Nothing -> []
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+25          in
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+26             foldl' evalVertex
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+27                    (XlEnv (insert rc newCell cells)
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+28                           (updateValue rc cell values))
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+29                    affectedNodes
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+20          where
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+21             
+\emph on
+evalVertex :: XlEnv -> Vertex -> XlEnv
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+22             evalVertex env@(XlEnv cells values) vtx =
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+23                let (cell, rc, _) = vertList vtx
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+24                in  XlEnv cells (updateValue rc cell values)
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Xl1-Evaluation-loop"
+
+\end_inset
+
+Evaluation loop of Interpreter 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Interpreter 1 is similar to the semantics commonly presented in works from
+ the literature that model spreadsheets 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Abraham:2006:TIS:1140335.1140346,Cunha:2009:SRD:1480945.1480972"
+
+\end_inset
+
+.
+ It is a simple interpreter of cell expressions which follows references
+ to other cells recursively.
+ Circular references are not detected: a loop in the spreadsheet results
+ in a loop in the interpreter.
+ There is no support for indirect references, such as those produced by
+ the 
+\family typewriter
+INDIRECT
+\family default
+ function: for this reason, the evaluation graph of the spreadsheet can
+ be derived entirely from its cell contents, with no need to inspect the
+ calculated cell values.
+ Reflecting this, as illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Xl1-Evaluation-loop"
+
+\end_inset
+
+, the evaluation for an event produces a dependency graph (lines 8-9) from
+ the spreadsheet cell contents, transposes this graph into a dependents
+ graph (that is, for each cell, which cells depend on this one; lines 11-12),
+ and then recursively traverses this graph producing a list of cells that
+ should be reevaluated (lines 14-19).
+ This list is iterated (lines 26-29), producing a new environment at each
+ step which contains the updated value of the evaluated cell (lines 21-24).
+\end_layout
+
+\begin_layout Standard
+Since each event represents a change of cell contents made by the user,
+ note that the main iteration through the event list (line 3) causes a recalcula
+tion of the dependency graph et each new event.
+ Still, in this interpreter the dependency graph remains static as the cell
+ references are traversed.
+ This is not a valid model of how a spreadsheet works in face of indirect
+ references.
+ For this reason, Intepreter 2 uses a different evaluation model.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement t
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 1 
+\emph on
+evalFormula :: Set XlRC -> XlCells -> XlValues -> XlRC -> XlFormula
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 2 
+\emph on
+               -> (XlValue, XlValues)
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 3 evalFormula visited cells values fc formula = ...
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 4
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 5 
+\emph on
+updateValue :: XlCells -> XlValues -> XlRC -> XlCell -> XlValues 
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 6 updateValue cells values rc (XlCell formula) =
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 7    snd $ evalFormula Set.empty cells values rc formula 
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 8
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+ 9 
+\emph on
+run :: XlWorksheet -> [XlEvent] -> XlEnv
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+10 run sheet@(XlWorksheet cells) events =
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+11    foldl' runEvent (XlEnv cells Map.empty) events
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+12    where
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+13       
+\emph on
+runEvent :: XlEnv -> XlEvent -> XlEnv
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+14       runEvent env@(XlEnv cells _) event@(XlEvent rc newCell) =
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+15          let 
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+16             newCells = Map.insert rc newCell cells
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+17             
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+18             
+\emph on
+acc :: XlRC -> XlCell -> XlValues -> XlValues
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+19             acc rc cell values =
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+20                if Map.member rc values
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+21                then values
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+22                else updateValue newCells values rc cell
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+23          in
+\end_layout
+
+\begin_layout LyX-Code
+
+\size footnotesize
+24             XlEnv newCells (Map.foldrWithKey acc Map.empty newCells)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Xl2-Evaluation-loop"
+
+\end_inset
+
+Evaluation loop of Interpreter 2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Xl2-Evaluation-loop"
+
+\end_inset
+
+ illustrates the evaluation engine of Interpreter 2.
+ Again, the run function iterates over the list of events (line 11), but
+ this time, 
+\family typewriter
+runEvent
+\family default
+ produces a new environment by iterating over all non-empty cells on each
+ step, using a fold operation (line 24).
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+accumulator
+\begin_inset Quotes erd
+\end_inset
+
+ function of this fold operation (lines 18-22) first checks if a value was
+ already produced for this cell during this step (via a previous recursive
+ evaluation of another cell); if it was not already calculated, it calls
+ 
+\family typewriter
+updateValue
+\family default
+ (defined in lines 5-7).
+ This function starts a new recursive evaluation step of formulas, calling
+ 
+\family typewriter
+evalFormula
+\family default
+ (outlined in lines 1-3; its implementation includes cases for each data
+ type and function supported).
+ Note that 
+\family typewriter
+evalFormula
+\family default
+ includes a 
+\family typewriter
+visited
+\family default
+ argument of type 
+\family typewriter
+Set XlRC
+\family default
+: this is populated as 
+\family typewriter
+evalFormula
+\family default
+ recurses, to detect evaluation loops.
+\end_layout
+
+\begin_layout Standard
+This model recalculates the entire spreadsheet on each edit.
+ This is not a realistic representation of what a spreadsheet application
+ would do, performance-wise, but since all formulas in our model are pure,
+ it produces the same cell values that a more efficient implementation would
+ produce.
+ We are concerned here with the resulting environment of each step, which
+ is the user-visible results of the execution.
+ It is important to note, however, that actual spreadsheet applications
+ do include side-effecting functions: for example, they can call functions
+ implemented in imperative scripting languages.
+ Also, a function like 
+\family typewriter
+RAND()
+\family default
+ produces a new value each time it is evaluated.
+ Rules for reevaluation in different implementations seem arbitrary.
+ In LibreOffice and Excel Online, for example, any cell containing a 
+\family typewriter
+RAND()
+\family default
+ call is re-evaluated each time any other cell is edited, even if unrelated
+ or when the edit operation maintains the same cell contents.
+ Google Sheets has a slightly different behavior: if the edited cell contains
+ a formula and the edit operation maintains the same cell contents, it does
+ not trigger a reevaluation; if editing a cell with an immediate value,
+ it always triggers a recalculation.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO Verify that it's the same in Excel.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Interpreter 3 is our first approach at implementing array evaluation.
+ We extend the previous model by adding a second cell type, 
+\family typewriter
+XlAFCell
+\family default
+, which represents a formula marked for array evaluation by pressing Ctrl+Shift+
+Enter.
+ In spreadsheets, a single array formula can occupy a number of cells: the
+ user can select a rectangular cell group when entering the formula, and
+ if the result of the calculation is a matrix, the values of its elements
+ will be distributed across the positions of the range, according to the
+ rules described in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Array-formulas"
+
+\end_inset
+
+.
+ For this reason, 
+\family typewriter
+XAFCell
+\family default
+ is defined as containing a 
+\family typewriter
+XlFormula
+\family default
+ and a pair of integers, representing the size in rows and columns of its
+ cell group (see Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Xl-Data-types"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: Further specify the evaluation rules, based on the model.
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: 
+\end_layout
+
+\end_inset
+
+All examples in the OASIS specification pass in Interpreter 3; examples
+ in the ISO specification fail, require Interpreter 4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: Explain how model 4 is different from model 3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+While implementing the third and fourth interpreters, we identified that
+ the semantics of array evaluation are different in Excel and LibreOffice.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: 
+\end_layout
+
+\end_inset
+
+Weirdness in Excel specification (both modes produce same result)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: Note Excel examples that fail in LibreOffice
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: Subtleties in the semantics: evaluation of ranges by intersection
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: Array formulas are a first-class concept in the language but a second-clas
+s citizen in the UI: dragging extends a formula over an array of cells;
+ why doesn't it produce an array formula? Copying and pasting is 
+\begin_inset Quotes eld
+\end_inset
+
+more general
+\begin_inset Quotes erd
+\end_inset
+
+ [pick example from estimates spreadsheet].
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Case study: LabVIEW
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:LabVIEW"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+LabVIEW
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://ni.com/labview/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ is a commercial tool for data acquisition, instrument control and industrial
+ automation, developed by National Instruments.
+ It is a proprietary commercial application, with extensive support for
+ typical engineering domains such as digital signal processing.
+ The application consists of a graphical programming environment, including
+ a large amount of bundled functionality for data acquisition, as well as
+ support for hardware also produced by its vendor.
+ LabVIEW programs can be compiled and deployed stand-alone, depending only
+ on a runtime package.
+ LabVIEW is noted as a major success story of a visual programming language
+ in the industry 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Johnston:2004:ADP:1013208.1013209"
+
+\end_inset
+
+.
+ In it, program code is represented as a set of graphical diagrams.
+\end_layout
+
+\begin_layout Standard
+The programming language of the LabVIEW environment is called G.
+ However, since there are no other implementations of G or any specification
+ other than the implementation of LabVIEW itself, it is customary to refer
+ to the language as LabVIEW
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[citation needed]
+\end_layout
+
+\end_inset
+
+; for simplicity, we will do the same here.
+\end_layout
+
+\begin_layout Section
+Overview of the language
+\end_layout
+
+\begin_layout Standard
+In LabVIEW, programs are called 
+\emph on
+virtual instruments
+\emph default
+ (VIs), as their interfaces mimic laboratory instruments, with buttons,
+ scopes and gauges.
+ This is a clear nod to its application domain, since the developer of the
+ tool is also a vendor of physical hardware instruments.
+\end_layout
+
+\begin_layout Standard
+A VI has always two parts:
+\end_layout
+
+\begin_layout Itemize
+the 
+\emph on
+front panel
+\emph default
+, which is the user interface.
+ It contains elements that provide inputs and outputs to the program, presented
+ as graphical widgets for interaction or visualization.
+\end_layout
+
+\begin_layout Itemize
+the 
+\emph on
+block diagram
+\emph default
+, which is the dataflow graph.
+ It contains all elements that are present in the front panel (this time
+ in iconic mode) as well as any additional nodes which represent functions
+ to be applied to data, effectively constructing the program.
+\end_layout
+
+\begin_layout Standard
+All widgets included in the front panel are either input elements, called
+ 
+\emph on
+controls
+\emph default
+ in LabVIEW, or output elements, called 
+\emph on
+indicators
+\emph default
+.
+ This dichotomy leads to a much simpler model for UI programming, as opposed
+ to typical GUI frameworks where one programs handlers to various events
+ that read-write widgets may produce.
+ Indicators appear as write-only in the block diagram and read-only in the
+ front panel; contrariwise, controls appear as data-entry widgets in the
+ front panel that are read-only in the block diagram.
+ It is possible to update control values from the block diagram using more
+ advanced features of the language that are less evident in its UI, but
+ the environment is conducive to a simpler input/output discipline which
+ presents data flowing from controls, to the block diagram, and finally
+ to indicators.
+\end_layout
+
+\begin_layout Subsection
+Data types and wires
+\end_layout
+
+\begin_layout Standard
+The language features primitive and structured data types.
+ It supports a large number of primitive basic types: 8, 16, 32 and 64 bit
+ integers; fixed-point, floating-point and complex numbers of various sizes.
+ For structured data, LabVIEW includes single and multi-dimensional arrays,
+ as well as record types called 
+\emph on
+clusters
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Controls, nodes and indicators are connected throw 
+\emph on
+wires
+\emph default
+, which is how edges in the dataflow graph are called.
+ Apart from a special 
+\begin_inset Quotes eld
+\end_inset
+
+dynamic
+\begin_inset Quotes erd
+\end_inset
+
+ wire which sees limited use as it demands special conversions, wires are
+ generally statically typed: each wire has a static data type assigned to
+ it.
+ In the UI, the color, thickness and stripe pattern of the wire indicates
+ its type: the color represents the base type (integer, floating point,
+ array, cluster), the thickness represents data dimensions (scalar, single
+ or multidimensional array) and additional styling such as stripe patterns
+ are used for particular types, such as a waveform or error data, which
+ are predefinitions for particular cluster types.
+ For example, a waveform is a cluster containing on array of data points,
+ a numeric timestamp and a numeric interval value between data samples.
+ Not all types can be visually distinguished in the interface.
+ Apart from the especially predefined clusters like waveform and error,
+ all user-defined cluster types look alike.
+ For these wires, the contextual help window serves as a useful aid, describing
+ the complete type of the wire under the mouse cursor.
+\end_layout
+
+\begin_layout Standard
+Structured data such as arrays and clusters still flow as a single dataflow
+ packet: the transfer of a whole array between two nodes happens as a single
+ firing through an array-typed wire.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+cite here dataflow paper that talks of the difficulty of dealing with structured
+ data
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Some types support automatic coercions.
+ For example, it is possible to connect an integer output port to a floating-poi
+nt input port.
+ The resulting wire has integer type: coercion happens at the input edge
+ of the wire.
+\end_layout
+
+\begin_layout Subsection
+Looping and cycles
+\end_layout
+
+\begin_layout Standard
+LabVIEW programs are directed graphs, and cycles are controlled via the
+ use of explicit 
+\begin_inset Quotes eld
+\end_inset
+
+feedback nodes
+\begin_inset Quotes erd
+\end_inset
+
+ and structured looping constructs.
+ Program reuse can be achieved encapsulating sub-graphs into sub-VIs.
+ LabVIEW supports running several VIs simultaneously, and it provides a
+ form of global variables as a means to transfer data between them.
+ 
+\end_layout
+
+\begin_layout Standard
+A 
+\begin_inset Quotes eld
+\end_inset
+
+for-loop
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+while-loop
+\begin_inset Quotes erd
+\end_inset
+
+ construct appears in the UI as a frame inside the graph.
+ This frame encloses a subgraph and controls its iteration.
+ The subgraph may produce one or more values that are sent out as the iteration
+ completes.
+\end_layout
+
+\begin_layout Standard
+Values may also be sent to the next iteration of the loop through the use
+ of 
+\emph on
+shift registers
+\emph default
+.
+ A shift register appears as a pair of small nodes at the edges of the loop
+ frame: one incoming node at the right and one outgoing node at the left.
+ This is conceptually similar to how textual detaflow languages like Lucid
+ allow iteration, with 
+\family typewriter
+x
+\family default
+ and 
+\family typewriter
+\series bold
+next
+\series default
+ x
+\family default
+ holding distinct values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+ Recursion
+\end_layout
+
+\begin_layout Subsection
+Timing
+\end_layout
+
+\begin_layout Standard
+LabVIEW offers two wait functions: 
+\begin_inset Quotes eld
+\end_inset
+
+Wait Until Next ms Multiple
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+Wait
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The former monitors a millisecond counter and waits until it reaches the
+ specified multiple of a given number, controlling the loop execution rate
+ by holding back the loop step.
+ This is designed for synchronizing loops, typically when performing device
+ reads and outputs to indicators in the interface.
+ Note that the given multiple may happen right after the loop starts, so
+ the delay for the first iteration of the loop is indeterminate.
+ The latter function, 
+\begin_inset Quotes eld
+\end_inset
+
+Wait
+\begin_inset Quotes erd
+\end_inset
+
+, always waits the specified amount of time, effectively adding a pause
+ of constant size between steps of the loop.
+\end_layout
+
+\begin_layout Standard
+The firing of a wait node inside a loop construct holds back the next step
+ of the loop, effectively controlling the execution rate, assuming the rest
+ of the code in the loop takes less time to execute than the configured
+ delay.
+ When multiple parallel loops exist in the graph, using 
+\begin_inset Quotes eld
+\end_inset
+
+Wait Until Next ms Multiple
+\begin_inset Quotes erd
+\end_inset
+
+ allows one to synchronize them to millisecond precision, which is often
+ good enough for the domain of data acquisition hardware.
+ It is amusing to note that the icon for 
+\begin_inset Quotes eld
+\end_inset
+
+Wait Until Next ms Multiple
+\begin_inset Quotes erd
+\end_inset
+
+ is a metronome, a device for counting tempo in music; in Pure Data, the
+ function for generating periodic messages is called 
+\family typewriter
+metro
+\family default
+, referencing the same device.
+ The image of the metronome reinforces the idea of 
+\begin_inset Quotes eld
+\end_inset
+
+orchestration
+\begin_inset Quotes erd
+\end_inset
+
+ between parallel agents.
+\end_layout
+
+\begin_layout Section
+Semantics
+\end_layout
+
+\begin_layout Standard
+A difficulty in discussing the semantics of LabVIEW is that is has no published
+ specification.
+ Its documentation often resorts to examples to explain concepts, and does
+ not serve an an exhaustive specification of the language.
+ Previous attempts on the formalization of LabVIEW have been restricted
+ to subsets of the language, and based themselves on its user manual and
+ experimenting with the tool itself.
+ In 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Mok1998RTLLabVIEW"
+
+\end_inset
+
+, Mok and Stuart map a subset of the language to RTL (real-time logic),
+ a first-order logic used for describing real-time and embedded systems;
+ they note that design decisions had to be made in points where the precise
+ behavior was not clear.
+ In 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Kaufmann:2009:FVL:1637837.1637851"
+
+\end_inset
+
+, Kaufmann et al.
+ map a purely functional subset of LabVIEW into a dialect of Common Lisp
+ used by the ACL2 theorem prover.
+\end_layout
+
+\begin_layout Standard
+In developing a model of LabVIEW's semantics, we are particularly interested
+ about modularity issues and management of state.
+ In our modeling, we aim to go beyond the functional subset, including the
+ relationship between VIs and global variables.
+ Like previous work in the literature, we aim to design the model based
+ on LabVIEW's documentation and experimentation with the tool itself.
+\end_layout
+
+\begin_layout Standard
+Types:
+\end_layout
+
+\begin_layout Standard
+While LabVIEW supports arrays of clusters, and clusters of arrays, it does
+ not support arrays of arrays.
+ The recommended alternative is to use an 
+\begin_inset Quotes eld
+\end_inset
+
+array of cluster of array
+\begin_inset Quotes erd
+\end_inset
+
+: an array where elements are single-element clusters containing an array.
+ This limitation is an explicit design decision, harking back to the development
+ of LabVIEW 2.0 in 1988
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://forums.ni.com/t5/LabVIEW-Idea-Exchange/Add-Support-for-Array-of-Array/idi-
+p/1875123
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+concerns with excessive array copying
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+new material:
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: 
+\end_layout
+
+\end_inset
+
+Tunnels.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: 
+\end_layout
+
+\end_inset
+
+Three of the new plug-ins introduced in LabVIEW 2015 were suggested by users
+ of the vendor's discussion forums: all three of them dealt with array types:
+ Change to Array or Element, Size Array Constants to Contents, Transpose
+ 2D Array.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: 
+\end_layout
+
+\end_inset
+
+LabVIEW 2015 also introduced a palette with Data Type Parsing controls,
+ for introspecting type information of dynamically-typed data.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: 
+\end_layout
+
+\end_inset
+
+LabVIEW 2016 introduced Channel Wires (previewed as an 
+\begin_inset Quotes eld
+\end_inset
+
+unofficial feature
+\begin_inset Quotes erd
+\end_inset
+
+ in LabVIEW 2015).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: 
+\end_layout
+
+\end_inset
+
+Feedback nodes, direction, Z-Transform feedback nodes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: 
+\end_layout
+
+\end_inset
+
+ XNodes and recursion
+\end_layout
+
+\begin_layout Section
+Is LabVIEW end-user programming?
+\end_layout
+
+\begin_layout Standard
+It is interesting to contrast the presentation of programs in LabVIEW with
+ that of Pure Data.
+ Both applications have two modes of operation (called 
+\begin_inset Quotes eld
+\end_inset
+
+edit mode
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+ in Pure Data).
+ LabVIEW presents both the front panel and the block diagram when editing,
+ but when running one interacts only with the front panel.
+ In Pure Data, however, the same graph is presented in both modes.
+ Interaction with the audio produced by a dataflow graph is made via manipulatio
+n of values directly in the nodes or clicking nodes to trigger messages.
+ While it is possible to hide the graph structure in Pure Data through the
+ use of subprograms and indirect messages, the environment does not lead
+ the user in this direction.
+ When running a program inside the LabVIEW environment, the block diagram
+ is still visible when running, but it is read-only.
+ At runtime, it can only be decorated with temporary probes for debugging
+ purposes, attached to wires.
+ A program can be compiled and deployed so that only the front panel is
+ visible.
+ A deployed LabVIEW program, therefore, is not itself end-user programmable.
+\end_layout
+
+\begin_layout Standard
+In Pure Data, the user of the program and the developer are often the same:
+ a computer musician programming audio synthesis and sequencing.
+ Even when that is not the case — and there are communities where Pure Data
+ programs are shared — the explicit nature of the graph structure invites
+ users to tweak the patches to their liking, producing their own sounds.
+\end_layout
+
+\begin_layout Standard
+LabVIEW...
+\end_layout
+
+\begin_layout Chapter
+Semantics for a dataflow engine
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:A-Dataflow-Engine"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Based on the knowledge obtained studying existing languages, we wish to
+ propose a new dataflow language with a focus on embeddability and extensibility
+, through which developers of end-user applications will be able to construct
+ a domain-specific language for their application.
+ The idea is that this language will be implemented as a 
+\emph on
+dataflow engine
+\emph default
+, to be embedded into the application.
+ The application developer will use the engine to specify a DSL for their
+ application, defining data types for the objects of its domain, and selecting
+ the appropriate subset of the functionality of the dataflow engine that
+ should be exposed to the application UI.
+\end_layout
+
+\begin_layout Standard
+Note that this does not mean that the language proposed here will be the
+ language exposed to the end-user, or that a single end-user UI-level language
+ is generally suitable for all sorts of data-centric applications: the language
+ exposed to the user will be a DSL created by the core application developer,
+ exposing elements of the application domain.
+ This DSL will run on top of the dataflow engine, which should on its turn
+ provide clean execution semantics so that the DSL avoids design pitfalls
+ that plague end-user languages that are developed ad hoc.
+ The dataflow engine will not concern itself with syntax: it is up to the
+ developer of the application's UI to provide the user a presentation of
+ the language, which may be textual and/or graphical (hence the name 
+\begin_inset Quotes eld
+\end_inset
+
+engine
+\begin_inset Quotes erd
+\end_inset
+
+, in analogy to game engines, where the low-level mechanics are provided
+ by the engine but the presentation of the game is up to the game developer).
+\end_layout
+
+\begin_layout Standard
+This extends the approach taken when embedding scripting languages, where
+ the domain data is exposed as values to the execution environment (objects,
+ APIs) but the language itself is usually unchanged.
+ Here, we want to let the developer produce the appropriate language for
+ their interface, by choosing which supported language features to expose.
+ For example, some UI-level languages will be purely functional, some will
+ need to deal with state; some will allow functional abstraction, others
+ won't.
+ The semantics of the underlying dataflow engine should be 
+\emph on
+modular
+\emph default
+.
+ We believe that the set of representative features existing in dataflow
+ UI-level languages form a gradient representing a design space, and are
+ not just a set of disjoint functionalities particular to each application
+ studied.
+\end_layout
+
+\begin_layout Standard
+This means that the ability to expose or hide certain features needs to
+ be built into the design, and not left for the domain developer as a presentati
+on issue.
+ Taking away features from a language after the fact can have unintended
+ consequences and may not be easily possible.
+ In scripting languages, this kind of customization is restricted to the
+ library level, when available at all.
+ Lua is a rare example of a language where its standard libraries are optional
+ when embedding; even then, disabling operators and language constructs
+ would require editing the source code of the virtual machine.
+ In an end-user language one might want to impose restrictions to obtain
+ certain operational guarantees, such as the lack of cycles.
+ The central challenge in designing the dataflow engine supporting feature
+ modularity is finding the proper granularity at which these features can
+ be selected.
+\end_layout
+
+\begin_layout Standard
+We intend to design the dataflow engine and produce an executable model
+ of its semantics in Haskell.
+ We will then use it to model the languages of the various dataflow applications
+ studied, using the engine to develop prototypes that capture the data manipulat
+ion style of each application.
+ We will compare the resulting languages with the original models, aiming
+ to demonstrate that, like in scripting, there is room for reuse in end-user
+ UI-level language design and implementation.
+\end_layout
+
+\begin_layout Chapter
+Conclusion
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Conclusion"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+End-user languages for UI interaction are today in the state where scripting
+ languages were in the 1980s: ad hoc languages, one for each application,
+ with their implementation often mixed with that of the application itself,
+ and their design reflecting an organic evolution
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In the case of scripting languages, many of those evolved out of either
+ configuration files or interactive command-line prompts
+\end_layout
+
+\end_inset
+
+.
+ In the world of scripting, this has since been replaced by out-of-the-box
+ implementations of widely used languages, reused among many applications,
+ with their implementation clearly isolated from the application, and their
+ design reflecting an evolution towards suitability for multiple domains.
+ Most importantly, this notion of a 
+\begin_inset Quotes eld
+\end_inset
+
+scriptable application
+\begin_inset Quotes erd
+\end_inset
+
+ composed by a low-level core and a scripting language extended with bindings
+ to this core has become a common architectural pattern (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(a)).
+\end_layout
+
+\begin_layout Standard
+In this work, we aim to bring a similar evolution to end-user UI-level languages
+ one step closer to reality, by means of two main contributions:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement t
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../proposta_hisham/scriptable_app.eps
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../proposta_hisham/scriptable_eup_app.eps
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "40col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+
+\size small
+(a) Scriptable application
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "40col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+
+\size small
+(b) Scriptable end-user programmable application
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../proposta_hisham/first_draft_design.eps
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../proposta_hisham/second_draft_design.eps
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "40col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+
+\size small
+(c) UI-level DSL provided by a dataflow engine
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "40col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+
+\size small
+(d) UI-level and scripting languages with shared bindings
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Architectural-patterns"
+
+\end_inset
+
+Architectural patterns of programmable applications
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+Mapping
+\begin_inset space ~
+\end_inset
+
+the
+\begin_inset space ~
+\end_inset
+
+design
+\begin_inset space ~
+\end_inset
+
+space
+\begin_inset space ~
+\end_inset
+
+of
+\begin_inset space ~
+\end_inset
+
+dataflow
+\begin_inset space ~
+\end_inset
+
+end-user
+\begin_inset space ~
+\end_inset
+
+languages.
+ We claim that we need to have a better understanding of the state of dataflow
+ languages in the context of end-user programming.
+ To lower the barrier of entry for the development of programmable end-user
+ applications, we believe that domain developers should be given building
+ blocks for designing dataflow domain-specific languages in a coherent way.
+ But first of all, we need to understand which are the building blocks they
+ need, and which are the ones they are now constructing.
+ In this work, we are evaluating a number of candidate end-user languages,
+ and selecting among them a few representative examples, producing an in-depth
+ analysis of their semantics.
+ As an end result, we wish to obtain a clearer view of the design space
+ of dataflow end-user languages, rooted on actual practice.
+\end_layout
+
+\begin_layout Description
+An
+\begin_inset space ~
+\end_inset
+
+architectural
+\begin_inset space ~
+\end_inset
+
+pattern
+\begin_inset space ~
+\end_inset
+
+for
+\begin_inset space ~
+\end_inset
+
+end-user
+\begin_inset space ~
+\end_inset
+
+programmable
+\begin_inset space ~
+\end_inset
+
+applications.
+ The architecture of today's end-user programmable applications is typically
+ an extension of that of scriptable applications, adding an ad hoc end-user
+ language accessible via the application's interface (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(b)).
+ To move past ad hoc end-user languages and get us closer to the situation
+ we have in the scripting world, it is necessary to take into account the
+ fact that these languages need to be fully customized to their domain.
+ An approach for this is to produce a DSL on top of a reusable component,
+ as we advocated in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:A-Dataflow-Engine"
+
+\end_inset
+
+ (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(c)).
+ One concern when exposing the functionality of an application as two different
+ languages is a possible discontinuity in the abstractions provided (termed
+ the semiotic continuum principle in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "deSouza2001SemEngPrinciples"
+
+\end_inset
+
+), so that the scripting layer contains functionality that is unrepresentable
+ in the UI, or vice-versa.
+ Such a possibility exists when there are different paths towards the applicatio
+n core, which may be inconsistent (as in Figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(b) and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(c)).
+ A way to ensure this consistency between the end-user UI-level language
+ and the scripting language would be to share the application bindings,
+ thus providing a single path to the application core (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(d)).
+ There are interesting possibilities of how to achieve this, such as compatible
+ lower-level APIs or using the scripting language to implement the dataflow
+ engine.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "thesis"
+options "alpha"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
