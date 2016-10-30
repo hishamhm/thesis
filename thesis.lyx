@@ -7963,9 +7963,72 @@ Is LabVIEW end-user programming?
 \end_layout
 
 \begin_layout Standard
-It is interesting to contrast the presentation of programs in LabVIEW with
- that of Pure Data.
- Both applications have two modes of operation (called 
+When we discuss end-user programming, what defines the concept is not a
+ particular programming paradigm, set of constructs of UI style.
+ End-user programming is about the fact that the person doing the programming
+ is the one who will use the resulting program, and, as a secundary point,
+ that they are not programmers by profession.
+ That is indeed not always the case in LabVIEW, which is indeed used by
+ professional programmers who build, compile and deploy programs for other
+ end-users.
+\end_layout
+
+\begin_layout Standard
+However, two aspects warrant its presence in the discussion on end-user
+ programming languages taking place in this work.
+ First, although it is used as a traditional programming language by software
+ professionals, LabVIEW is also heavily used by end-users in engineering
+ and physics fields, and the design of the language is heavily informed
+ by this fact.
+ One might even argue that the language is better suited to small-scale
+ rapid end-user programming than to large-scale software development.
+ Second, it a particularly interesting subject in the design space of end-user
+ programming because it is developed as a programming environment for writing
+ data acquisition programs rather than a programmable data acquisition applicati
+on.
+ This has effects in the design of the resulting language.
+ A good way to observe these effects is by contrasting LabVIEW and Pure
+ Data.
+\end_layout
+
+\begin_layout Subsection
+LabVIEW and Pure Data compared
+\end_layout
+
+\begin_layout Standard
+While both LabVIEW and Pure Data are both graphical dataflow languages that
+ presents programs as graph diagrams connecting node objects, the LabVIEW
+ environment is a lot more similar to that of a typical programming language
+ IDE.
+ Beyond the visual presentation, a fundamental difference is that in LabVIEW
+ the block diagram with the graph and front panel with the UI widgets are
+ the 
+\begin_inset Quotes eld
+\end_inset
+
+source code
+\begin_inset Quotes erd
+\end_inset
+
+ of the program, which can then be executed, presenting the UI windows which
+ are the 
+\begin_inset Quotes eld
+\end_inset
+
+program
+\begin_inset Quotes erd
+\end_inset
+
+ to be used.
+ In Pure Data, there is no such distinction: the graph is the 
+\begin_inset Quotes eld
+\end_inset
+
+document
+\begin_inset Quotes erd
+\end_inset
+
+, which is edited in 
 \begin_inset Quotes eld
 \end_inset
 
@@ -7973,7 +8036,7 @@ edit mode
 \begin_inset Quotes erd
 \end_inset
 
- and 
+ as the programming takes place, and which is later manipulated in 
 \begin_inset Quotes eld
 \end_inset
 
@@ -7981,16 +8044,50 @@ run mode
 \begin_inset Quotes erd
 \end_inset
 
- in Pure Data).
- LabVIEW presents both the front panel and the block diagram when editing,
- but when running one interacts only with the front panel.
- In Pure Data, however, the same graph is presented in both modes.
- Interaction with the audio produced by a dataflow graph is made via manipulatio
-n of values directly in the nodes or clicking nodes to trigger messages.
+ as the music is produced.
+ This means both applications have two modes of operation — in LabVIEW,
+ toggling execution with the 
+\begin_inset Quotes eld
+\end_inset
+
+play
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+stop
+\begin_inset Quotes erd
+\end_inset
+
+ buttons is analogous to Pure Data's two modes — but in Pure Data there
+ is no distinction between what is being edited during creation and the
+ end result.
+\end_layout
+
+\begin_layout Standard
+In Pure Data's 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+ interaction happens via manipulation of values directly in the graph nodes
+ or by clicking nodes to trigger messages: the program structure is transparent.
  While it is possible to hide the graph structure in Pure Data through the
  use of subprograms and indirect messages, the environment does not lead
- the user in this direction.
- When running a program inside the LabVIEW environment, the block diagram
+ the user in this direction; it is more natural to present the graph, and
+ it helps understanding the effect of editing values (this visibility is
+ common practice in the field: some hardware synthesizers even include drawings
+ of their high-level audio flow diagrams painted in their chassis).
+\end_layout
+
+\begin_layout Standard
+When running a program inside the LabVIEW environment, the block diagram
  is still visible when running, but it is read-only.
  At runtime, it can only be decorated with temporary probes for debugging
  purposes, attached to wires.
