@@ -8076,14 +8076,16 @@ run mode
 \begin_inset Quotes erd
 \end_inset
 
- interaction happens via manipulation of values directly in the graph nodes
+, interaction happens via manipulation of values directly in the graph nodes
  or by clicking nodes to trigger messages: the program structure is transparent.
  While it is possible to hide the graph structure in Pure Data through the
  use of subprograms and indirect messages, the environment does not lead
  the user in this direction; it is more natural to present the graph, and
- it helps understanding the effect of editing values (this visibility is
- common practice in the field: some hardware synthesizers even include drawings
- of their high-level audio flow diagrams painted in their chassis).
+ it helps understanding the effect of editing values.
+ This visibility is common practice in the field: some hardware synthesizers
+ even include in their chassis drawings of their high-level audio flow diagrams,
+ to help the musician make sense of how the various buttons relate to each
+ other in the overall synthesis.
 \end_layout
 
 \begin_layout Standard
@@ -8105,7 +8107,14 @@ In Pure Data, the user of the program and the developer are often the same:
 \end_layout
 
 \begin_layout Standard
-LabVIEW...
+This would lead us to believe that Pure Data has a stronger focus on end-users.
+ However, by including features common to typical professional programming
+ environments, such as stronger typing and visual indication of types, LabVIEW
+ makes it easier for......................
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Chapter
