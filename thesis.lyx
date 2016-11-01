@@ -2071,7 +2071,7 @@ edit mode
 \begin_inset Quotes erd
 \end_inset
 
- in which the graph can be edited, and a 
+ in which the graph structure can be edited, and a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2079,7 +2079,27 @@ run mode
 \begin_inset Quotes erd
 \end_inset
 
- in which the DSP (Digital Signal Processing) engine runs.
+ in which input values can be produced by interacting with the graph.
+ The DSP (Digital Signal Processing) engine can be toggled on or off independent
+ly of the mode of execution.
+ Most importantly, the dataflow program is running at all times: the user
+ can create nodes in the graph, switch to 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+, trigger a loop that produces audio waves, return to 
+\begin_inset Quotes eld
+\end_inset
+
+edit mode
+\begin_inset Quotes erd
+\end_inset
+
+ and modify the graph while the loop is still running.
 \end_layout
 
 \begin_layout Standard
@@ -8046,7 +8066,7 @@ run mode
 
  as the music is produced.
  This means both applications have two modes of operation — in LabVIEW,
- toggling execution with the 
+ execution is toggled with the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -8062,9 +8082,27 @@ stop
 \begin_inset Quotes erd
 \end_inset
 
- buttons is analogous to Pure Data's two modes — but in Pure Data there
- is no distinction between what is being edited during creation and the
- end result.
+ buttons of the UI.
+ However, in Pure Data there is no distinction between what is being edited
+ during creation and the end result; not only the interface is the same:
+ most importantly, the DSP engine remains running while in 
+\begin_inset Quotes eld
+\end_inset
+
+edit mode
+\begin_inset Quotes erd
+\end_inset
+
+, so a musician can transition between these two modes during a performance.
+ Recall that even while in 
+\begin_inset Quotes eld
+\end_inset
+
+edit mode
+\begin_inset Quotes erd
+\end_inset
+
+ the dataflow program is still running.
 \end_layout
 
 \begin_layout Standard
@@ -8091,8 +8129,9 @@ run mode
 \begin_layout Standard
 When running a program inside the LabVIEW environment, the block diagram
  is still visible when running, but it is read-only.
- At runtime, it can only be decorated with temporary probes for debugging
- purposes, attached to wires.
+ At runtime, the interaction with the block diagram is limited.
+ It can only be decorated with temporary probes for debugging purposes,
+ attached to wires.
  A program can be compiled and deployed so that only the front panel is
  visible.
  A deployed LabVIEW program, therefore, is not itself end-user programmable.
@@ -8107,14 +8146,50 @@ In Pure Data, the user of the program and the developer are often the same:
 \end_layout
 
 \begin_layout Standard
-This would lead us to believe that Pure Data has a stronger focus on end-users.
+This would lead us to conclude that Pure Data has a stronger focus on end-users,
+ and by catering also to a professional audience, LabVIEW would be more
+ difficult for newcomers.
  However, by including features common to typical professional programming
- environments, such as stronger typing and visual indication of types, LabVIEW
- makes it easier for......................
+ environments, such as a clearer distinction between types and error messages
+ targeting at the specific points of failure, LabVIEW makes it actually
+ easier to understand problems in the dataflow graph than Pure Data.
 \end_layout
 
 \begin_layout Standard
+Language features such as (auto-generated) feedback nodes make it easier
+ to understand and debug cycle constructs; data coercion nodes (also auto-generc
+ated) make explicit any precision loss — a problem that also affects musicians
+ using Pure Data, where it is perceived as degraded audio quality.
+ 
+\end_layout
 
+\begin_layout Standard
+Both Pure Data and LabVIEW feature multiple types, including numbers, strings
+ and table objects holding aggregated data.
+ LabVIEW has a richer set of types, and is statically typed; Pure Data has
+ a simpler one, and is dynamically typed.
+ Both of them make a visual distinction among edge types in the graph: Pure
+ Data displays audio connections as thicker lines and message connections
+ as thinner lines; LabVIEW uses colors, thickness and stripe patterns to
+ indicate the various data types it supports.
+ It is easy to make an invalid connection in Pure Data, for example connecting
+ a string outlet to a float inlet, which will cause a runtime error being
+ logged.
+ In LabVIEW, the mismatch is caught as the user tries to make the connection;
+ if the data is coercible, a conversion node is automatically inserted.
+\end_layout
+
+\begin_layout Standard
+Through a combination of language and environment features, LabVIEW happens
+ to be an easier language to program for, even though engineers typically
+ have more formal training in programming-related fields than musicians.
+ Still, a large community of musicians thrives using software such as Pure
+ Data (and its proprietary relative Max/MSP) even without the facilities
+ that professional programmers have grown used to.
+ This shows us that the abilities of end-users should not be underestimated,
+ and invites us to consider how much those end-users could benefit if the
+ languages they work on incorporated more from established programming language
+ design practices.
 \end_layout
 
 \begin_layout Chapter
@@ -8129,10 +8204,13 @@ name "chap:A-Dataflow-Engine"
 \end_layout
 
 \begin_layout Standard
-Based on the knowledge obtained studying existing languages, we wish to
- propose a new dataflow language with a focus on embeddability and extensibility
-, through which developers of end-user applications will be able to construct
- a domain-specific language for their application.
+Based on the knowledge obtained studying existing languages, 
+\end_layout
+
+\begin_layout Standard
+we wish to propose a new dataflow language with a focus on embeddability
+ and extensibility, through which developers of end-user applications will
+ be able to construct a domain-specific language for their application.
  The idea is that this language will be implemented as a 
 \emph on
 dataflow engine
