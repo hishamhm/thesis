@@ -7902,6 +7902,88 @@ Tunnels.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename labview_connection_errors.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Connection-errors-LabVIEW"
+
+\end_inset
+
+Connection errors in LabVIEW.
+ Connecting two data sources (A1 and A2) directly to an input (A3) produces
+ a helpful error message.
+ If one of the connections goes through a tunnel, however (B2), this produces
+ a tunnel direction inference error.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because the direction of tunnels is inferred, incorrect connections involving
+ tunnels produce less useful messages than similar connections not going
+ through a tunnel.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Connection-errors-LabVIEW"
+
+\end_inset
+
+ illustrates how tunnel inference affects error messages.
+ When one connects two controls (A1 and A2) to an indicator (A3), this produces
+ one error message that says 
+\begin_inset Quotes eld
+\end_inset
+
+a wire can be connected to only one data source
+\begin_inset Quotes erd
+\end_inset
+
+.
+ When one attempts a similar connection (B1 and B2 to B3), but one of these
+ data sources (B2) goes through a tunnel, this produces three identical
+ error messages that say 
+\begin_inset Quotes eld
+\end_inset
+
+wire connected to an undirected tunnel: a tunnel on this wire cannot determine
+ whether it is an input or an output
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This is typical of error messages involving inference: the inference engine
+ of the language detects that a unification was not possible, but cannot
+ tell which one of the two mismatching elements is the incorrect one.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
