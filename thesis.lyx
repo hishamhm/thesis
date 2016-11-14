@@ -7910,7 +7910,80 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
+	filename labview_loops_and_tunnels.png
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Loops-and-tunnels-LabVIEW"
+
+\end_inset
+
+Interaction of loops and tunnels in LabVIEW.
+ Loop A never updates its output; Loop B updates only at the end; Loop C
+ updates every second.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When using tunnels to send values into or out of loop structures, the values
+ are transferred only at the beginning or at the end of the execution of
+ the loop.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Loops-and-tunnels-LabVIEW"
+
+\end_inset
+
+ illustrates the behavior of input and output tunnels in loops.
+ We have three while-loops in which the termination condition is connected
+ to a boolean button, the iteration counter is connected to a numeric indicator,
+ and the loop timing is controlled to execute one iteration per 1000
+\begin_inset space ~
+\end_inset
+
+ms.
+ In Loop A, both the inputs and outputs are connected through tunnels.
+ The end result is that Indicator A is never updated, because the value
+ of Boolean A is entering through a tunnel and becomes fixed over the loop,
+ so the iteration either never starts if Boolean A is true at the beginning
+ of execution, or it never stops if Boolean A is false.
+ In Loop B, the loop stops once Boolean B is set to true, but the value
+ at Indicator B is only updated once the loop stops.
+ Running Loop C, the interface displays Indicator C being updated once a
+ second as long as Boolean C is false.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
 	filename labview_connection_errors.png
+	scale 75
 
 \end_inset
 
