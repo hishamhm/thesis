@@ -7963,14 +7963,18 @@ reference "fig:Loops-and-tunnels-LabVIEW"
 
 ms.
  In Loop A, both the inputs and outputs are connected through tunnels.
- The end result is that Indicator A is never updated, because the value
- of Boolean A is entering through a tunnel and becomes fixed over the loop,
- so the iteration either never starts if Boolean A is true at the beginning
- of execution, or it never stops if Boolean A is false.
- In Loop B, the loop stops once Boolean B is set to true, but the value
- at Indicator B is only updated once the loop stops.
- Running Loop C, the interface displays Indicator C being updated once a
- second as long as Boolean C is false.
+ The end result is that the termination value becomes fixed in the loop
+ as the value of Boolean A goes through the tunnel.
+ If the value of Boolean A at the beginning of execution is true, the loop
+ runs for only one iteration and 0 is sent to Indicator A.
+ If Boolean A is false at the beginning of execution, the loop never stops,
+ and clicking the button has no effect.
+ In Loop B, Boolean B is inside the loop, so its value is sent to the conditiona
+l terminal on each iteration.
+ The loop stops once Boolean B is set to true, and only then the iteration
+ value is sent via the output tunnel to Indicator B.
+ In Loop C, the interface displays Indicator C being updated once a second
+ as long as Boolean C is false.
 \end_layout
 
 \begin_layout Standard
