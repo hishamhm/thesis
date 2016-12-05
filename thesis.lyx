@@ -409,17 +409,8 @@ Abstract
 End-user programming refers to programming performed by end-users who are
  not professionals in software development but are specialists in other
  domains.
- Scripting is a way to add programmability as an advanced, peripheral feature
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-to applications
-\end_layout
-
-\end_inset
-
-.
+ Scripting is a way to add programmability to applications as an advanced,
+ peripheral feature.
  Another alternative is to make an end-user language central to the application'
 s UI, as is the case with spreadsheet formulas: programming becomes indistinguis
 hable from using the application proper.
@@ -851,6 +842,10 @@ on of existing ones, and there has to be linguistic support in the application
  so that the user may express this new functionality.
 \end_layout
 
+\begin_layout Subsection
+Roles of programming in end-user applications
+\end_layout
+
 \begin_layout Standard
 Depending on the application's design, end-user programming may take a 
 \emph on
@@ -861,7 +856,38 @@ peripheral
 central
 \emph default
  role in its use.
- Examples of peripheral support for end-user programming are macro recorders
+ We define them as such:
+\end_layout
+
+\begin_layout Itemize
+Programming is 
+\emph on
+peripheral
+\emph default
+ to an end-user application if users can make effective use of the application
+ with variable degrees of complexity, producing from simple to complex end-resul
+ts (e.g.
+ documents, queries, etc.), without ever resorting explicitly to the programming
+ capabilities of the application.
+\end_layout
+
+\begin_layout Itemize
+Programming is 
+\emph on
+central
+\emph default
+ to an end-user application if users must interact explicitly with the programmi
+ng capabilities of the application in order to make any non-trivial use
+ of it, even when producing simple end-results.
+ In other words, using the application 
+\emph on
+is
+\emph default
+ using the application's programming language.
+\end_layout
+
+\begin_layout Standard
+Examples of peripheral support for end-user programming are macro recorders
  and embedded scripting languages.
  Macro recording allows the user to automate sequences of steps, but offers
  little in the way of abstraction.
@@ -874,14 +900,54 @@ n, because most users can produce content in the application while ignoring
 \end_layout
 
 \begin_layout Standard
+The LibreOffice Writer word processor and the Gimp image editor are examples
+ of scriptable applications, where programming takes a peripheral role.
+ A user can produce a text document with a very complex layout in LibreOffice
+ Writer or an intricate multi-layered drawing in Gimp without ever touching
+ their scripting abilities.
+ A Gimp user may benefit implicitly from the scripting abilities of the
+ application by using bundled filters and effects available in the application
+ toolset that are implemented as scripts, but from the user's perspective
+ these tools could just as well be built into the application's core.
+ One could conceive an application where all tools are implemented as scripts;
+ still, if the user could use these tools as black boxes without ever touching
+ the programming language, this means the role of programming is not central
+ from an end-user perspective.
+ For this reason, we state that the interaction with the programming facilities
+ needs to be explicit in order to characterize the activity as end-user
+ programming.
+\end_layout
+
+\begin_layout Standard
 A prominent example of an application where end-user programming takes a
  central role is the spreadsheet.
- It has an open-ended design in which users can create new solutions for
- their domains, expressed as calculations in the spreadsheet formula language.
+ A spreadsheet has an open-ended design in which users can create new solutions
+ for their domains, expressed as calculations in a formula language.
  Programming is central in the sense that the programmable aspect of the
- application, the formula language, is unavoidable for any use beyond entering
- constants into cells: using the formula language is equivalent to using
- the spreadsheet.
+ application, the formula language, is unavoidable for any use beyond the
+ trivial case of entering constants into cells: using the formula language
+ is equivalent to using the spreadsheet.
+\end_layout
+
+\begin_layout Subsection
+The three-layer architecture in end-user programmable applications
+\end_layout
+
+\begin_layout Standard
+When programming support is added in a peripheral role to an application,
+ it is usually to provide advanced flexibility beyond what the base feature
+ set of the application offers: composition of features to automate workflows,
+ iteration to avoid repetitive tasks, interaction with the operating system.
+ Visual Basic for Applications (VBA), embedded in Microsoft Office programs,
+ is an example of this.
+\end_layout
+
+\begin_layout Standard
+This kind of addition also makes sense in applications where this base feature
+ set is provided as a programming language in a central role.
+ This means an application may feature programming in both central and periphera
+l roles.
+ Modern spreadsheets such as Excel are an example of this.
  For advanced uses, spreadsheets also offer scripting support: 
 \begin_inset Quotes eld
 \end_inset
@@ -890,7 +956,8 @@ macros
 \begin_inset Quotes erd
 \end_inset
 
-, in spreadsheet parlance, are extension functions implemented as scripts.
+, in spreadsheet parlance, are extension functions implemented as scripts
+ (in Excel, these scripts are implemented in VBA).
  These extended functions can then be used in the formula language.
 \end_layout
 
@@ -1048,10 +1115,10 @@ glue
  In this context, scripting exists to serve the needs of the end-user language
  that sits above it, providing unconstrained, Turing-complete extensibility
  to a UI-level language that remains focused on domain-specific elements.
- While a scripting language for a 3D editor may deal in terms of typical
- programmer constructs such as records, lists and associative arrays, its
- end-user UI-level language should deal in terms of domain constructs such
- as 3D objects, textures and lighting sources.
+ For example, while a scripting language for a 3D editor may deal in terms
+ of typical programmer constructs such as records, lists and associative
+ arrays, its end-user UI-level language should deal in terms of domain construct
+s such as 3D objects, textures and lighting sources.
 \end_layout
 
 \begin_layout Standard
@@ -1617,319 +1684,230 @@ TODO: Rewrite
 \end_inset
 
 
-\begin_inset Note Comment
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="3">
-<features rotate="0" tabularvalignment="middle">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Application
+Not strictly visual languages
 \end_layout
 
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
+
+
+\end_layout
+
+\begin_layout Standard
+We coined the term 
+\begin_inset Quotes eld
+\end_inset
+
+dataflow UI-level languages
+\begin_inset Quotes erd
+\end_inset
+
+ and use it here to refer to the languages we are interested in because
+ we want to refer to a different set of languages than those described by
+ more established terms.
+ In particular, we want to make a distinction from the term 
+\begin_inset Quotes eld
+\end_inset
+
+dataflow visual languages
+\begin_inset Quotes erd
+\end_inset
+
+ for two reasons.
+\end_layout
+
+\begin_layout Standard
+First, we include 
+\begin_inset Quotes eld
+\end_inset
+
+UI-level
+\begin_inset Quotes erd
+\end_inset
+
+ because we want to focus only on dataflow languages which take 
+\emph on
+center
+\emph default
+ stage as the 
+\emph on
+application interface
+\emph default
+ (in other words: they are central to the UI, and not an optional component;
+ and they are integrated into an application of a specific domain, and are
+ not general-purpose programming languages).
+\end_layout
+
+\begin_layout Standard
+Second, we exclude 
+\begin_inset Quotes eld
+\end_inset
+
+visual
+\begin_inset Quotes erd
+\end_inset
+
+ because we want to cover the entire spectrum of languages that fall within
+ our focus, without having to worry whether a language is visual or not.
+ In 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hils1992DFVPLSurvey"
+
+\end_inset
+
+, Hils presented an extensive survey of dataflow visual languages (both
+ domain-specific and general-purpose) and excluded the most widely used
+ application-specific dataflow language — spreadsheets.
+ Granted, the relationship between data cells in a spreadsheet is presented
+ symbolically rather than visually, but it is remarkable how, apart from
+ this fact, spreadsheets would fit every other aspect of that study.
+ Our work is concerned with semantics and not syntax; the visual presentation
+ of a language is a syntactic feature.
+\end_layout
+
+\begin_layout Standard
+In this chapter, we will give a panoramic view of dataflow UI-level languages
+ in use today, mentioning some of their design features.
+ We will organize languages by their application domains.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
 
 \begin_layout Plain Layout
+* data-driven vs.
+ demand-driven
+\end_layout
 
-\series bold
-Field
+\begin_layout Plain Layout
+* https://books.google.com.br/books?id=dS4b3i36qsEC&pg=PA505&lpg=PA505&dq=lucid+dem
+and-driven+dataflow&source=bl&ots=bMTKoHR-RQ&sig=6rgUvPGf4ZbKWEesYnhyWEi4lHY&hl=
+en&sa=X&redir_esc=y#v=onepage&q=lucid%20demand-driven%20dataflow&f=false
+\end_layout
+
+\begin_layout Plain Layout
+* eazyflow
 \end_layout
 
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
-\series bold
-Modeling phase
 \end_layout
 
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
+\begin_layout Section
+Languages for music
+\end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 Pure Data
 \end_layout
 
+\begin_layout Standard
+Reaktor is an application for constructing synthesizers, which can be used
+ stand-alone, or as plugins in different music applications.
+ It supports abstracting sub-graphs as 
+\begin_inset Quotes eld
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
+
+macros
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Languages for image processing
+\end_layout
+
+\begin_layout Section
+Languages for science
+\end_layout
+
+\begin_layout Standard
+LabVIEW
+\end_layout
+
+\begin_layout Standard
+VEE 
+\begin_inset Note Note
+status open
 
 \begin_layout Plain Layout
-music, multimedia
+dataflow with sequencing or like Blueprints?
 \end_layout
 
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
-done: modeled
+
 \end_layout
 
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
+\begin_layout Section
+Languages for numeric manipulation
+\end_layout
+
+\begin_layout Standard
+Excel
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: Pure Data
+\end_layout
 
 \begin_layout Plain Layout
 Excel
 \end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-spreadsheet
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-in progress: modeling
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
 \begin_layout Plain Layout
 LabVIEW
 \end_layout
 
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-industrial automation
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-in progress: study
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Blender
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3D graphics
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-candidate
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Grasshopper
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3D modeling
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-candidate
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Nuke
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-video editing
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-candidate
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
 
 
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Progress-of-study"
-
-\end_inset
-
-Progress of study of dataflow UI-level languages, in which their semantics
- are modeled in Haskell.
+\begin_layout Section
+Non-dataflow UI-level languages
 \end_layout
 
-\end_inset
-
-
+\begin_layout Standard
+To make the boundaries of our scope clearer, it is worth dedicating a few
+ words to UI-level languages that fall outside of the dataflow model.
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-We are performing an ongoing work of formalization of the semantics of a
- series of relevant dataflow-based end-user applications.
- The idea here is not to produce a complete specification of each language,
- but to capture the notable features of their semantics.
- Examples of aspects to be compared in this analysis are: whether the language
- is purely declarative; whether time affects the flow graph; presence of
- constructs for looping and recursion; support for abstraction.
- We aim to understand what is the required functionality expected by application
-s for dataflow-based interfaces and how different languages solve similar
- problems.
- Also, we aim to be able to reason on the designs of those languages under
- similar terms.
- The progress of this study is outlined in Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Progress-of-study"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Plain Layout
-We are modeling the semantics of those languages by implementing interpreters
- for them in Haskell, written in the style of structural operational semantics.
- Each interpreter is written as a set of evaluation functions, one for each
- language construct.
- As a whole, this set serves as a specification of the language being interprete
-d.
- These functions take as inputs the current state of the execution environment
- and a language construct to be evaluated, and return the new state of the
- environment after evaluation of the construct.
-\end_layout
-
-\begin_layout Plain Layout
-This study has two goals: identifying what are the common patterns that
- are present, in order to assess to which extent those languages are 
+\begin_layout Standard
+Since end-user applications tend to be in general document-centric, with
+ the user interface dominated by the 
 \begin_inset Quotes eld
 \end_inset
 
-variations on a theme
+current document
 \begin_inset Quotes erd
 \end_inset
 
-; and pinpointing aspects where their ad hoc designs show.
- As we investigate those languages, some of these design issues have already
- surfaced.
- We illustrate these preliminary results below.
+ and the interaction focusing on manipulating this document, it is natural
+ that data-oriented approaches become appealing choices when one wants to
+ enable end-user programming.
+ However, we do not claim that dataflow languages are the best model of
+ programmable interaction for all kinds of end-user applications.
 \end_layout
 
-\begin_layout Plain Layout
-It is worth pointing out that we do not claim that dataflow languages are
- the best model of programmable interaction for all kinds of end-user applicatio
-ns.
- For example, applications employing a storytelling paradigm 
+\begin_layout Standard
+For example, applications employing a storytelling paradigm 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Leshed:2008:CAS:1357054.1357323,Monteiro:2013:GBF:2577101.2577124"
@@ -1937,8 +1915,34 @@ key "Leshed:2008:CAS:1357054.1357323,Monteiro:2013:GBF:2577101.2577124"
 \end_inset
 
  benefit from a control-oriented model.
- We are also not covering languages which combine data and control-flow
- graphs, such as Blueprints
+ In these scenarios, the fundamental building block for the user's programming
+ experience is the 
+\emph on
+sequencing 
+\emph default
+construct: 
+\begin_inset Quotes eld
+\end_inset
+
+this happens, then that happens
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Sequencing is notably absent in the pure dataflow model.
+ However, as we will see in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:LabVIEW"
+
+\end_inset
+
+, a dataflow language may include it to simplify operations involving timing.
+\end_layout
+
+\begin_layout Standard
+It is possible to combine data and control flow in graphs.
+ That is the case of Blueprints
 \begin_inset Foot
 status open
 
@@ -1958,12 +1962,63 @@ https://docs.unrealengine.com/latest/INT/Engine/Blueprints/
 
 \end_inset
 
-, the graphical language used in the Unreal game engine.
+, the graphical language used for gameplay scripting in the Unreal game
+ engine.
+ There are different kinds of edges in the graph, representing either data
+ connections in dataflow style, or control-flow sequencing.
+ The semantics of Blueprints, therefore, is of an imperative nature, and
+ the resulting graph resembles a traditional flowchart.
+ This kind of language, therefore, falls beyond our intended scope in the
+ discussion of dataflow semantics.
 \end_layout
 
+\begin_layout Section
+Case studies
+\end_layout
+
+\begin_layout Standard
+In the following chapters, we will present in-depth case studies analyzing
+ the semantics of three of the languages discussed above: Pure Data, the
+ spreadsheet formula language (Excel) and LabVIEW.
+ 
+\end_layout
+
+\begin_layout Standard
+We modelled the semantics of those languages by implementing interpreters
+ for them in Haskell, written in the style of structural operational semantics.
+ Each interpreter is written as a set of evaluation functions, one for each
+ language construct.
+ As a whole, this set serves as a specification of the language being interprete
+d.
+ These functions take as inputs the current state of the execution environment
+ and a language construct to be evaluated, and return the new state of the
+ environment after evaluation of the construct.
+\end_layout
+
+\begin_layout Standard
+The interpreters do not intend to be a complete specification of each language,
+ but aim to capture the notable features of their semantics.
+ We will discuss the extent to which these languages are purely declarative;
+ how time affects the flow graph; the semantics of iteration constructs;
+ support for abstraction.
+ In these studies, we identify what are the common patterns that are present,
+ assessing to which extent those languages are 
+\begin_inset Quotes eld
 \end_inset
 
+variations on a theme
+\begin_inset Quotes erd
+\end_inset
 
+; and pinpoint aspects where their ad hoc designs show.
+\end_layout
+
+\begin_layout Standard
+The underlying goal is to understand what is the required functionality
+ expected by applications for dataflow-based interfaces and how different
+ languages solve similar problems.
+ Also, the interpreters allow us to reason on the designs of those languages
+ under similar terms.
 \end_layout
 
 \begin_layout Chapter
@@ -7775,6 +7830,19 @@ orchestration
 \end_inset
 
  between parallel agents.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Todo: add forced example without sequencing, then show it with sequencing.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
