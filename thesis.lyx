@@ -1463,6 +1463,10 @@ control-flow
  all dataflow languages.
 \end_layout
 
+\begin_layout Subsection
+A brief history of dataflow
+\end_layout
+
 \begin_layout Standard
 Early history of dataflow languages is closely tied to that of dataflow
  computers.
@@ -1536,7 +1540,10 @@ exp
 \family default
 \emph default
  represent its value in in the previous iteration.
- Since the 1990s, the focus of dataflow languages moved away from performance
+\end_layout
+
+\begin_layout Standard
+Since the 1990s, the focus of dataflow languages moved away from performance
  and paralellism and into software engineering territory, with a particular
  growth in the field of dataflow visual programming languages 
 \begin_inset CommandInset citation
@@ -1564,6 +1571,61 @@ key "Lin2008Parameterized,Gupta:2011:DES:2155620.2155628,Gantel2011dataflowRecon
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+nowadays: reactive systems? 
+\begin_inset Quotes eld
+\end_inset
+
+flow
+\begin_inset Quotes erd
+\end_inset
+
+ stuff (tensorflow, flow, google dataflow)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Data-driven and demand-driven dataflow
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+todo
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Uni and bidirectional flow
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+todo: reorganize this to match the title
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1674,29 +1736,28 @@ name "chap:Understanding-dataflow"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: Rewrite
-\end_layout
+Research on the dataflow paradigm has seen a decrease in activity since
+ the early 1990s.
+ The revolution of visual languages inspired by GUI systems that was expected
+ by some never came to pass (object-oriented programming systems remained
+ textual), and massively-parallel dataflow hardware architectures proved
+ difficult to implement efficiently and are now historical artifacts (modern
+ GPUs obtain massive parallelism via vector processing based on imperative
+ machine code).
+ Practical use of dataflow languages, however, has not gone away, and it
+ is arguably more widespread than ever.
+ Dataflow is the paradigm of choice in a large number of programmable end-user
+ applications.
+ Dataflow-based UIs, especially visual ones based on box-line graph representati
+ons, make it easy for the user to inspect intermediate results and therefore
+ understand what is going on in the application 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hils1992DFVPLSurvey"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Not strictly visual languages
-\end_layout
-
-\end_inset
-
-
+, making the relationships between data more concrete to the user.
 \end_layout
 
 \begin_layout Standard
@@ -1764,7 +1825,7 @@ key "Hils1992DFVPLSurvey"
 
 , Hils presented an extensive survey of dataflow visual languages (both
  domain-specific and general-purpose) and excluded the most widely used
- application-specific dataflow language — spreadsheets.
+ application-specific dataflow language — spreadsheet formulas.
  Granted, the relationship between data cells in a spreadsheet is presented
  symbolically rather than visually, but it is remarkable how, apart from
  this fact, spreadsheets would fit every other aspect of that study.
@@ -1774,7 +1835,8 @@ key "Hils1992DFVPLSurvey"
 
 \begin_layout Standard
 In this chapter, we will give a panoramic view of dataflow UI-level languages
- in use today, mentioning some of their design features.
+ in use today by end-user applications, mentioning some of their design
+ features.
  We will organize languages by their application domains.
 \end_layout
 
