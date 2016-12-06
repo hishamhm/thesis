@@ -970,158 +970,6 @@ A three-layer general architecture like this, with an end-user language
 \end_layout
 
 \begin_layout Standard
-In 
-\begin_inset Quotes eld
-\end_inset
-
-A Small Matter of Programming
-\begin_inset Quotes erd
-\end_inset
-
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Nardi1993"
-
-\end_inset
-
-, Bonnie Nardi reports on studies that identified three types of people
- who are engaged in programming at different levels: the 
-\emph on
-end-user
-\emph default
-, who may be a sophisticated user in their own domain but who does not particula
-rly care about programming and just wants to use the computer as a tool
- to solve problems from their domain; the 
-\emph on
-domain developer
-\emph default
- (called a 
-\begin_inset Quotes eld
-\end_inset
-
-local developer
-\begin_inset Quotes erd
-\end_inset
-
- in 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Nardi:1991:TLN:122825.122820"
-
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-translator
-\begin_inset Quotes erd
-\end_inset
-
- in 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Mackay:1990:PSC:99332.99356"
-
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-tinkerer
-\begin_inset Quotes erd
-\end_inset
-
- in 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "MacLean:1990:USP:97243.97271"
-
-\end_inset
-
-), who started as an end-user but acquired an appreciation towards programming
- and is therefore more predisposed to dive into the possibilities offered
- by a programmable system; and finally, the professional, who had formal
- training in programming.
- Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Three-layers"
-
-\end_inset
-
- maps these kinds of users to examples of three-language architectures used
- by end-user-programmable applications.
-\end_layout
-
-\begin_layout Standard
-The existence of different roles among a community of users continues to
- be observed 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "draxler2011managing"
-
-\end_inset
-
-, and the alignment between these three different user profiles and three
- architectural layers does not seem to be coincidental.
- We believe that this three-tier architecture is necessary in end-user programma
-ble applications that feature programmability as a central feature in their
- design.
- The main user-facing language should be closer to the domain abstractions
- than a full-fledged general-purpose scripting language: while a language
- like Python is appropriate for scripting a 3D editor like Blender, a Python
- command line would never be appropriate as the editor's primary interface.
- The scripting language exists, thus, as a feature that provides support
- for when the user's goals outgrow the possibilities of the UI-level language.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Expandir um pouco --R
-\end_layout
-
-\end_inset
-
-Scripting allows advanced users (or even programming professionals) to provide
- extensions to the UI-level language when needed, such as adding custom
- functions to a spreadsheet's formula language, or designing richer game
- interactions than those available out-of-the-box in a game level editor.
- This is, in a sense, an alternative look at the role of scripting.
- Ever since Ousterhout's seminal paper 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Ousterhout:1998:SHP:619027.620930"
-
-\end_inset
-
-, scripting languages are primarily regarded in relation to the core application
-s that sit below them: they are regarded as higher-level alternatives to
- system programming languages, and as 
-\begin_inset Quotes eld
-\end_inset
-
-glue
-\begin_inset Quotes erd
-\end_inset
-
- languages that connect lower-level components.
- Here, we focus on higher-level programmability of applications.
- In this context, scripting exists to serve the needs of the end-user language
- that sits above it, providing unconstrained, Turing-complete extensibility
- to a UI-level language that remains focused on domain-specific elements.
- For example, while a scripting language for a 3D editor may deal in terms
- of typical programmer constructs such as records, lists and associative
- arrays, its end-user UI-level language should deal in terms of domain construct
-s such as 3D objects, textures and lighting sources.
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide true
 sideways false
@@ -1374,6 +1222,243 @@ Nardi's three types of programmers and three-layer architectures in end-user
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+In 
+\begin_inset Quotes eld
+\end_inset
+
+A Small Matter of Programming
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Nardi1993"
+
+\end_inset
+
+, Bonnie Nardi reports on studies that identified three types of people
+ who are engaged in programming at different levels: the 
+\emph on
+end-user
+\emph default
+, who may be a sophisticated user in their own domain but who does not particula
+rly care about programming and just wants to use the computer as a tool
+ to solve problems from their domain; the 
+\emph on
+domain developer
+\emph default
+ (called a 
+\begin_inset Quotes eld
+\end_inset
+
+local developer
+\begin_inset Quotes erd
+\end_inset
+
+ in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Nardi:1991:TLN:122825.122820"
+
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+translator
+\begin_inset Quotes erd
+\end_inset
+
+ in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Mackay:1990:PSC:99332.99356"
+
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+tinkerer
+\begin_inset Quotes erd
+\end_inset
+
+ in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "MacLean:1990:USP:97243.97271"
+
+\end_inset
+
+), who started as an end-user but acquired an appreciation towards programming
+ and is therefore more predisposed to dive into the possibilities offered
+ by a programmable system; and finally, the professional, who had formal
+ training in programming.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Three-layers"
+
+\end_inset
+
+ maps these kinds of users to examples of three-language architectures used
+ by end-user-programmable applications.
+\end_layout
+
+\begin_layout Standard
+The existence of different roles among a community of users continues to
+ be observed 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "draxler2011managing"
+
+\end_inset
+
+, and the alignment between these three different user profiles and three
+ architectural layers does not seem to be coincidental.
+ We believe that this three-tier architecture is necessary in end-user programma
+ble applications that feature programmability as a central feature in their
+ design.
+ The main user-facing language should be closer to the domain abstractions
+ than a full-fledged general-purpose scripting language: while a language
+ like Python is appropriate for scripting a 3D editor like Blender, a Python
+ command line would never be appropriate as the editor's primary interface.
+ The scripting language exists, thus, as a feature that provides support
+ for when the user's goals outgrow the possibilities of the UI-level language.
+\end_layout
+
+\begin_layout Subsection
+Scripting languages
+\end_layout
+
+\begin_layout Standard
+Scripting languages complement UI-level languages in end-user programmable
+ applications.
+ They allow advanced users (or even programming professionals) to provide
+ extensions to the UI-level language when needed.
+ Common examples of such extensions are adding custom functions to a spreadsheet
+'s formula language, or designing richer game interactions than those available
+ out-of-the-box in a game level editor.
+\end_layout
+
+\begin_layout Standard
+This is, in a sense, an alternative look at the role of scripting.
+ Ever since Ousterhout's seminal paper 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Ousterhout:1998:SHP:619027.620930"
+
+\end_inset
+
+, scripting languages are primarily regarded in relation to the core application
+s that sit below them: they are regarded as higher-level alternatives to
+ system programming languages, and as 
+\begin_inset Quotes eld
+\end_inset
+
+glue
+\begin_inset Quotes erd
+\end_inset
+
+ languages that connect lower-level components.
+ Here, we focus on higher-level programmability of applications.
+ In this context, scripting exists to serve the needs of the end-user language
+ that sits above it, providing unconstrained, Turing-complete extensibility
+ to a UI-level language that remains focused on domain-specific elements.
+ For example, while a scripting language for a 3D editor may deal in terms
+ of typical programmer constructs such as records, lists and associative
+ arrays, its end-user UI-level language should deal in terms of domain construct
+s such as 3D objects, textures and lighting sources.
+\end_layout
+
+\begin_layout Standard
+The evolution of scripting languages points in the direction we indicate
+ here.
+ When we look at the development history of successful scripting languages
+ such as Python and Lua, we see that these languages started out with clear
+ goals of being easy to program, but over the years their development focus
+ tends to favor adding constructs for advanced programmers.
+ Lua grew from having a single numeric type to having distinct floating-point
+ and integer numbers with bitwise operators, and gained advanced features
+ such as coroutines and lexically-scoped closures.
+ Python gradually shifted its focus away from adding libraries with ready-made
+ components and into improving core language constructs.
+ In contrast, end-user programmable applications like LabVIEW and Max/MSP
+ advertise the number of new library functions added on each new release.
+\end_layout
+
+\begin_layout Standard
+This marks a culture shift in scripting languages.
+ The forerunner of modern scripting languages, Tcl, was seen as inseparable
+ from its UI library to the point that the language was often mistakenly
+ called 
+\begin_inset Quotes eld
+\end_inset
+
+Tcl/Tk
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Nowadays, the Python community favors adding libraries through the PIP
+ package manager rather than merging them into the core language
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+At one point, Python core developer WHOOOOO quipped that 
+\begin_inset Quotes eld
+\end_inset
+
+the standard library is where modules go to die
+\begin_inset Quotes erd
+\end_inset
+
+, as standardizing libraries tends to slow down their evolution for the
+ sake of backward compatibility
+\end_layout
+
+\end_inset
+
+.
+ We see similar trends in all scripting languages, with their fledgling
+ package managers: Perl and CPAN, Ruby and RubyGems, JavaScript and npm,
+ Lua and LuaRocks.
+\end_layout
+
+\begin_layout Standard
+Scripting languages today are seen less as a deliberately simplified tool
+ for 
+\begin_inset Quotes eld
+\end_inset
+
+non-programmers
+\begin_inset Quotes erd
+\end_inset
+
+ and more as as a class of languages focused on rapid development, sharing
+ some features such as dynamic type systems, automatic memory management
+ and dynamic code loading.
+ As these languages evolve and these features prove useful for programming
+ in general, they are gaining ground in many fields beyond those originally
+ identified with 
+\begin_inset Quotes eld
+\end_inset
+
+scripting
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Still, scripting — in the sense of embedding the power of a full programming
+ language to provide advanced control of applications — remains an essential
+ aspect of end-user programming.
 \end_layout
 
 \begin_layout Section
