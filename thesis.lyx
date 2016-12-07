@@ -1412,16 +1412,23 @@ Tcl/Tk
 status open
 
 \begin_layout Plain Layout
-At one point, Python core developer WHOOOOO quipped that 
+Python developer Kenneth Reitz quipped that the 
 \begin_inset Quotes eld
 \end_inset
 
-the standard library is where modules go to die
+standard library is where modules go to die
 \begin_inset Quotes erd
 \end_inset
 
 , as standardizing libraries tends to slow down their evolution for the
- sake of backward compatibility
+ sake of backward compatibility 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "DeadBatteries"
+
+\end_inset
+
+.
 \end_layout
 
 \end_inset
