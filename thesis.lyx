@@ -9311,7 +9311,56 @@ virtual instruments
 \end_layout
 
 \begin_layout Standard
-A VI has always two parts:
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename labview_windows.png
+	width 95col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:LabVIEW-windows"
+
+\end_inset
+
+The main interface of LabVIEW.
+ Each virtual instrument appears in two windows: the front panel (left)
+ and the block diagram (right).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:LabVIEW-windows"
+
+\end_inset
+
+, each VI has always two parts:
 \end_layout
 
 \begin_layout Itemize
@@ -9319,7 +9368,7 @@ the
 \emph on
 front panel
 \emph default
-, which is the user interface.
+, which is the user program's interface.
  It contains elements that provide inputs and outputs to the program, presented
  as graphical widgets for interaction or visualization.
 \end_layout
@@ -9352,7 +9401,20 @@ indicators
  Indicators appear as write-only in the block diagram and read-only in the
  front panel; contrariwise, controls appear as data-entry widgets in the
  front panel that are read-only in the block diagram.
- It is possible to update control values from the block diagram using more
+\end_layout
+
+\begin_layout Standard
+When running a program inside the LabVIEW environment, the block diagram
+ is still visible when running, but it is read-only.
+ At runtime, the interaction with the block diagram is limited.
+ It can only be decorated with temporary probes for debugging purposes,
+ attached to wires.
+ When a LabVIEW program is compiled and deployed, only the front panel is
+ visible.
+\end_layout
+
+\begin_layout Standard
+It is possible to update control values from the block diagram using more
  advanced features of the language that are less evident in its UI, but
  the environment is conducive to a simpler input/output discipline which
  presents data flowing from controls, to the block diagram, and finally
@@ -10116,13 +10178,12 @@ run mode
 \end_layout
 
 \begin_layout Standard
-When running a program inside the LabVIEW environment, the block diagram
- is still visible when running, but it is read-only.
- At runtime, the interaction with the block diagram is limited.
- It can only be decorated with temporary probes for debugging purposes,
- attached to wires.
- A program can be compiled and deployed so that only the front panel is
- visible.
+When running a LabVIEW program, there is no way to affect the program itself
+ by interacting with the graph during execution.
+ The only form of interaction allowed is via the front panel or other attached
+ inputs (such as hardware instruments).
+ When a LabVIEW program is compiled and deployed, the graph is not even
+ visible, let alone editable by the user.
  A deployed LabVIEW program, therefore, is not itself end-user programmable.
 \end_layout
 
