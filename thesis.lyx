@@ -1545,7 +1545,14 @@ control-flow
  oriented languages are those that feature explicit sequencing constructs
  written by the programmer: all imperative languages fall in this group.
  In a pure dataflow language, evaluation order is implicit and arbitrary,
- and there is full referential transparency.
+ and there is full referential transparency 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Dennis85Models"
+
+\end_inset
+
+.
  Purely functional languages certainly fit this description.
  What came to be known as the dataflow paradigm, however, is a particular
  style of representing these data relationships, in particular the focus
