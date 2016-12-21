@@ -10254,13 +10254,29 @@ name "chap:A-Dataflow-Engine"
 \end_layout
 
 \begin_layout Standard
-Based on the knowledge obtained studying existing languages, 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Timing considerations: in end-user applications, the scale of timing constraints
+ depend on the domain, so they can be in the order of milliseconds or sometimes
+ even tenths of seconds.
+\end_layout
+
+\begin_layout Plain Layout
+TODO: glitch
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-we wish to propose a new dataflow language with a focus on embeddability
- and extensibility, through which developers of end-user applications will
- be able to construct a domain-specific language for their application.
+Based on the knowledge obtained studying existing languages, we wish to
+ propose a new dataflow language with a focus on embeddability and extensibility
+, through which developers of end-user applications will be able to construct
+ a domain-specific language for their application.
  The idea is that this language will be implemented as a 
 \emph on
 dataflow engine
