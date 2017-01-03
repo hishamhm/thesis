@@ -1497,11 +1497,12 @@ dataflow language
 \end_layout
 
 \begin_layout Standard
-Dataflow programs correspond to directed graphs, where nodes are operations
- on data.
+Dataflow programs correspond to directed graphs, where nodes represent operation
+s on data, and arcs represent connections through which data tokens can
+ be sent from node to node.
  Operations have inputs (incoming edges receiving data) and outputs (outgoing
  edges sending data).
- An operation executes when all its inputs receive data.
+ An operation executes when all its inputs receive data tokens.
  The operation computes its function, and then 
 \begin_inset Quotes eld
 \end_inset
@@ -1691,6 +1692,84 @@ flow
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Static and dynamic dataflow models
+\end_layout
+
+\begin_layout Standard
+Dataflow programming models allow the representation of iteration, where
+ a subgraph will execute multiple times.
+ If we consider that the only rule for firing a node is that its all inputs
+ have data ready for consumption, it is conceivable that the early part
+ of a new iteration could begin executing before the previous iteration
+ has finished to run, in a pipeline style of execution.
+ Further, if the iterations of a loop have no data dependencies between
+ them, it should be possible to run all iterations of a loop in parallel.
+ These possibilities, however, complicate both the processing and memory
+ models.
+\end_layout
+
+\begin_layout Standard
+A simple restriction that causes a major simplification to the dataflow
+ model is to add another rule for firing nodes: a node is fired only if
+ all its input ports have data tokens ready for consumption and if its output
+ ports have no data tokens pending for consumption by further nodes.
+ This model is called the 
+\emph on
+static
+\emph default
+ dataflow model.
+ In the static dataflow model, memory management is simple, as each arc
+ in the graph represents one storage unit for a data token 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Dennis85Models"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+For exploiting the full possibilities of dataflow parallelism, 
+\emph on
+dynamic
+\emph default
+ models were devised.
+ In common, they all lift the restriction that the output ports need to
+ be empty for a node to execute.
+ A straightforward interpretation of this model is that arcs now represents
+ buffers with multiple data tokens between nodes.
+ Management of memory and processing units becomes more complicated, as
+ it becomes necessary to tag tokens with bookkeping data, for managing concurren
+t flows of different iterations.
+ There is a number of architectural challenges for implementing dynamic
+ dataflow models efficiently: several models were proposed, and this continues
+ to be an area of active research 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "kavi2015dataflow"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The choice of dataflow execution model is not only an implementation issue.
+ For one, it affects language design, as typical tagged-token models use
+ explicit looping constructs, which mark points where loop iteration tags
+ in tokens should be incremented or reset 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Dennis85Models"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -10254,25 +10333,6 @@ name "chap:A-Dataflow-Engine"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Timing considerations: in end-user applications, the scale of timing constraints
- depend on the domain, so they can be in the order of milliseconds or sometimes
- even tenths of seconds.
-\end_layout
-
-\begin_layout Plain Layout
-TODO: glitch
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Based on the knowledge obtained studying existing languages, we wish to
  propose a new dataflow language with a focus on embeddability and extensibility
 , through which developers of end-user applications will be able to construct
@@ -10358,6 +10418,80 @@ ion style of each application.
  We will compare the resulting languages with the original models, aiming
  to demonstrate that, like in scripting, there is room for reuse in end-user
  UI-level language design and implementation.
+\end_layout
+
+\begin_layout Section
+Static and dynamic dataflow models
+\end_layout
+
+\begin_layout Standard
+Since real-world programs are usually not purely functional and include
+ visible effects, the underlying dataflow model can be apparent to the end-user:
+ in a static model, a fast operation can be held back by a slow operation
+ in a different branch of a bifurcated pipeline, even though there is no
+ data dependency between these two operations.
+\end_layout
+
+\begin_layout Standard
+On the other hand, understanding and debugging a dataflow graph is easier
+ when there is a single token per arc, and only one iteration of a loop
+ is running at a time.
+ For end-user programming, understandability is more important than parallel
+ efficiency, so programs should present a static dataflow view of program
+ execution.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+opinion!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Timing considerations
+\end_layout
+
+\begin_layout Standard
+In end-user applications, timing constraints depend on the domain.
+ In the field of music, for example, timing precision matters up to the
+ scale of human-perceptible audio latency, which is in the order of a few
+ hundredths of seconds.
+\end_layout
+
+\begin_layout Standard
+This means that synchronization can be often satisfactorily approximated
+ via real-time clock events.
+ As we saw in the case of LabVIEW, timing primitives with millisecond precision
+ are used to cause iterations of parallel loops to proceed in tandem.
+\end_layout
+
+\begin_layout Standard
+Due to the nature of the dataflow model, 
+\end_layout
+
+\begin_layout Standard
+They can be in the order of milliseconds or sometimes even tenths of seconds.
+\end_layout
+
+\begin_layout Standard
+TODO: glitch
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Timing considerations: 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
