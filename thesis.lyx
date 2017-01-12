@@ -2538,7 +2538,7 @@ key "LabVIEWgettingstarted"
 \begin_layout Plain Layout
 \begin_inset CommandInset citation
 LatexCommand citep
-key "vee1998"
+key "vee93userguide"
 
 \end_inset
 
@@ -3299,16 +3299,7 @@ No
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
-\end_layout
-
-\end_inset
-
-
+No
 \end_layout
 
 \end_inset
@@ -4476,7 +4467,7 @@ VEE (Visual Engineering Environment) is a tool for development of engineering
  
 \begin_inset CommandInset citation
 LatexCommand citep
-key "vee1998"
+key "vee93userguide"
 
 \end_inset
 
@@ -4622,6 +4613,18 @@ Collector
 \family typewriter
 AlphaNumeric
 \family default
+.
+ The sequence output pin of a node fires after the evaluation of all subgraphs
+ connected to that node's data outputs is complete, which may include triggering
+ sequence pins in nested subgraphs.
+ A description of the intricate evaluation semantics of sequence pins in
+ VEE is given in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "vee1998"
+
+\end_inset
+
 .
 \end_layout
 
