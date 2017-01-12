@@ -1696,6 +1696,13 @@ flow
 
 \begin_layout Subsection
 Static and dynamic dataflow models
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Static-and-dynamic"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1774,6 +1781,93 @@ key "Dennis85Models"
 
 \begin_layout Subsection
 Data-driven and demand-driven dataflow
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Data-driven-and-demand-driven"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Another major design decision when choosing a dataflow model is whether
+ to use data-driven or demand-driven evaluation.
+ These modes of evaluation correspond to what in programming languages is
+ conventionally called, respectively, eager (or strict) and lazy evaluation.
+\end_layout
+
+\begin_layout Standard
+Data-driven evaluation maps to eager evaluation: the availability of input
+ data triggers the evaluation of nodes that are connected to them, producing
+ data for nodes connected further ahead in the graph.
+\end_layout
+
+\begin_layout Standard
+Demand-driven evaluation maps to lazy evaluation: the request of an output
+ causes a node connected to it to be triggered.
+ If that node's input ports have data, the node will execute, producing
+ the output.
+ If inputs are not available, the nodes to which these inputs are connected
+ are then triggered, cascading the triggering backwards until inputs are
+ available.
+ Once inputs are available, nodes are evaluated and their result values
+ propagate forward via their output ports.
+ This way, only the parts of the graph which produce output data execute.
+\end_layout
+
+\begin_layout Standard
+These terms come from the field of computer architecture, when dataflow
+ machines were proposed as alternatives to the von Neumann model.
+ In 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Treleaven:1982:DDC:356869.356873"
+
+\end_inset
+
+, Treleaven classified architectures as 
+\begin_inset Quotes eld
+\end_inset
+
+data-driven
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+demand-driven
+\begin_inset Quotes erd
+\end_inset
+
+, but also called data-driven architectures 
+\begin_inset Quotes eld
+\end_inset
+
+data-flow computers
+\begin_inset Quotes erd
+\end_inset
+
+ and demand-driven architectures 
+\begin_inset Quotes eld
+\end_inset
+
+reduction computers
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Nowadays, both models are considered styles of dataflow 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hils1991datavis,Avron1994"
+
+\end_inset
+
+.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1782,6 +1876,25 @@ status open
 
 \begin_layout Plain Layout
 todo
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+https://books.google.com.br/books?id=dS4b3i36qsEC&pg=PA505&lpg=PA505&dq=lucid+deman
+d-driven+dataflow&source=bl&ots=bMTKoHR-RQ&sig=6rgUvPGf4ZbKWEesYnhyWEi4lHY&hl=en
+&sa=X&redir_esc=y#v=onepage&q=lucid%20demand-driven%20dataflow&f=false
+\end_layout
+
+\begin_layout Plain Layout
+* eazyflow?
 \end_layout
 
 \end_inset
@@ -1922,7 +2035,6 @@ Research on the dataflow paradigm has seen a decrease in activity since
  Massively-parallel dataflow hardware architectures proved difficult to
  implement efficiently and are now historical artifacts — modern GPUs obtain
  massive parallelism via vector processing based on imperative machine code.
- 
 \end_layout
 
 \begin_layout Standard
@@ -1943,18 +2055,31 @@ key "Hils1992DFVPLSurvey"
 \end_layout
 
 \begin_layout Standard
-We coined the term 
-\begin_inset Quotes eld
+In this chapter, we will give a panoramic view of dataflow UI-level languages.
+ We will discuss a number of alternatives in dataflow language design, and
+ then present a number of examples of end-user applications featuring dataflow
+ programming.
+\end_layout
+
+\begin_layout Section
+Design alternatives
+\end_layout
+
+\begin_layout Standard
+In 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hils1992DFVPLSurvey"
+
 \end_inset
 
-dataflow UI-level languages
-\begin_inset Quotes erd
-\end_inset
-
- and use it here to refer to the languages we are interested in because
- we want to refer to a different set of languages than those described by
- more established terms.
- In particular, we want to make a distinction from the term 
+, Hils presented an extensive survey of dataflow visual languages (both
+ domain-specific and general-purpose) and produced a list of design alternatives
+ through which those languages can be classified in various axes.
+ Here, we reuse and expand upon this list while shifting our focus from
+ dataflow visual languages to what we call dataflow UI-level languages.
+ We felt it was necessary to coin this term and to make a distinction from
+ the more common term 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1963,6 +2088,7 @@ dataflow visual languages
 \end_inset
 
  for two reasons.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1982,13 +2108,14 @@ center
 \emph on
 application interface
 \emph default
- (in other words: they are central to the UI, and not an optional component;
- and they are integrated into an application of a specific domain, and are
- not general-purpose programming languages).
+; in other words, those languages that are central to the UI, and not an
+ optional component.
+ Being languages that are integrated into an application of a specific domain,
+ this classification excludes general-purpose programming languages.
 \end_layout
 
 \begin_layout Standard
-Second, we exclude 
+Second, we avoid the term 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1998,16 +2125,8 @@ visual
 
  because we want to cover the entire spectrum of languages that fall within
  our focus, without having to worry whether a language is visual or not.
- In 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Hils1992DFVPLSurvey"
-
-\end_inset
-
-, Hils presented an extensive survey of dataflow visual languages (both
- domain-specific and general-purpose) and excluded the most widely used
- application-specific dataflow language — spreadsheet formulas.
+ Notably missing from Hils's work is most widely used application-specific
+ dataflow language — spreadsheet formulas.
  Granted, the relationship between data cells in a spreadsheet is presented
  symbolically rather than visually, but it is remarkable how, apart from
  this fact, spreadsheets would fit every other aspect of that study.
@@ -2016,40 +2135,236 @@ key "Hils1992DFVPLSurvey"
 \end_layout
 
 \begin_layout Standard
-In this chapter, we will give a panoramic view of dataflow UI-level languages
- in use today by end-user applications, mentioning some of their design
- features.
- We will organize languages by their application domains.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-* data-driven vs.
- demand-driven
-\end_layout
-
-\begin_layout Plain Layout
-* https://books.google.com.br/books?id=dS4b3i36qsEC&pg=PA505&lpg=PA505&dq=lucid+dem
-and-driven+dataflow&source=bl&ots=bMTKoHR-RQ&sig=6rgUvPGf4ZbKWEesYnhyWEi4lHY&hl=
-en&sa=X&redir_esc=y#v=onepage&q=lucid%20demand-driven%20dataflow&f=false
-\end_layout
-
-\begin_layout Plain Layout
-* eazyflow
-\end_layout
+Apart from this distinction on the criteria for selecting languages, the
+ list of design alternatives can be directly reused in our work.
+ We present in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Hils-comparison"
 
 \end_inset
 
+ an update to the table presented in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hils1992DFVPLSurvey"
 
+\end_inset
+
+, applying the list of design alternatives to a different set of contemporary
+ dataflow languages.
+ The only language in that study that is also in our list is LabVIEW 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "LabVIEWgettingstarted"
+
+\end_inset
+
+.
+ Hils's original list of design alternatives can be summarized as follows:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+box-line representation
+\emph default
+: whether the language is presented as a visual graph depicting nodes as
+ boxes and edges as connected by lines (this is the only syntactic aspect
+ discussed, but we retain it in the table for completeness);
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+iteration
+\emph default
+: whether the language supports iteration constructs, through graph cycles
+ or explicit constructs for iterated execution of subgraphs;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+procedural abstraction
+\emph default
+: does the language support abstracting subgraphs as reusable subprograms;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+selector and/or distributor
+\emph default
+: whether the language includes classic dataflow constructs for directing
+ the routing of data through a control input (a selector is a function 
+\begin_inset Formula $select(k,a_{1},...,a_{n})=a_{k}$
+\end_inset
+
+, i.e.
+ one of many inputs is forwarded to the single output port according to
+ control input 
+\begin_inset Formula $k$
+\end_inset
+
+; a distributor is a function 
+\begin_inset Formula $distribute(k,a)$
+\end_inset
+
+ with multiple outputs, where its input 
+\begin_inset Formula $a$
+\end_inset
+
+ is fired to the 
+\begin_inset Formula $k$
+\end_inset
+
+-th output — the simplest kinds of selectors and distributors take a boolean
+ 
+\begin_inset Formula $k$
+\end_inset
+
+ and two 
+\begin_inset Formula $a$
+\end_inset
+
+ ports);
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+sequential execution construct
+\emph default
+: whether the language breaks away from pure dataflow by providing an explicit
+ construct for specifying the order of evaluation of actions, independently
+ from data dependencies;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+type checking
+\emph default
+: in Hils's classification, this entry discussed whether the arcs in the
+ dataflow graph are typed — in other words, whether the graph is statically
+ typed.
+ Statically-typed graphs provide checking when constructing the graph, disallowi
+ng incorrect connections.
+ A dynamically-typed graph may still have typed tokens, resulting in type
+ errors at runtime only.
+ Note that this is different from static and dynamic dataflow models (as
+ discussed in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Static-and-dynamic"
+
+\end_inset
+
+);
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+higher-order functions
+\emph default
+: whether the language supports nodes that take functions as arguments.
+ None of the languages studied in this work support this, and in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hils1992DFVPLSurvey"
+
+\end_inset
+
+ this feature was only present in general-purpose languages and in Hils's
+ own scientific visualization language DataVis 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hils1991datavis"
+
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+execution mode
+\emph default
+: whether the language is data-driven or demand-driven, as discussed in
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Data-driven-and-demand-driven"
+
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+liveness level
+\emph default
+: a classification developed by Tanimoto 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "tanimoto1990liveness"
+
+\end_inset
+
+ with a four-level scale of liveness for visual programming tools.
+ In level 1, 
+\begin_inset Quotes eld
+\end_inset
+
+informative
+\begin_inset Quotes erd
+\end_inset
+
+, the visual representation is a non-executable auxiliary representation
+ (like flowchart documentation for textual programs).
+ In level 2, 
+\begin_inset Quotes eld
+\end_inset
+
+informative and significant
+\begin_inset Quotes erd
+\end_inset
+
+, the visual representation is the executable program, but program editing
+ and execution are separate activities.
+ In level 3, 
+\begin_inset Quotes eld
+\end_inset
+
+informative, significant and responsive
+\begin_inset Quotes erd
+\end_inset
+
+, editing the visual representation triggers updates to the evaluation of
+ the program; there are no separate edit and execution modes.
+ In level 4, 
+\begin_inset Quotes eld
+\end_inset
+
+informative, significant, responsive and live
+\begin_inset Quotes erd
+\end_inset
+
+, the system updates continuously, updating the visual representation in
+ response to data updates, and not only to user inputs.
+ The liveness level affects the evaluation rules of the language, since
+ levels 3 and 4 allow changing the dataflow graph dynamically.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
-sideways false
+sideways true
 status open
 
 \begin_layout Plain Layout
@@ -2068,8 +2383,9 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Tabular
-<lyxtabular version="3" rows="15" columns="5">
+<lyxtabular version="3" rows="15" columns="6">
 <features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -2120,13 +2436,22 @@ Excel
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
 LabVIEW
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+VEE
 \end_layout
 
 \end_inset
@@ -2148,6 +2473,12 @@ Main reference
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Reaktor6Primary"
+
+\end_inset
+
 
 \end_layout
 
@@ -2157,6 +2488,12 @@ Main reference
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citep
+key "PuckettePd"
+
+\end_inset
+
 
 \end_layout
 
@@ -2166,6 +2503,30 @@ Main reference
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citep
+key "LabVIEWgettingstarted"
+
+\end_inset
+
 
 \end_layout
 
@@ -2175,6 +2536,12 @@ Main reference
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citep
+key "vee1998"
+
+\end_inset
+
 
 \end_layout
 
@@ -2226,13 +2593,22 @@ Office /
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
-Science
+Engineering
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Engineering
 \end_layout
 
 \end_inset
@@ -2275,6 +2651,15 @@ domain
 
 \size small
 Productivity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -2334,12 +2719,21 @@ No
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
+Yes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 Yes
 \end_layout
 
@@ -2395,7 +2789,7 @@ iteration
 \begin_layout Plain Layout
 
 \size small
-No
+Yes
 \end_layout
 
 \end_inset
@@ -2406,7 +2800,31 @@ No
 \begin_layout Plain Layout
 
 \size small
-Array formulas
+Limited
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+
+\size small
+A non-scalar evaluation mode is the only way to apply a formula over multiple
+ cells at once.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Yes
 \end_layout
 
 \end_inset
@@ -2415,9 +2833,21 @@ Array formulas
 \begin_inset Text
 
 \begin_layout Plain Layout
+Yes
+\size small
+
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
 
 \size small
-Yes
+The iteration node fires its outputs a given number of times.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -2468,12 +2898,21 @@ No
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
+Yes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 Yes
 \end_layout
 
@@ -2496,7 +2935,7 @@ Selector/distributor
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+Yes
 \end_layout
 
 \end_inset
@@ -2523,12 +2962,21 @@ Yes (IF)
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
+Yes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 Yes
 \end_layout
 
@@ -2580,12 +3028,21 @@ Uni
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
+Uni
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 Uni
 \end_layout
 
@@ -2637,12 +3094,21 @@ No
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
+Yes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 Yes
 \end_layout
 
@@ -2657,6 +3123,15 @@ Yes
 
 \size small
 execution construct
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -2743,13 +3218,22 @@ No
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
 Yes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No
 \end_layout
 
 \end_inset
@@ -2800,13 +3284,31 @@ No
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
 No
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -2857,12 +3359,21 @@ Data-driven
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
+Data-driven
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 Data-driven
 \end_layout
 
@@ -2914,13 +3425,22 @@ Liveness level
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \size small
-2, 3 or 4
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
 \end_layout
 
 \end_inset
@@ -2942,7 +3462,14 @@ Liveness level
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Hils-comparison"
 
+\end_inset
+
+A comparison of contemporary dataflow UI-level languages, using Hils's design
+ alternatives for dataflow languages
 \end_layout
 
 \end_inset
@@ -2960,6 +3487,103 @@ Liveness level
 \end_layout
 
 \begin_layout Standard
+In addition to the axes of comparison proposed by Hils, we identify a number
+ of other criteria to compare these languages:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+dataflow model
+\emph default
+: whether the dataflow model of the language is static or dynamic, as discussed
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Static-and-dynamic"
+
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+N-to-1 inputs
+\emph default
+: does the language allow connecting multiple wires to a single input port
+ in a node (when this is allowed, the language needs a policy for dealing
+ with multiple tokens, such as queueing);
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+separate graph / UI
+\emph default
+: does the language present separate interfaces for editing the dataflow
+ program and for using the resulting user-written program, or does the use
+ of the program happen in the same interface where it is edited (note that
+ this is different from having separate edit and use modes, which is the
+ distinction between Tanimoto's liveness levels 2 and 3 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "tanimoto1990liveness"
+
+\end_inset
+
+);
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+time-based evaluation
+\emph default
+: does the evaluation of the dataflow graph happens at a time-controlled
+ rate;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+indirect connections
+\emph default
+: does the language allow data to flow between nodes without an explicit
+ connection between them (such as a wire in box-wire models, or an explicit
+ cell reference in a spreadsheet model);
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+runtime-evaluated indirect connections
+\emph default
+: in the presence of indirect connections, can these be determined at runtime;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+textual expression sub-language
+\emph default
+: does the language include a textual sub-language for representing mathematical
+ expressions;
+\end_layout
+
+\begin_layout Standard
+Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Our-comparison"
+
+\end_inset
+
+ summarizes our observations of the studied dataflow UI-level languages.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
@@ -2967,8 +3591,9 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Tabular
-<lyxtabular version="3" rows="13" columns="5">
+<lyxtabular version="3" rows="10" columns="6">
 <features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -3011,11 +3636,20 @@ Excel
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 LabVIEW
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+VEE
 \end_layout
 
 \end_inset
@@ -3045,6 +3679,15 @@ Static
 
 \begin_layout Plain Layout
 Dynamic
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Static
 \end_layout
 
 \end_inset
@@ -3105,6 +3748,15 @@ No
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -3152,6 +3804,15 @@ No
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Yes
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -3167,7 +3828,7 @@ Yes
 \begin_inset Text
 
 \begin_layout Plain Layout
-Rate-controlled events
+Time-based evaluation
 \end_layout
 
 \end_inset
@@ -3199,11 +3860,29 @@ No
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 No
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3214,7 +3893,16 @@ No
 \begin_inset Text
 
 \begin_layout Plain Layout
-Non-wire connections
+Indirect connections
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Yes
 \end_layout
 
 \end_inset
@@ -3293,10 +3981,28 @@ Yes
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Yes
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -3308,7 +4014,16 @@ Yes
 \begin_inset Text
 
 \begin_layout Plain Layout
-non-wire connections
+indirect connections
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -3355,7 +4070,7 @@ non-wire connections
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+Textual expression
 \end_layout
 
 \end_inset
@@ -3364,7 +4079,7 @@ non-wire connections
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+No
 \end_layout
 
 \end_inset
@@ -3373,7 +4088,7 @@ non-wire connections
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+Yes
 \end_layout
 
 \end_inset
@@ -3382,7 +4097,16 @@ non-wire connections
 \begin_inset Text
 
 \begin_layout Plain Layout
+Yes
+\end_layout
 
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Yes
 \end_layout
 
 \end_inset
@@ -3391,14 +4115,23 @@ non-wire connections
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+Yes
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+sub-language
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3407,7 +4140,7 @@ non-wire connections
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3416,7 +4149,7 @@ non-wire connections
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3425,7 +4158,7 @@ non-wire connections
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3434,148 +4167,7 @@ non-wire connections
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3596,7 +4188,13 @@ non-wire connections
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Our-comparison"
 
+\end_inset
+
+Additional design aspects of dataflow UI-level languages
 \end_layout
 
 \end_inset
@@ -3796,8 +4394,9 @@ vent-Table-as-Copy-Buffer-in-REAKTOR-5
 
 \begin_layout Standard
 Reaktor notably lacks a textual scripting mode.
- A major music industry magazine, Sound On Sound, states in its review of
- the latest version of Reaktor that 
+ This absence is noted even by the music practitioner community: a major
+ music industry magazine, Sound On Sound, states in its review of the latest
+ version of Reaktor that 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3850,24 +4449,198 @@ TODO: what are:
 \end_layout
 
 \begin_layout Section
-Languages for image processing
+Languages for image compositing
+\end_layout
+
+\begin_layout Subsection
+Natron
 \end_layout
 
 \begin_layout Section
-Languages for science
+Languages for engineering
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection
 LabVIEW
 \end_layout
 
+\begin_layout Subsection
+VEE
+\end_layout
+
 \begin_layout Standard
-VEE 
+VEE (Visual Engineering Environment) is a tool for development of engineering
+ test-and-measurement software, based around a visual programming language.
+ It was originally released by Hewlett-Packard in 1991, and is currently
+ marketed by Keysight Technologies.
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "vee1998"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+VEE supports integrating with other languages for scripting.
+ MATLAB integration support is included.
+ Additionally, VBA scripting and an Excel integration library are also supported
+ on Windows.
+\end_layout
+
+\begin_layout Standard
+There are several data types, including integer, real, complex, waveform,
+ enum, text, record and multidimensional arrays.
+ Connections, however, are not typed.
+ Most nodes perform automatic type conversions.
+ VEE also supports named variables, which can be used via Set Variable and
+ Get Variable nodes, allowing for indirect connections in the graph.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename vee_for_count.png
+	width 75col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:VEE-for-count"
+
+\end_inset
+
+Mix of data and control flow in VEE.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are five kinds of ports for connecting wires (called 
+\emph on
+pins
+\emph default
+ in VEE): data pins, which carry data; sequence pins, designed only for
+ affecting the firing sequence; execute pins, which force an immediate execution
+ when fired; control pins, which affect the internal state of a node but
+ do not cause data propagation; and error pins, for error handling.
+ Sequence pins are prominent in VEE and break the pure dataflow model.
+ In a comparison between LabVIEW and VEE in an engineering magazine, it
+ is said that 
+\begin_inset Quotes eld
+\end_inset
+
+LabVIEW follows the data-flow paradigm of programming rigorously.
+ HP VEE is loosely based on data-flow diagrams with a large measure of flow-char
+ting sprinkled with a little decision table.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "ee1999labview_vs_vee"
+
+\end_inset
+
+.
+ Connected subgraphs of a disjoint graph can be launched separately, by
+ connecting separate 
+\begin_inset Quotes eld
+\end_inset
+
+Start
+\begin_inset Quotes erd
+\end_inset
+
+ buttons to the sequence pins of input nodes of each subgraph.
+ Data pins can connect to sequence pins; for example, an 
+\family typewriter
+If-Then-Else
+\family default
+ node can be used either in the dataflow way, outputting a value according
+ to a condition, or in the flowchart way, triggering a subgraph.
+ The 
+\family typewriter
+For Count
+\family default
+ iteration node is often used in conjunction with sequence and execute pins.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:VEE-for-count"
+
+\end_inset
+
+ illustrates the mix of data and control flow in VEE.
+ Ports at the top and bottom of nodes are sequence pins; the green port
+ is an execute pin; other pins at the left and right are data pins.
+ This graph has two dataflow connections (black wires) and two control flow
+ connections (gray wires).
+ The 
+\family typewriter
+For Count
+\family default
+ output data pin triggers the sequence input pin of 
+\family typewriter
+RandomNumber
+\family default
+ ten times; at the end of the count, the sequence output pin of 
+\family typewriter
+For Count
+\family default
+ triggers the execute pin of 
+\family typewriter
+Collector
+\family default
+, which then outputs the array to 
+\family typewriter
+AlphaNumeric
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+There are two kinds of abstractions: UserObjects and UserFunctions.
+ A UserObject is merely a collapsable subgraph.
+ To reuse it, the object needs to be cloned, producing a new subgraph instance
+ which can be edited separately from the original copy.
+ A UserFunction is a reusable subgraph, for which all uses are references
+ to the same instance.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-dataflow with sequencing or like Blueprints?
+other EUP apps also have this confusion, and terminology varies.
+ Abstractions, etc (find examples)
 \end_layout
 
 \end_inset
@@ -3879,7 +4652,7 @@ dataflow with sequencing or like Blueprints?
 Languages for numeric manipulation
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection
 Excel
 \end_layout
 
@@ -10640,6 +11413,14 @@ re view.
 Data-driven and demand-driven dataflow
 \end_layout
 
+\begin_layout Standard
+Data-driven is better for EUP
+\end_layout
+
+\begin_layout Standard
+TODO: Reaktor is demand-driven
+\end_layout
+
 \begin_layout Section
 Timing considerations
 \end_layout
@@ -10668,6 +11449,10 @@ They can be in the order of milliseconds or sometimes even tenths of seconds.
 
 \begin_layout Standard
 TODO: glitch
+\end_layout
+
+\begin_layout Section
+Procedural abstractions
 \end_layout
 
 \begin_layout Chapter
