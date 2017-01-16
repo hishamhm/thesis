@@ -9384,7 +9384,7 @@ type XlValues = Map.Map XlRC XlValue
 \begin_layout LyX-Code
 
 \size footnotesize
-data XlEnv = XlEnv XlCells XlValues
+data XlState = XlState XlCells XlValues
 \end_layout
 
 \begin_layout LyX-Code
@@ -9438,7 +9438,7 @@ use
 \end_layout
 
 \begin_layout LyX-Code
-run :: XlWorksheet -> [XlEvent] -> XlEnv
+run :: XlWorksheet -> [XlEvent] -> XlState
 \end_layout
 
 \begin_layout Standard
@@ -9496,9 +9496,9 @@ row-column
 XlFormula
 \family default
 ), representing user interaction editing cells.
- The output is the resulting program environment (
+ The output is the resulting program state (
 \family typewriter
-XlEnv
+XlState
 \family default
 ): the full set of cell contents (
 \family typewriter
@@ -9510,7 +9510,11 @@ XlValues
 \family default
 ).
  The execution of the interpreter iterates through the list of events, producing
- a new XlEnv as each event is processed.
+ a new 
+\family typewriter
+XlState
+\family default
+ as each event is processed.
  The formula that is edited is updated in the map of cell contents and the
  necessary cell values are recomputed.
  Our model supports both absolute and relative references (
@@ -9574,7 +9578,7 @@ status open
 \size footnotesize
  1 
 \emph on
-run :: XlWorksheet -> [XlEvent] -> XlEnv
+run :: XlWorksheet -> [XlEvent] -> XlState
 \end_layout
 
 \begin_layout LyX-Code
@@ -9586,7 +9590,7 @@ run :: XlWorksheet -> [XlEvent] -> XlEnv
 \begin_layout LyX-Code
 
 \size footnotesize
- 3    foldl' runEvent (XlEnv cells Map.empty) events
+ 3    foldl' runEvent (XlState cells Map.empty) events
 \end_layout
 
 \begin_layout LyX-Code
@@ -9600,13 +9604,14 @@ run :: XlWorksheet -> [XlEvent] -> XlEnv
 \size footnotesize
  5       
 \emph on
-runEvent :: XlEnv -> XlEvent -> XlEnv
+runEvent :: XlState -> XlEvent -> XlState
 \end_layout
 
 \begin_layout LyX-Code
 
 \size footnotesize
- 6       runEvent env@(XlEnv cells values) event@(XlEvent rc newCell) =
+ 6       runEvent env@(XlState cells values) event@(XlEvent rc newCell)
+ =
 \end_layout
 
 \begin_layout LyX-Code
@@ -9708,7 +9713,7 @@ e -> e /= v)
 \begin_layout LyX-Code
 
 \size footnotesize
-27                    (XlEnv (insert rc newCell cells)
+27                    (XlState (insert rc newCell cells)
 \end_layout
 
 \begin_layout LyX-Code
@@ -9734,13 +9739,13 @@ e -> e /= v)
 \size footnotesize
 21             
 \emph on
-evalVertex :: XlEnv -> Vertex -> XlEnv
+evalVertex :: XlState -> Vertex -> XlState
 \end_layout
 
 \begin_layout LyX-Code
 
 \size footnotesize
-22             evalVertex env@(XlEnv cells values) vtx =
+22             evalVertex env@(XlState cells values) vtx =
 \end_layout
 
 \begin_layout LyX-Code
@@ -9752,7 +9757,7 @@ evalVertex :: XlEnv -> Vertex -> XlEnv
 \begin_layout LyX-Code
 
 \size footnotesize
-24                in  XlEnv cells (updateValue rc cell values)
+24                in  XlState cells (updateValue rc cell values)
 \end_layout
 
 \begin_layout LyX-Code
@@ -9821,8 +9826,8 @@ reference "fig:Xl1-Evaluation-loop"
  graph (that is, for each cell, which cells depend on this one; lines 11-12),
  and then recursively traverses this graph producing a list of cells that
  should be reevaluated (lines 14-19).
- This list is iterated (lines 26-29), producing a new environment at each
- step which contains the updated value of the evaluated cell (lines 21-24).
+ This list is iterated (lines 26-29), producing a new state at each step
+ which contains the updated value of the evaluated cell (lines 21-24).
 \end_layout
 
 \begin_layout Standard
@@ -9917,7 +9922,7 @@ updateValue :: XlCells -> XlValues -> XlRC -> XlCell -> XlValues
 \size footnotesize
  9 
 \emph on
-run :: XlWorksheet -> [XlEvent] -> XlEnv
+run :: XlWorksheet -> [XlEvent] -> XlState
 \end_layout
 
 \begin_layout LyX-Code
@@ -9929,7 +9934,7 @@ run :: XlWorksheet -> [XlEvent] -> XlEnv
 \begin_layout LyX-Code
 
 \size footnotesize
-11    foldl' runEvent (XlEnv cells Map.empty) events
+11    foldl' runEvent (XlState cells Map.empty) events
 \end_layout
 
 \begin_layout LyX-Code
@@ -9943,13 +9948,13 @@ run :: XlWorksheet -> [XlEvent] -> XlEnv
 \size footnotesize
 13       
 \emph on
-runEvent :: XlEnv -> XlEvent -> XlEnv
+runEvent :: XlState -> XlEvent -> XlState
 \end_layout
 
 \begin_layout LyX-Code
 
 \size footnotesize
-14       runEvent env@(XlEnv cells _) event@(XlEvent rc newCell) =
+14       runEvent env@(XlState cells _) event@(XlEvent rc newCell) =
 \end_layout
 
 \begin_layout LyX-Code
@@ -10011,7 +10016,7 @@ acc :: XlRC -> XlCell -> XlValues -> XlValues
 \begin_layout LyX-Code
 
 \size footnotesize
-24             XlEnv newCells (Map.foldrWithKey acc Map.empty newCells)
+24             XlState newCells (Map.foldrWithKey acc Map.empty newCells)
 \end_layout
 
 \end_inset
@@ -10056,8 +10061,8 @@ reference "fig:Xl2-Evaluation-loop"
 \family typewriter
 runEvent
 \family default
- produces a new environment by iterating over all non-empty cells on each
- step, using a fold operation (line 24).
+ produces a new state by iterating over all non-empty cells on each step,
+ using a fold operation (line 24).
  The 
 \begin_inset Quotes eld
 \end_inset
@@ -10106,7 +10111,7 @@ This model recalculates the entire spreadsheet on each edit.
  would do, performance-wise, but since all formulas in our model are pure,
  it produces the same cell values that a more efficient implementation would
  produce.
- We are concerned here with the resulting environment of each step, which
+ We are concerned here with the resulting state produced in each step, which
  is the user-visible results of the execution.
  It is important to note, however, that actual spreadsheet applications
  do include side-effecting functions: for example, they can call functions
