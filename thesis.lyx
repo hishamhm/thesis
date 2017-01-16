@@ -1875,19 +1875,6 @@ key "Hils1991datavis,Avron1994"
 status open
 
 \begin_layout Plain Layout
-todo
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
 https://books.google.com.br/books?id=dS4b3i36qsEC&pg=PA505&lpg=PA505&dq=lucid+deman
 d-driven+dataflow&source=bl&ots=bMTKoHR-RQ&sig=6rgUvPGf4ZbKWEesYnhyWEi4lHY&hl=en
 &sa=X&redir_esc=y#v=onepage&q=lucid%20demand-driven%20dataflow&f=false
@@ -4862,19 +4849,6 @@ https://cycling74.com/products/max/
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-semântica do PD (o texto está lá, espalhado)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 In Pure Data, a program, called a 
 \begin_inset Quotes eld
 \end_inset
@@ -4895,49 +4869,270 @@ In this section, terms in Pd jargon are presented in quotes.
 
 , is represented as a graph of nodes (operations) and edges (the flow of
  data between them).
- Data flowing between nodes may be either discrete messages (numbers, strings,
- or lists of these base types) or audio data.
- Pure Data has two modes of execution, an 
-\begin_inset Quotes eld
-\end_inset
-
-edit mode
-\begin_inset Quotes erd
-\end_inset
-
- in which the graph structure can be edited, and a 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
- in which input values can be produced by interacting with the graph.
- The DSP (Digital Signal Processing) engine can be toggled on or off independent
-ly of the mode of execution.
- Most importantly, the dataflow program is running at all times: the user
- can create nodes in the graph, switch to 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
-, trigger a loop that produces audio waves, return to 
-\begin_inset Quotes eld
-\end_inset
-
-edit mode
-\begin_inset Quotes erd
-\end_inset
-
- and modify the graph while the loop is still running.
 \end_layout
 
 \begin_layout Standard
-Nodes in Pure Data have 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../proposta_hisham/puredata.png
+	width 60col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:puredata"
+
+\end_inset
+
+The demo for the oscillator node 
+\family typewriter
+osc~
+\family default
+, from the Pure Data documentation.
+ Thin lines are message connections, bold lines are audio connections; their
+ types are determined by their outlets.
+ Boxes with a slanted top-right corner are atom boxes, editable in 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+; boxes with a recessed right side are clickable message boxes.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:puredata"
+
+\end_inset
+
+ gives an example of a Pure Data patch.
+ This program produces a 1000Hz sine wave (the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+osc~ 1000
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ object), which has its amplitude multiplied (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+*~
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) according to a linear function (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+line~
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) prior to be sent to the DSP output (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+dac~
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+).
+ The sine wave is also sampled at a rate of 500Hz (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+metro 500
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) into a visual representation (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+tabwrite~ array99
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+).
+ The user may interact with the program by setting a new frequency to the
+ oscillator (typing in new values in the atom box that initially contains
+ 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+0
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+), by clicking the message boxes that reconfigure the linear function (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+0 100
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+, which will configure 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+line~
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ to produce a slope from its current value to 0 over the course of 100ms,
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+0.1 1000
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+, which will cause the value to slide to 0.1 over 1s) or by toggling the
+ tabulation of the graph (message boxes 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+metroToggle 0
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+metroToggle 1
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+, which sends the value 0 or 1 to the 
+\begin_inset Quotes eld
+\end_inset
+
+receiver
+\begin_inset Quotes erd
+\end_inset
+
+ object with that name, declared as 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+r metroToggle
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Section
+The language
+\end_layout
+
+\begin_layout Subsection
+Nodes and values
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+semântica do PD (o texto está lá, espalhado)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Data flowing between nodes may be either discrete messages (numbers, strings,
+ or lists of these base types) or audio data.
+ Nodes in Pure Data have 
 \begin_inset Quotes eld
 \end_inset
 
@@ -5062,41 +5257,28 @@ objects
  A non-audio object may only send and receive messages.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename ../proposta_hisham/puredata.png
-	width 60col%
-
-\end_inset
-
-
+\begin_layout Subsection
+Messages and the textual sub-language
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption Standard
+\begin_layout Section
+Semantics
+\end_layout
 
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:puredata"
+\begin_layout Subsection
+Graph evaluation
+\end_layout
 
+\begin_layout Standard
+Pure Data has two modes of execution, an 
+\begin_inset Quotes eld
 \end_inset
 
-The demo for the oscillator node 
-\family typewriter
-osc~
-\family default
-, from the Pure Data documentation.
- Thin lines are message connections, bold lines are audio connections; their
- types are determined by their outlets.
- Boxes with a slanted top-right corner are atom boxes, editable in 
+edit mode
+\begin_inset Quotes erd
+\end_inset
+
+ in which the graph structure can be edited, and a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -5104,12 +5286,361 @@ run mode
 \begin_inset Quotes erd
 \end_inset
 
-; boxes with a recessed right side are clickable message boxes.
+ in which input values can be produced by interacting with the graph.
+ The DSP (Digital Signal Processing) engine can be toggled on or off independent
+ly of the mode of execution.
+ Most importantly, the dataflow program is running at all times: the user
+ can create nodes in the graph, switch to 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+, trigger a loop that produces audio waves, return to 
+\begin_inset Quotes eld
+\end_inset
+
+edit mode
+\begin_inset Quotes erd
+\end_inset
+
+ and modify the graph while the loop is still running.
+\end_layout
+
+\begin_layout Standard
+Execution in Pure Data is synchronous.
+ The tree of DSP nodes is processed periodically, updating their buffers
+ and propagating audio data.
+ A complete propagation of audio is called a 
+\begin_inset Quotes eld
+\end_inset
+
+DSP tick
+\begin_inset Quotes erd
+\end_inset
+
+, during which only audio nodes are processed.
+ When an input or timing event happens, the entire cascade of messages produced
+ is processed in sequence, before the next DSP tick 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PuckettePd"
+
+\end_inset
+
+.
+ This means that excessive processing of messages may produce noticeable
+ audio drop-outs, but the audio buffer with a user-specified size mitigates
+ this.
+ 
+\end_layout
+
+\begin_layout Standard
+It is possible to wire nodes in the Pd interface so that cycles in the graph
+ are created.
+ If those graphs involve audio wires, the resulting loops in the audio processin
+g chain are detected and propagation is halted.
+ When cycles happen in the message flow, messages may also produce infinite
+ loops, but being dynamic they cannot be detected a priori: those are caught
+ during 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+, reporting a stack overflow.
+ 
+\end_layout
+
+\begin_layout Subsection
+Node triggering
+\end_layout
+
+\begin_layout Standard
+To avoid triggering functions with multiple arguments many times, as the
+ input arguments arrive through different paths of the graph, Pure Data
+ has the notion of 
+\begin_inset Quotes eld
+\end_inset
+
+hot
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+cold
+\begin_inset Quotes erd
+\end_inset
+
+ input ports.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+hot and cold, a bit like data execute pins in VEE
+\end_layout
+
+\end_inset
+
+Only the hot input port triggers recalculation; data arriving to cold input
+ ports stays buffered there and is only consumed when a hot input port is
+ triggered.
+ This allows, for example, to create a 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+float
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ node that increments its value every time it is triggered, by sending its
+ output to an increment node (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
++ 1
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) and sending the result back via a secondary, cold inlet.
+ This will 
+\emph on
+not
+\emph default
+ create an infinite loop, because the result of the increment will only
+ be consumed next time the hot inlet of the node is triggered.
+\end_layout
+
+\begin_layout Standard
+Due to the way Pure Data handles messages, for some node types the order
+ in which connections are performed in its interface can change the semantics
+ of the resulting graph, so that two visually identical graphs can produce
+ different results, depending on the order in which the lines between nodes
+ were drawn in the UI.
+ This behavior is documented as a possible user pitfall in the documentation
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PuckettePd"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Indirect messages
+\end_layout
+
+\begin_layout Standard
+The system of messaging via named receivers allows the program to send data
+ between nodes that are not explicitly linked via connections.
+ The relationship between a message and a receiver can be thought of as
+ an implicit edge in the dataflow graph.
+ Since the textual language of messages supports variable arguments fed
+ via input ports, receiver destinations can change during execution: this
+ makes the dataflow graph, in effect, dynamic
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+FIXME: dynamic in which sense
+\end_layout
+
+\end_inset
+
+.
+ This, however, is limited to discrete messages.
+ The flow of audio data cannot be re-routed while in 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+, but disconnections can be simulated multiplying a signal by 0.
+\end_layout
+
+\begin_layout Section
+An executable model
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+o que é modelado
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+We produced an executable model of the core semantics of Pure Data 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PuckettePd,Zmolnig2014pd"
+
+\end_inset
+
+ in Haskell 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Available at 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/hishamhm/puredata
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, which includes stateful nodes for multiple data types, message-based and
+ stream-based connectors, identifier-based message passing (functioning
+ in practice like dynamic message-based connectors) and an intra-node expression
+ language for message objects.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+como é modelado, isto é, o que o modelo faz
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Our model implements a simulation of the 
+\begin_inset Quotes eld
+\end_inset
+
+run mode
+\begin_inset Quotes erd
+\end_inset
+
+, in which the graph is fixed and input events are fed into it.
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+In our model, the DSP engine is always on, so the 
+\family typewriter
+pd dsp
+\family default
+ command as seen in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:puredata"
+
+\end_inset
+
+ is not represented.
+\end_layout
+
+\end_inset
+
+ The model implements this as a main function called 
+\family typewriter
+run
+\family default
+ which receives a data structure representing the patch and a list of timestampe
+d input events.
+ It produces a trace of the internal states of each node and the generated
+ outputs at each time tick.
+ Two lists of outputs are produced: textual data representing the output
+ of the Pd console (which can be written to using the Pd function 
+\family typewriter
+print
+\family default
+), and numeric values representing audio data that would be sent to the
+ sound card
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Our model is precise enough so that these numeric values can be actually
+ converted to sound file format and played back.
+ Our repository includes a script that performs this conversion and a sample
+ audio file it produced.
+\end_layout
+
+\end_inset
+
+.
+ Our model replicates the synchronous behavior of Pure Data: for each tick
+ it performs one full cascade of message propagation and one step of the
+ entire DSP processing tree.
+ For simplicity, it does not perform loop detection of messages.
+\end_layout
+
+\begin_layout Subsection
+Model semantics
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+O código que você mostra é basicamente um "data description", não reflete
+ a semântica.
+ Não sei se vale a pena gastar tanto tempo descrevendo a figura 4, na verdade
+ não sei nem se precisa ter a figura 4.
+ Podia apenas dar uma descrição bem mais alto nível, dizendo que criamos
+ uma estrutura de dados representando um grafo, com uma lista ordenada de
+ nós e uma lista ordenada de arestas, etc.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Em compensação, a descrição da semântica do programa (o que ele faz) devia
+ ser bastante ampliada.
+ (Atualmente é quase que só as quatro linhas do 2o par.
+ pág.
+ 11.) [Figure 4 depicts...]
 \end_layout
 
 \end_inset
@@ -5121,7 +5652,7 @@ run mode
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout LyX-Code
 
@@ -5332,493 +5863,6 @@ reference "fig:puredata"
 \end_layout
 
 \begin_layout Standard
-Execution in Pure Data is synchronous.
- The tree of DSP nodes is processed periodically, updating their buffers
- and propagating audio data.
- A complete propagation of audio is called a 
-\begin_inset Quotes eld
-\end_inset
-
-DSP tick
-\begin_inset Quotes erd
-\end_inset
-
-, during which only audio nodes are processed.
- When an input or timing event happens, the entire cascade of messages produced
- is processed in sequence, before the next DSP tick 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "PuckettePd"
-
-\end_inset
-
-.
- This means that excessive processing of messages may produce noticeable
- audio drop-outs, but the audio buffer with a user-specified size mitigates
- this.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-? --R
-\end_layout
-
-\end_inset
-
-Pd graphs may contain cycles: loops in the audio processing chain are detected
- and propagation is halted.
- The flow of messages may also produce infinite loops, but being dynamic
- they cannot be detected a priori: those are caught during 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
-, reporting a stack overflow.
- 
-\end_layout
-
-\begin_layout Standard
-Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:puredata"
-
-\end_inset
-
- gives an example of a Pure Data patch.
- This program produces a 1000Hz sine wave (the 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-osc~ 1000
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
- object), which has its amplitude multiplied (
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-*~
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-) according to a linear function (
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-line~
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-) prior to be sent to the DSP output (
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-dac~
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-).
- The sine wave is also sampled at a rate of 500Hz (
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-metro 500
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-) into a visual representation (
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-tabwrite~ array99
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-).
- The user may interact with the program by setting a new frequency to the
- oscillator (typing in new values in the atom box that initially contains
- 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-0
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-), by clicking the message boxes that reconfigure the linear function (
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-0 100
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-, which will configure 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-line~
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
- to produce a slope from its current value to 0 over the course of 100ms,
- or 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-0.1 1000
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-, which will cause the value to slide to 0.1 over 1s) or by toggling the
- tabulation of the graph (message boxes 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-metroToggle 0
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-metroToggle 1
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-, which sends the value 0 or 1 to the 
-\begin_inset Quotes eld
-\end_inset
-
-receiver
-\begin_inset Quotes erd
-\end_inset
-
- object with that name, declared as 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-r metroToggle
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-).
-\end_layout
-
-\begin_layout Standard
-The system of messaging via named receivers allows the program to send data
- between nodes that are not explicitly linked via connections.
- The relationship between a message and a receiver can be thought of as
- an implicit edge in the dataflow graph.
- Since the textual language of messages supports variable arguments fed
- via input ports, receiver destinations can change during execution: this
- makes the dataflow graph, in effect, dynamic.
- This, however, is limited to discrete messages.
- The flow of audio data cannot be re-routed while in 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
-, but disconnections can be simulated multiplying a signal by 0.
-\end_layout
-
-\begin_layout Standard
-To avoid triggering functions with multiple arguments many times, as the
- input arguments arrive through different paths of the graph, Pure Data
- has the notion of 
-\begin_inset Quotes eld
-\end_inset
-
-hot
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-cold
-\begin_inset Quotes erd
-\end_inset
-
- input ports.
- Only the hot input port triggers recalculation; data arriving to cold input
- ports stays buffered there and is only consumed when a hot input port is
- triggered.
- This allows, for example, to create a 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-float
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
- node that increments its value every time it is triggered, by sending its
- output to an increment node (
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-+ 1
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-) and sending the result back via a secondary, cold inlet.
- This will 
-\emph on
-not
-\emph default
- create an infinite loop, because the result of the increment will only
- be consumed next time the hot inlet of the node is triggered.
-\end_layout
-
-\begin_layout Standard
-Due to the way Pure Data handles messages, for some node types the order
- in which connections are performed in its interface can change the semantics
- of the resulting graph, so that two visually identical graphs can produce
- different results, depending on the order in which the lines between nodes
- were drawn in the UI.
- This behavior is documented as a possible user pitfall in the documentation
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "PuckettePd"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-o que é modelado
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We produced an executable model of the core semantics of Pure Data 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "PuckettePd,Zmolnig2014pd"
-
-\end_inset
-
- in Haskell 
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-Available at 
-\begin_inset Flex URL
-status open
-
-\begin_layout Plain Layout
-
-https://github.com/hishamhm/puredata
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-, which includes stateful nodes for multiple data types, message-based and
- stream-based connectors, identifier-based message passing (functioning
- in practice like dynamic message-based connectors) and an intra-node expression
- language for message objects.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-como é modelado, isto é, o que o modelo faz
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Our model implements a simulation of the 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
-, in which the graph is fixed and input events are fed into it.
- 
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-In our model, the DSP engine is always on, so the 
-\family typewriter
-pd dsp
-\family default
- command as seen in Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:puredata"
-
-\end_inset
-
- is not represented.
-\end_layout
-
-\end_inset
-
- The model implements this as a main function called 
-\family typewriter
-run
-\family default
- which receives a data structure representing the patch and a list of timestampe
-d input events.
- It produces a trace of the internal states of each node and the generated
- outputs at each time tick.
- Two lists of outputs are produced: textual data representing the output
- of the Pd console (which can be written to using the Pd function 
-\family typewriter
-print
-\family default
-), and numeric values representing audio data that would be sent to the
- sound card
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Our model is precise enough so that these numeric values can be actually
- converted to sound file format and played back.
- Our repository includes a script that performs this conversion and a sample
- audio file it produced.
-\end_layout
-
-\end_inset
-
-.
- Our model replicates the synchronous behavior of Pure Data: for each tick
- it performs one full cascade of message propagation and one step of the
- entire DSP processing tree.
- For simplicity, it does not perform loop detection of messages.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-O código que você mostra é basicamente um "data description", não reflete
- a semântica.
- Não sei se vale a pena gastar tanto tempo descrevendo a figura 4, na verdade
- não sei nem se precisa ter a figura 4.
- Podia apenas dar uma descrição bem mais alto nível, dizendo que criamos
- uma estrutura de dados representando um grafo, com uma lista ordenada de
- nós e uma lista ordenada de arestas, etc.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Em compensação, a descrição da semântica do programa (o que ele faz) devia
- ser bastante ampliada.
- (Atualmente é quase que só as quatro linhas do 2o par.
- pág.
- 11.) [Figure 4 depicts...]
-\end_layout
-
-\end_inset
-
 Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -11260,7 +11304,7 @@ Through a combination of language and environment features, LabVIEW happens
 \end_layout
 
 \begin_layout Chapter
-Semantics for a dataflow engine
+Design alternatives critiqued
 \begin_inset CommandInset label
 LatexCommand label
 name "chap:A-Dataflow-Engine"
@@ -11268,6 +11312,10 @@ name "chap:A-Dataflow-Engine"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+TABELA
 \end_layout
 
 \begin_layout Standard
@@ -11456,6 +11504,50 @@ TODO: glitch
 
 \begin_layout Section
 Procedural abstractions
+\end_layout
+
+\begin_layout Standard
+The ability to abstract away subprograms is a commonplace feature in modern
+ programming languages.
+ In the dataflow model, a procedural abstraction means replacing a subgraph
+ with a node that represents it.
+ In graphical languages, this feature becomes especially necessary to tame
+ the visual clutter of the graph representation.
+\end_layout
+
+\begin_layout Standard
+In end-user programming languages, and especially visual ones, abstractions
+ present semantic complications that are usually missing in languages for
+ programming professionals.
+ When copying a node representing an abstracted subgraph for reuse, end-users
+ have different intuitions whether these two nodes are references to the
+ same subgraph or if they are two separate copies, that can be modified
+ without affecting the other one.
+ Translating to the world of textual languages, this is the question whether
+ an abstraction behaves as a newly-declarated function used in two places,
+ or if it is merely a visual (syntactic) abbreviation, akin to those achieved
+ by code-folding text editors.
+\end_layout
+
+\begin_layout Standard
+Moreover, when end-users perceive an abstraction as a single subgraph referenced
+ in two different places, then there is the question if they perceive the
+ subgraph as reentrant: in other words, whether they see the two invocations
+ of the subgraph as fully independent executions (that is, like usual function
+ calls where each invocation has its own activation record), or if they
+ see the shared subgraph as a single entity in memory.
+ In case of stateful nodes, this is especially relevant, because that determines
+ if multiple invocations of the abstraction in the main graph affect each
+ other or not (this is equivalent to seeing all local variables in a C function
+ as being 
+\family typewriter
+static
+\family default
+ or not).
+\end_layout
+
+\begin_layout Standard
+TODO fechar a seção
 \end_layout
 
 \begin_layout Chapter
