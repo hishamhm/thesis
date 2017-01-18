@@ -1,0 +1,89 @@
+
+digraph G {
+   rankdir=LR;
+
+   subgraph cluster_B2 {
+      label=B2; labeljust=l;
+
+      k10 [label="10"];
+      B2 [shape=doublecircle];
+
+      k10 -> B2;
+   }
+
+   subgraph cluster_A1 {
+      label=A1;
+      shape=box;
+
+      A1 [shape=doublecircle];
+
+      B2 -> A1;
+
+   }
+   
+   subgraph cluster_A2 {
+      label=A2;
+
+      k9 [label="9"];
+      A2 [shape=doublecircle];
+
+      k9 -> A2;
+   }
+
+   subgraph cluster_B1 {
+      label=B1; labeljust=l;
+
+      k5 [label="5"];
+
+      plus [label=<
+         <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr>
+               <td port="in1"></td>
+               <td port="out" rowspan="2">+</td>
+            </tr>
+            <tr>
+               <td port="in2"></td>
+            </tr>
+         </table>
+      >,margin=0,shape=none];
+
+      lt [label=<
+         <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr>
+               <td port="in1"></td>
+               <td port="out" rowspan="2">&lt;</td>
+            </tr>
+            <tr>
+               <td port="in2"></td>
+            </tr>
+         </table>
+      >,margin=0,shape=none];
+
+      B1 [shape=doublecircle];
+
+      IF [label=<
+         <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr>
+               <td port="test">test</td>
+               <td port="out" rowspan="3">IF</td>
+            </tr>
+            <tr>
+            <td port="then">then</td>
+            </tr>
+            <tr>
+               <td port="else">else</td>
+            </tr>
+         </table>
+      >,margin=0,shape=none];
+
+      plus:out -> B1;
+      B2 -> plus:in2;
+      IF:out -> plus:in1;
+      k5 -> lt:in1;
+      A1 -> lt:in2;
+      lt:out -> IF:test;
+      A2 -> IF:then;
+      B1 -> IF:else;
+   }
+      
+}
