@@ -3683,6 +3683,23 @@ ordered
  on ordered representations of both edges and vertices.
 \end_layout
 
+\begin_layout Section
+Demonstration
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO explain we have something that actually plays music
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Case study: spreadsheets
 \begin_inset CommandInset label
@@ -8291,6 +8308,23 @@ more general
 
 \end_layout
 
+\begin_layout Section
+Demonstration
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO explain that our code draws the grid with formulas and values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Case study: LabVIEW
 \begin_inset CommandInset label
@@ -9093,6 +9127,23 @@ TODO:
 \end_inset
 
  XNodes and recursion
+\end_layout
+
+\begin_layout Section
+Demonstration
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO explain that we produce an animation of the graph
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
