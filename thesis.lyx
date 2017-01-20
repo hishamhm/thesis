@@ -2042,10 +2042,9 @@ key "Hils1992DFVPLSurvey"
 \end_layout
 
 \begin_layout Standard
-In this chapter, we will give a panoramic view of dataflow UI-level languages.
- We will discuss a number of alternatives in dataflow language design, and
- then present a number of examples of end-user applications featuring dataflow
- programming.
+In this chapter, we will discuss a number of alternatives in dataflow language
+ design, which will inform our presentation of dataflow UI-level languages
+ in the following chapters.
 \end_layout
 
 \begin_layout Section
@@ -3139,6 +3138,13 @@ run mode
 
 \begin_layout Subsection
 Node triggering
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Node-triggering"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3429,11 +3435,24 @@ Em compensação, a descrição da semântica do programa (o que ele faz) devia
 
 \end_layout
 
+\begin_layout Section
+Interpreter
+\end_layout
+
+\begin_layout Standard
+We implemented an interpreter in Haskell that models the core semantics
+ of Pure Data.
+\end_layout
+
+\begin_layout Subsection
+Representation of programs
+\end_layout
+
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout LyX-Code
 
@@ -3666,13 +3685,20 @@ PdPatch
  data type in our model, which contains the DSP buffer size, a sequence
  of nodes, a sequence of connections between nodes, and the pre-computed
  topological sort of audio connections.
+ The textual sub-language of Pure Data is represented as a list of tokens.
 \end_layout
 
 \begin_layout Standard
-Note that, in the case of the pitfall scenario we mentioned above, where
- two visually identical graphs could have different semantics, these graphs
- would not have identical representations in our model: a patch is represented
- as an 
+Note that in the case of the pitfall scenario we mentioned in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Node-triggering"
+
+\end_inset
+
+, where two visually identical graphs could have different semantics, these
+ graphs would not have identical representations in our model: a patch is
+ represented as an 
 \emph on
 ordered
 \emph default
@@ -3681,6 +3707,24 @@ ordered
  semantics in Pure Data: the application displays programs as a graph (a
  set of edges and a set of vertices) but its deterministic semantics depends
  on ordered representations of both edges and vertices.
+ Inspecting the internal text-file representation of 
+\family typewriter
+.pd
+\family default
+ files, we see the same approach is taken: edges and vertices are ordered
+ and preserved across loads and saves.
+\end_layout
+
+\begin_layout Subsection
+Representation of state
+\end_layout
+
+\begin_layout Subsection
+Evaluation model
+\end_layout
+
+\begin_layout Subsection
+Language constructs
 \end_layout
 
 \begin_layout Section
@@ -5433,7 +5477,7 @@ reference "tab:TYPE-function"
 \end_layout
 
 \begin_layout Section
-Evaluation
+Evaluation model
 \end_layout
 
 \begin_layout Standard
@@ -9834,7 +9878,16 @@ name "chap:A-Dataflow-Engine"
 \end_layout
 
 \begin_layout Standard
-TABELA
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO rewrite
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -9869,7 +9922,7 @@ key "LabVIEWgettingstarted"
 \begin_inset Float table
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Box Frameless
