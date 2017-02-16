@@ -7,6 +7,10 @@
 
 \def\dstart{\hbox to \hsize{\vrule depth 4pt\hrulefill\vrule depth 4pt}}
 \def\dend{\hbox to \hsize{\vrule height 4pt\hrulefill\vrule height 4pt}}
+
+\input{PdInterpreter_preamble.tex}
+\input{XlInterpreter_preamble.tex}
+\input{LvInterpreter_preamble.tex}
 \end_preamble
 \options hyphens
 \use_default_options true
@@ -409,7 +413,7 @@ Abstract
 End-user programming refers to programming performed by end-users who are
  not professionals in software development but are specialists in other
  domains.
- Scripting is a way to add programmability to applications as an advanced,
+ Scripting is one way to add programmability to applications as an advanced,
  peripheral feature.
  Another alternative is to make an end-user language central to the application'
 s UI, as is the case with spreadsheet formulas: programming becomes indistinguis
@@ -422,15 +426,19 @@ hable from using the application proper.
  domain-specific UIs on top of reusable core semantics, much like scripting
  is now done presenting domain-specific abstractions of top of reusable
  scripting languages.
+ For this, however, an understanding of the underlying programming model
+ is necessary.
  In this work, we model the semantics of existing end-user programming languages
  of different domains, such as spreadsheets and multimedia, aiming to better
  understand their commonalities and shortcomings.
- Based on this understanding, our goal is to propose a semantics for a reusable
- dataflow engine, on top of which different end-user programmable environments
- can be devised.
- Our work is in the context of dataflow languages, a paradigm representative
+ Our focus is on the dataflow paradigm, since this paradigm is representative
  of a number of applications where end-user programmability takes center
  stage.
+ Based on this understanding, our goal is to provide a better understanding
+ of dataflow semantics in the context of end-user programming and propose
+ guidelines for the development of dataflow languages for end-user programmable
+ applications.
+ 
 \end_layout
 
 \begin_layout Chapter
@@ -3436,295 +3444,23 @@ Em compensação, a descrição da semântica do programa (o que ele faz) devia
 \end_layout
 
 \begin_layout Section
-Interpreter
+An interpreter modeling the semantics of Pure Data
 \end_layout
 
 \begin_layout Standard
-We implemented an interpreter in Haskell that models the core semantics
- of Pure Data.
-\end_layout
-
-\begin_layout Subsection
-Representation of programs
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
+\begin_inset ERT
 status open
 
-\begin_layout LyX-Code
-
-\size scriptsize
- 1  PdPatch 10 (Seq.fromList [
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
- 2   PdAtomBox [PdFlt 0] [PdCtlIn True "bang"] [PdCtlOut "float"],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
- 3   PdObj     [PdSymbol "osc~", PdFlt gsh]
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
- 4               [PdCtlIn True "float", PdCtlIn True "float"] [PdSgnOut],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
- 5   PdMsgBox  [PdCommand PdToOut [PdTAtom (PdFlt 0.5), PdTAtom (PdFlt 1000)]]
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
- 6               [PdCtlIn True "bang"] [PdCtlOut "list"],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
- 7   PdMsgBox  [PdCommand PdToOut [PdTAtom (PdFlt 0), PdTAtom (PdFlt 100)]]
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
- 8               [PdCtlIn True "bang"] [PdCtlOut "list"],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
- 9   PdObj     [PdSymbol "line~"]
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-10               [PdCtlIn True "list", PdCtlIn False "float"] [PdSgnOut],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-11   PdObj     [PdSymbol "*~"] [PdSgnIn 0, PdSgnIn 0] [PdSgnOut],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-12   PdObj     [PdSymbol "dac~"] [PdSgnIn 0] [],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-13   PdObj     [PdSymbol "r", PdSymbol "metroToggle"] [] [PdCtlOut "bang"],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-14   PdObj     [PdSymbol "metro", PdFlt 500] [PdCtlIn True "bang"] [PdCtlOut
- "bang"],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-15   PdObj     [PdSymbol "tabwrite~", PdSymbol "array99"] [PdCtlIn True
- "signal"] [],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-16   PdGObj    [PdSymbol "array99"] [] [],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-17   PdMsgBox  [PdCommand (PdReceiver "metroToggle") [PdTAtom (PdFlt 1.0)]]
- [] [],
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-18   PdMsgBox  [PdCommand (PdReceiver "metroToggle") [PdTAtom (PdFlt 0.0)]]
- [] []
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-19 ]) (Seq.fromList [
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-20   PdConnection (0, 0) (1, 0), -- 0 -> osc~
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-21   PdConnection (1, 0) (5, 0), -- osc~ -> *~
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-22   PdConnection (1, 0) (9, 0), -- osc~ -> tabwrite~
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-23   PdConnection (7, 0) (8, 0), -- r -> metro
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-24   PdConnection (8, 0) (9, 0), -- metro -> tabwrite~
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-25   PdConnection (2, 0) (4, 0), -- 0.1 100 -> line~
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-26   PdConnection (3, 0) (4, 0), -- 0 100 -> line~
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-27   PdConnection (4, 0) (5, 1), -- line~ -> *~
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-28   PdConnection (5, 0) (6, 0)  -- *~ -> dac~
-\end_layout
-
-\begin_layout LyX-Code
-
-\size scriptsize
-29 ]) [1, 4, 5, 9, 6] -- topological sort of audio connections
-\end_layout
-
 \begin_layout Plain Layout
-\begin_inset Caption Standard
 
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:puredata-hs"
 
-\end_inset
-
-Haskell representation of the graph depicted in Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:puredata"
-
-\end_inset
-
-.
+\backslash
+input{PdInterpreter_text.tex}
 \end_layout
 
 \end_inset
 
 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:puredata-hs"
-
-\end_inset
-
- depicts the Haskell representation of the patch from Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:puredata"
-
-\end_inset
-
-.
- A Pure Data program is represented with the 
-\family typewriter
-PdPatch
-\family default
- data type in our model, which contains the DSP buffer size, a sequence
- of nodes, a sequence of connections between nodes, and the pre-computed
- topological sort of audio connections.
- The textual sub-language of Pure Data is represented as a list of tokens.
-\end_layout
-
-\begin_layout Standard
-Note that in the case of the pitfall scenario we mentioned in Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Node-triggering"
-
-\end_inset
-
-, where two visually identical graphs could have different semantics, these
- graphs would not have identical representations in our model: a patch is
- represented as an 
-\emph on
-ordered
-\emph default
- sequence of connections.
- Our model, therefore, makes evident a central mismatch between syntax and
- semantics in Pure Data: the application displays programs as a graph (a
- set of edges and a set of vertices) but its deterministic semantics depends
- on ordered representations of both edges and vertices.
- Inspecting the internal text-file representation of 
-\family typewriter
-.pd
-\family default
- files, we see the same approach is taken: edges and vertices are ordered
- and preserved across loads and saves.
-\end_layout
-
-\begin_layout Subsection
-Representation of state
-\end_layout
-
-\begin_layout Subsection
-Evaluation model
-\end_layout
-
-\begin_layout Subsection
-Language constructs
 \end_layout
 
 \begin_layout Section
@@ -8189,10 +7925,14 @@ Incompatibilities handling empty array literals
 \end_layout
 
 \begin_layout Section
-Interpreters modeling spreadsheet semantics
+An interpreter modeling spreadsheet semantics
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 In the same spirit of our modeling of Pure Data, we produced an executable
  model of the core semantics of spreadsheets, implemented in Haskell 
 \begin_inset Foot
@@ -8218,7 +7958,7 @@ https://github.com/hishamhm/spreadsheet
 .
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
@@ -8386,7 +8126,7 @@ Data types used in all four spreadsheet interpreters
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The approach was to model not only the initial state of a spreadsheet (producing
  the values of cells by recursively computing their formulas), but its 
 \emph on
@@ -8400,7 +8140,7 @@ use
 run :: XlWorksheet -> [XlEvent] -> XlState
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 that takes as inputs an initial state and a list of events, and outputs
  the resulting state of the environment.
  The initial state is an empty spreadsheet.
@@ -8488,7 +8228,7 @@ XlRel
  of formulas and their grid representation.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 We produced a series of incremental models of spreadsheet evaluation, ranging
  from naive models to more precise ones:
 \end_layout
@@ -8511,7 +8251,7 @@ Interpreter 2 extended with a form of array evaluation
 Interpreter 3 extended with implicit iteration in array formulas
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float figure
 placement t
 wide false
@@ -8751,7 +8491,7 @@ Evaluation loop of Interpreter 1
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Interpreter 1 is similar to the semantics commonly presented in works from
  the literature that model spreadsheets 
 \begin_inset CommandInset citation
@@ -8789,7 +8529,7 @@ reference "fig:Xl1-Evaluation-loop"
  which contains the updated value of the evaluated cell (lines 21-24).
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Since each event represents a change of cell contents made by the user,
  note that the main iteration through the event list (line 3) causes a recalcula
 tion of the dependency graph et each new event.
@@ -8801,7 +8541,7 @@ tion of the dependency graph et each new event.
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float figure
 placement t
 wide false
@@ -9006,7 +8746,7 @@ Evaluation loop of Interpreter 2
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -9064,7 +8804,7 @@ evalFormula
  recurses, to detect evaluation loops.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 This model recalculates the entire spreadsheet on each edit.
  This is not a realistic representation of what a spreadsheet application
  would do, performance-wise, but since all formulas in our model are pure,
@@ -9103,7 +8843,7 @@ TODO Verify that it's the same in Excel.
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Interpreter 3 is our first approach at implementing array evaluation.
  We extend the previous model by adding a second cell type, 
 \family typewriter
@@ -9142,7 +8882,7 @@ reference "fig:Xl-Data-types"
 ).
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -9155,7 +8895,7 @@ TODO: Further specify the evaluation rules, based on the model.
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -9169,7 +8909,7 @@ All examples in the OASIS specification pass in Interpreter 3; examples
  in the ISO specification fail, require Interpreter 4.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -9182,13 +8922,13 @@ TODO: Explain how model 4 is different from model 3
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 While implementing the third and fourth interpreters, we identified that
  the semantics of array evaluation are different in Excel and LibreOffice.
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -9201,7 +8941,7 @@ TODO:
 Weirdness in Excel specification (both modes produce same result)
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -9214,7 +8954,7 @@ TODO: Note Excel examples that fail in LibreOffice
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -9227,7 +8967,7 @@ TODO: Subtleties in the semantics: evaluation of ranges by intersection
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -9250,16 +8990,20 @@ more general
 
 \end_layout
 
-\begin_layout Section
-Demonstration
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset ERT
 status open
 
 \begin_layout Plain Layout
-TODO explain that our code draws the grid with formulas and values
+
+
+\backslash
+input{XlInterpreter_text.tex}
 \end_layout
 
 \end_inset
@@ -10069,6 +9813,26 @@ TODO:
 \end_inset
 
  XNodes and recursion
+\end_layout
+
+\begin_layout Section
+An interpreter modeling the semantics of LabVIEW
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{LvInterpreter_text.tex}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

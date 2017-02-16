@@ -1,0 +1,9 @@
+[submodule "puredata"]
+	path = puredata
+	url = https://github.com/hishamhm/puredata
+[submodule "spreadsheet"]
+	path = spreadsheet
+	url = https://github.com/hishamhm/spreadsheet
+[submodule "lv"]
+	path = lv
+	url = https://github.com/hishamhm/lv
