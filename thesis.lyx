@@ -42,7 +42,7 @@
 \pdf_bookmarksopen false
 \pdf_bookmarksopenlevel 1
 \pdf_breaklinks true
-\pdf_pdfborder false
+\pdf_pdfborder true
 \pdf_colorlinks false
 \pdf_backref false
 \pdf_pdfusetitle true
@@ -2603,7 +2603,7 @@ key "PuckettePd"
 
 \end_inset
 
- (abbreviated as Pd) is a graphical language originally designed for music
+ (also known as Pd) is a graphical language originally designed for music
  and later expanded for multimedia in general via extension packages.
  It is widely used in the computer music community 
 \begin_inset CommandInset citation
@@ -2636,27 +2636,107 @@ https://cycling74.com/products/max/
 , created by the same author.
 \end_layout
 
+\begin_layout Section
+The language
+\end_layout
+
+\begin_layout Subsection
+Nodes and values
+\end_layout
+
 \begin_layout Standard
 In Pure Data, a program, called a 
-\begin_inset Quotes eld
-\end_inset
-
+\emph on
 patch
-\begin_inset Quotes erd
-\end_inset
-
- in Pd jargon 
+\emph default
+ in Pd jargon
 \begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-In this section, terms in Pd jargon are presented in quotes.
+In this section, terms in Pd jargon are presented in italics.
 \end_layout
 
 \end_inset
 
 , is represented as a graph of nodes (operations) and edges (the flow of
  data between them).
+\end_layout
+
+\begin_layout Standard
+Data flowing between nodes may be either discrete messages (numbers, strings,
+ or lists of these base types) or audio data.
+ Nodes in Pure Data have 
+\emph on
+creation arguments
+\emph default
+, input ports (
+\emph on
+inlets
+\emph default
+) and output ports (
+\emph on
+outlets
+\emph default
+).
+ The creation arguments are the initial contents of nodes, given by the
+ programmer via a simple textual language.
+ A node is of one these types:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+atom box
+\emph default
+ - represents a value which can be edited by the user while in 
+\emph on
+run mode
+\emph default
+; editing the value (typing a new number or via the mouse scroll wheel)
+ sends the updated value through its output port;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+message box
+\emph default
+ - can be clicked by the user while in run mode, producing one or more messages;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+graphical objects
+\emph default
+ - receive data and represent it visually, for example, as a plot;
+\end_layout
+
+\begin_layout Itemize
+plain 
+\emph on
+objects
+\emph default
+ - represent Pd functions.
+ There are two kinds of Pd functions: those that operate on discrete messages
+ only, and those that operate on audio streams (denoted with a 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+~
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ suffix in their names); accordingly, inlets and outlets are also identified
+ as handling messages, audio or both.
+ An object implementing an audio-processing function may have both message
+ and audio inlets and outlets.
+ A non-audio object may only send and receive messages.
 \end_layout
 
 \begin_layout Standard
@@ -2759,7 +2839,17 @@ line~
 \begin_inset Quotes erd
 \end_inset
 
-) prior to be sent to the DSP output (
+) prior to be sent to the DSP
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Digital Signal Processing
+\end_layout
+
+\end_inset
+
+ output (
 \begin_inset Quotes eld
 \end_inset
 
@@ -2893,164 +2983,34 @@ r metroToggle
 \begin_inset Quotes erd
 \end_inset
 
-).
-\end_layout
-
-\begin_layout Section
-The language
-\end_layout
-
-\begin_layout Subsection
-Nodes and values
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
+)
+\begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-semântica do PD (o texto está lá, espalhado)
+change r to receive
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-Data flowing between nodes may be either discrete messages (numbers, strings,
- or lists of these base types) or audio data.
- Nodes in Pure Data have 
-\begin_inset Quotes eld
-\end_inset
-
-creation arguments
-\begin_inset Quotes erd
-\end_inset
-
-, input ports (
-\begin_inset Quotes eld
-\end_inset
-
-inlets
-\begin_inset Quotes erd
-\end_inset
-
-) and output ports (
-\begin_inset Quotes eld
-\end_inset
-
-outlets
-\begin_inset Quotes erd
-\end_inset
-
-).
- The 
-\begin_inset Quotes eld
-\end_inset
-
-creation arguments
-\begin_inset Quotes erd
-\end_inset
-
- are the initial contents of nodes, given by the programmer during 
-\begin_inset Quotes eld
-\end_inset
-
-edit mode
-\begin_inset Quotes erd
-\end_inset
-
- via a simple textual language.
- A node is of one these types:
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
-
-atom box
-\begin_inset Quotes erd
-\end_inset
-
- - represents a value which can be edited by the user while in 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
-; editing the value (typing a new number or via the mouse scroll wheel)
- sends the updated value through its output port;
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
-
-message box
-\begin_inset Quotes erd
-\end_inset
-
- - can be clicked by the user while in 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
-, producing one or more messages;
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
-
-graphical objects
-\begin_inset Quotes erd
-\end_inset
-
- - receive data and represent it visually, for example, as a plot;
-\end_layout
-
-\begin_layout Itemize
-plain 
-\begin_inset Quotes eld
-\end_inset
-
-objects
-\begin_inset Quotes erd
-\end_inset
-
- - represent Pd functions.
- There are two kinds of Pd functions: those that operate on discrete messages
- only, and those that operate on audio streams (denoted with a 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-~
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
- suffix in their names); accordingly, inlets and outlets are also identified
- as handling messages, audio or both.
- An object implementing an audio-processing function may have both message
- and audio inlets and outlets.
- A non-audio object may only send and receive messages.
+.
 \end_layout
 
 \begin_layout Subsection
 Messages and the textual sub-language
 \end_layout
 
-\begin_layout Section
-Semantics
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO write
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -3059,42 +3019,19 @@ Graph evaluation
 
 \begin_layout Standard
 Pure Data has two modes of execution, an 
-\begin_inset Quotes eld
-\end_inset
-
+\emph on
 edit mode
-\begin_inset Quotes erd
-\end_inset
-
+\emph default
  in which the graph structure can be edited, and a 
-\begin_inset Quotes eld
-\end_inset
-
+\emph on
 run mode
-\begin_inset Quotes erd
-\end_inset
-
+\emph default
  in which input values can be produced by interacting with the graph.
- The DSP (Digital Signal Processing) engine can be toggled on or off independent
-ly of the mode of execution.
+ The DSP engine can be toggled on or off independently of the mode of execution.
  Most importantly, the dataflow program is running at all times: the user
- can create nodes in the graph, switch to 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
-, trigger a loop that produces audio waves, return to 
-\begin_inset Quotes eld
-\end_inset
-
-edit mode
-\begin_inset Quotes erd
-\end_inset
-
- and modify the graph while the loop is still running.
+ can create nodes in the graph, switch to run mode, trigger a loop that
+ produces audio waves, return to edit mode and modify the graph while the
+ loop is still running.
 \end_layout
 
 \begin_layout Standard
@@ -3102,13 +3039,9 @@ Execution in Pure Data is synchronous.
  The tree of DSP nodes is processed periodically, updating their buffers
  and propagating audio data.
  A complete propagation of audio is called a 
-\begin_inset Quotes eld
-\end_inset
-
+\emph on
 DSP tick
-\begin_inset Quotes erd
-\end_inset
-
+\emph default
 , during which only audio nodes are processed.
  When an input or timing event happens, the entire cascade of messages produced
  is processed in sequence, before the next DSP tick 
@@ -3132,15 +3065,7 @@ It is possible to wire nodes in the Pd interface so that cycles in the graph
 g chain are detected and propagation is halted.
  When cycles happen in the message flow, messages may also produce infinite
  loops, but being dynamic they cannot be detected a priori: those are caught
- during 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
-, reporting a stack overflow.
+ during run mode, reporting a stack overflow.
  
 \end_layout
 
@@ -3159,35 +3084,16 @@ name "sub:Node-triggering"
 To avoid triggering functions with multiple arguments many times, as the
  input arguments arrive through different paths of the graph, Pure Data
  has the notion of 
-\begin_inset Quotes eld
-\end_inset
-
+\emph on
 hot
-\begin_inset Quotes erd
-\end_inset
-
+\emph default
  and 
-\begin_inset Quotes eld
-\end_inset
-
+\emph on
 cold
-\begin_inset Quotes erd
-\end_inset
-
+\emph default
  input ports.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-hot and cold, a bit like data execute pins in VEE
-\end_layout
-
-\end_inset
-
-Only the hot input port triggers recalculation; data arriving to cold input
- ports stays buffered there and is only consumed when a hot input port is
- triggered.
+ Only the hot inlet triggers the node; data arriving to a cold inlet stays
+ buffered there and is only consumed when a hot input port is triggered.
  This allows, for example, to create a 
 \begin_inset Quotes eld
 \end_inset
@@ -3213,7 +3119,17 @@ float
 \begin_inset Quotes erd
 \end_inset
 
-) and sending the result back via a secondary, cold inlet.
+) and sending the result back via a secondary, cold inlet
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+insert figure
+\end_layout
+
+\end_inset
+
+.
  This will 
 \emph on
 not
@@ -3237,6 +3153,16 @@ key "PuckettePd"
 \end_inset
 
 .
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+insert figure
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -3250,44 +3176,24 @@ The system of messaging via named receivers allows the program to send data
  an implicit edge in the dataflow graph.
  Since the textual language of messages supports variable arguments fed
  via input ports, receiver destinations can change during execution: this
- makes the dataflow graph, in effect, dynamic
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-FIXME: dynamic in which sense
-\end_layout
-
-\end_inset
-
-.
- This, however, is limited to discrete messages.
- The flow of audio data cannot be re-routed while in 
+ makes the dataflow graph, in effect, mutable at runtime.
+ This, however, is limited to discrete messages, and only the destination
+ of a message can be changed at runtime, and not the identifier a receiver
+ is 
 \begin_inset Quotes eld
 \end_inset
 
-run mode
+listening
 \begin_inset Quotes erd
 \end_inset
 
-, but disconnections can be simulated multiplying a signal by 0.
+ to.
+ The flow of audio data cannot be re-routed while in run mode, but disconnection
+s can be simulated multiplying a signal by 0.
 \end_layout
 
 \begin_layout Section
-An executable model
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-o que é modelado
-\end_layout
-
-\end_inset
-
-
+An interpreter modeling the semantics of Pure Data
 \end_layout
 
 \begin_layout Standard
@@ -3298,158 +3204,79 @@ key "PuckettePd,Zmolnig2014pd"
 
 \end_inset
 
- in Haskell 
-\begin_inset Foot
+ written in Haskell, which includes stateful nodes for multiple data types,
+ message and audio objects, identifier-based message passing and the intra-node
+ language for message objects.
+\end_layout
+
+\begin_layout Standard
+Our model implements a simulation of the run mode, in which the graph is
+ fixed and input events are fed into it.
+ It replicates the synchronous behavior of Pure Data, processing cascades
+ of message events and DSP ticks for propagating audio buffers.
+ Our model is precise enough so that the numeric values produced in audio
+ buffers can be converted to a sound file format and played back.
+\end_layout
+
+\begin_layout Standard
+This section was written in Literate Haskell 
+\begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Available at 
+cite
+\end_layout
+
+\end_inset
+
+, and is a description of the entire interpreter, including its complete
+ listings.
+ The text was written so that it should be understandable without a detailed
+ reading of the source code, but the sources are nevertheless included for
+ completeness and as supporting material for the interested reader.
+ The source code in 
+\family typewriter
+.lhs
+\family default
+ format (
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+LaTeX{}
+\end_layout
+
+\end_inset
+
+ with embedded Haskell) is also available at 
 \begin_inset Flex URL
 status open
 
 \begin_layout Plain Layout
 
-https://github.com/hishamhm/puredata
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-, which includes stateful nodes for multiple data types, message-based and
- stream-based connectors, identifier-based message passing (functioning
- in practice like dynamic message-based connectors) and an intra-node expression
- language for message objects.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-como é modelado, isto é, o que o modelo faz
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Our model implements a simulation of the 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
-, in which the graph is fixed and input events are fed into it.
- 
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-In our model, the DSP engine is always on, so the 
-\family typewriter
-pd dsp
-\family default
- command as seen in Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:puredata"
-
-\end_inset
-
- is not represented.
-\end_layout
-
-\end_inset
-
- The model implements this as a main function called 
-\family typewriter
-run
-\family default
- which receives a data structure representing the patch and a list of timestampe
-d input events.
- It produces a trace of the internal states of each node and the generated
- outputs at each time tick.
- Two lists of outputs are produced: textual data representing the output
- of the Pd console (which can be written to using the Pd function 
-\family typewriter
-print
-\family default
-), and numeric values representing audio data that would be sent to the
- sound card
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Our model is precise enough so that these numeric values can be actually
- converted to sound file format and played back.
- Our repository includes a script that performs this conversion and a sample
- audio file it produced.
+https://hisham.hm/thesis/
 \end_layout
 
 \end_inset
 
 .
- Our model replicates the synchronous behavior of Pure Data: for each tick
- it performs one full cascade of message propagation and one step of the
- entire DSP processing tree.
- For simplicity, it does not perform loop detection of messages.
-\end_layout
-
-\begin_layout Subsection
-Model semantics
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-O código que você mostra é basicamente um "data description", não reflete
- a semântica.
- Não sei se vale a pena gastar tanto tempo descrevendo a figura 4, na verdade
- não sei nem se precisa ter a figura 4.
- Podia apenas dar uma descrição bem mais alto nível, dizendo que criamos
- uma estrutura de dados representando um grafo, com uma lista ordenada de
- nós e uma lista ordenada de arestas, etc.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-Em compensação, a descrição da semântica do programa (o que ele faz) devia
- ser bastante ampliada.
- (Atualmente é quase que só as quatro linhas do 2o par.
- pág.
- 11.) [Figure 4 depicts...]
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-An interpreter modeling the semantics of Pure Data
 \end_layout
 
 \begin_layout Standard
 \begin_inset ERT
 status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+setlength{
+\backslash
+mathindent}{0pt}
+\end_layout
 
 \begin_layout Plain Layout
 
@@ -3463,7 +3290,7 @@ input{PdInterpreter_text.tex}
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Demonstration
 \end_layout
 
@@ -5568,83 +5395,12 @@ Array formulas
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO First, what are array formulas
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Array formulas are a powerful feature: they implement a separate evaluation
- model for formulas, and have been used to demonstrate that spreadsheets
- can model relational algebra 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Tyszkiewicz:2010:SRD:1807167.1807191"
-
-\end_inset
-
-.
- Still, they are usually disregarded when discussing the semantics of spreadshee
-ts, and do not feature on any of the works cited above.
- The Excel documentation is vague when explaining their evaluation logic,
- resorting to examples 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Microsoft2016ArrayFormulas"
-
-\end_inset
-
-.
- In fact, in the standardization process of spreadsheet file formats, the
- complete specification of formula evaluation was a contention issue: the
- draft specification of the OASIS OpenFormula did not specify formula evaluation
-, which led a Microsoft Office team member to raise issues about it 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Jones2005formulas"
-
-\end_inset
-
-.
- However, Microsoft's own specification did not fully specify formula evaluation
- at the time either , and even the following draft of OpenFormula did not
- specify array formulas 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "OASIS2006OpenFormulaDraft"
-
-\end_inset
-
-.
- Eventually, specification of array formulas were included in both OASIS
- ODF 1.2 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "OASIS2011ODFFormula"
-
-\end_inset
-
- and Microsoft Office Open XML 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "ISO29500_OfficeOpenXML"
-
-\end_inset
-
-, but even then the specification was informal and mostly driven by examples,
- in both documents.
-\end_layout
-
-\begin_layout Standard
-An array formula is a formula that is marked to be evaluated in a special
- array-oriented evaluation model.
+An 
+\emph on
+array formula
+\emph default
+ is a formula that is marked to be evaluated in a special array-oriented
+ evaluation model.
  In Excel and LibreOffice a formula is marked as an array formula by confirming
  its entry pressing Ctrl+Shift+Enter, and the UI displays the formula enclosed
  in brackets, as in 
@@ -6667,6 +6423,68 @@ INDIRECT({"A1","A2"})
  In the last row, we see that the spreadsheets also have inconsistencies
  in their evaluation order leading to observable differences in their results
  due to floating point calculations.
+\end_layout
+
+\begin_layout Standard
+Array formulas are a powerful feature: they implement a separate evaluation
+ model for formulas, and have been used to demonstrate that spreadsheets
+ can model relational algebra 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Tyszkiewicz:2010:SRD:1807167.1807191"
+
+\end_inset
+
+.
+ Still, they are usually disregarded when discussing the semantics of spreadshee
+ts, and do not feature on any of the works cited above.
+ The Excel documentation is vague when explaining their evaluation logic,
+ resorting to examples 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Microsoft2016ArrayFormulas"
+
+\end_inset
+
+.
+ In fact, in the standardization process of spreadsheet file formats, the
+ complete specification of formula evaluation was a contention issue: the
+ draft specification of the OASIS OpenFormula did not specify formula evaluation
+, which led a Microsoft Office team member to raise issues about it 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Jones2005formulas"
+
+\end_inset
+
+.
+ However, Microsoft's own specification did not fully specify formula evaluation
+ at the time either , and even the following draft of OpenFormula did not
+ specify array formulas 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "OASIS2006OpenFormulaDraft"
+
+\end_inset
+
+.
+ Eventually, specification of array formulas were included in both OASIS
+ ODF 1.2 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "OASIS2011ODFFormula"
+
+\end_inset
+
+ and Microsoft Office Open XML 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "ISO29500_OfficeOpenXML"
+
+\end_inset
+
+, but even then the specification was informal and mostly driven by examples,
+ in both documents.
 \end_layout
 
 \begin_layout Section
@@ -7929,6 +7747,43 @@ An interpreter modeling spreadsheet semantics
 \end_layout
 
 \begin_layout Standard
+This is an interpreter designed to model the core semantics of spreadsheets,
+ with a focus on the dataflow language at its core.
+ Our intention here is to illustrate the various design decisions that go
+ into specifying precise semantics for a spreadsheet containing a realistic
+ set of features, showcasing how complexity arises from what is usually
+ seen as a conceptually simple language.
+ We believe that this helps to explain the number of incompatibilities between
+ different implementations that we found and described in our work.
+\end_layout
+
+\begin_layout Standard
+We chose to model most closely the semantics of LibreOffice, which is the
+ spreadsheet for which the most detailed specification documents are available.
+\end_layout
+
+\begin_layout Standard
+As in the interpreter for Pure Data, this section was also written in Literate
+ Haskell, including the complete listings of the intepreter, and its source
+ code in 
+\family typewriter
+.lhs
+\family default
+ format is also available at 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://hisham.hm/thesis/
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status collapsed
 
@@ -9009,6 +8864,45 @@ input{XlInterpreter_text.tex}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Demonstration
+\end_layout
+
+\begin_layout Standard
+In Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "appendix:Spreadsheet"
+
+\end_inset
+
+ we present a demonstration of use of this interpreter, showcasing its features.
+ We also produced a series of tests that correspond to sections of the OpenDocum
+ent specification for the 
+\family typewriter
+.ods
+\family default
+ format 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "OASIS2011ODFFormula"
+
+\end_inset
+
+ and the ISO Open Office XML specification for the 
+\family typewriter
+.xlsx
+\family default
+ format 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "ISO29500_OfficeOpenXML"
+
+\end_inset
+
+, as well as our own additional tests that cover some unspecified behavior.
 \end_layout
 
 \begin_layout Chapter
@@ -10504,6 +10398,19 @@ status open
 \begin_layout Plain Layout
 other EUP apps also have this confusion, and terminology varies.
  Abstractions, etc (find examples)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+compare hot and cold inlets in Pure Data to data execute pins in VEE
 \end_layout
 
 \end_inset
@@ -13060,6 +12967,67 @@ reference "fig:Architectural-patterns"
 LatexCommand bibtex
 bibfiles "thesis"
 options "alpha"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+\start_of_appendix
+Demonstration of the interpreter modeling Pure Data
+\begin_inset CommandInset label
+LatexCommand label
+name "appendix:Pure-Data"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{PdInterpreter_demo.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Demonstration of the spreadsheet interpreter
+\begin_inset CommandInset label
+LatexCommand label
+name "appendix:Spreadsheet"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Bla
+\end_layout
+
+\begin_layout Chapter
+Demonstration of the interpreter modeling LabVIEW
+\begin_inset CommandInset label
+LatexCommand label
+name "appendix:LabVIEW"
 
 \end_inset
 
