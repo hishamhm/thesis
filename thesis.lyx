@@ -9142,6 +9142,9 @@ dynamic
  are predefinitions for particular cluster types.
  For example, a waveform is a cluster containing on array of data points,
  a numeric timestamp and a numeric interval value between data samples.
+ Error data flows as a cluster of three values: a boolean indicator an error
+ condition, a 32-bit integer with the error code, and a string containing
+ source information.
  Not all types can be visually distinguished in the interface.
  Apart from the especially predefined clusters like waveform and error,
  all user-defined cluster types look alike.
@@ -9784,6 +9787,19 @@ LabVIEW and Pure Data compared
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+both have context help windows
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 While both LabVIEW and Pure Data are both graphical dataflow languages that
  presents programs as graph diagrams connecting node objects, the LabVIEW
  environment is a lot more similar to that of a typical programming language
@@ -10094,7 +10110,15 @@ bundles
 \begin_inset Quotes erd
 \end_inset
 
-.
+ (akin to LabVIEW's 
+\begin_inset Quotes eld
+\end_inset
+
+clusters
+\begin_inset Quotes erd
+\end_inset
+
+).
  Memory storage in the style of shift registers represented as special wire
  types.
  While at first glance Core seems an extension of Primary, they are fundamentall
@@ -12499,6 +12523,15 @@ static
 
 \begin_layout Standard
 TODO fechar a seção
+\end_layout
+
+\begin_layout Section
+Referential transparency
+\end_layout
+
+\begin_layout Standard
+Purity of functions vs.
+ Undo
 \end_layout
 
 \begin_layout Chapter
