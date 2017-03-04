@@ -41,7 +41,7 @@ LvInterpreter_text.tex: lv/LvInterpreter.tex
 LvInterpreter_preamble.tex: lv/LvInterpreter.tex
 	./tex_split.sh PREAMBLE lv/LvInterpreter.tex > LvInterpreter_preamble.tex
 
-lv/LvInterpreter.tex: lv/LvInterpreter.lhs
+lv/LvInterpreter.tex: lv/LvInterpreter.in.lhs
 	cd lv && make LvInterpreter.tex
 
 #

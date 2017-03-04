@@ -9102,6 +9102,210 @@ It is possible to update control values from the block diagram using more
 \end_layout
 
 \begin_layout Subsection
+Execution modes
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:LabVIEW-execution-modes"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are two modes of execution, which can be launched, respectively, by
+ the first two icons in the toolbars depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:LabVIEW-windows"
+
+\end_inset
+
+.
+ In the LabVIEW UI they are simply called 
+\begin_inset Quotes eld
+\end_inset
+
+Run
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+Run continuously
+\begin_inset Quotes erd
+\end_inset
+
+.
+ We will therefore call these modes 
+\emph on
+single-shot
+\emph default
+ and 
+\emph on
+continuous
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+In single-shot mode, all controls and nodes that do not depend on other
+ objects are fired, and execution continue while there are values to be
+ propagated.
+ If all values propagate to the appropriate indicators, their values are
+ updated in the UI and the execution halts, bringing LabVIEW back to edit
+ mode.
+ However, if a diagram contains an infinite loop, for example, the program
+ will run forever.
+ Since controls are only fired at the beginning of execution, further inputs
+ entered by the user while a single-shot execution runs have no effect on
+ that execution.
+ Controls and indicators retain their last values.
+\end_layout
+
+\begin_layout Standard
+Continuous mode is equivalent to enclosing the entire program in an infinite
+ loop and firing controls on each iteration.
+ Each iteration of this continuous run is equivalent to one single-shot
+ execution: all controls are fired, and the graph evaluation essentially
+ restarts on each step, except that two kinds of objects, shift registers
+ and feedback nodes, also retain their values from iteration to iteration.
+ These two objects, which we will describe in detail in the next section,
+ are the only nodes that can represent cyclic connections in the graph.
+ In effect, single-shot execution is acyclic, and cycles can only propagate
+ values from one iteration of a graph (or subgraph) to the next.
+\end_layout
+
+\begin_layout Standard
+The fact that cycles only happen across iterations combined with the restriction
+ that only one wire can be connected to an input port means that at most
+ one value will arrive at an input port during an iteration.
+ This characterizes a static dataflow model, for which no buffers are necessary
+ in input ports.
+ This greatly simplifies scheduling and memory management: it is not possible
+ to produce a stack overflow through an execution cycle, or a buffer overflow
+ in nodes (for there are no buffers).
+ As we will see below, however, the presencel of aggregate data types brings
+ back concerns about memory management.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO controls take effect only when fired, so long-running graphs lead to
+ unresponsive applications.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Looping and cycles
+\end_layout
+
+\begin_layout Standard
+From the end-user's perspective, LabVIEW programs are graphs that can contain
+ cycles, but these are controlled via the use of explicit 
+\emph on
+feedback nodes
+\emph default
+ and structured looping constructs.
+\end_layout
+
+\begin_layout Standard
+The LabVIEW UI enforces that the only connections producing explicit cycles
+ in a graph are those connecting feedback nodes: wiring any two objects
+ in the graph producing a cycle automatically inserts a feedback node between
+ them.
+ This feedback node exists solely to store the value in between executions
+ of the graph.
+\end_layout
+
+\begin_layout Standard
+Structured looping constructs are available, mirroring those available in
+ traditional textual languages.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+for-loop
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+while-loop
+\begin_inset Quotes erd
+\end_inset
+
+ constructs act as their familiar equivalents (with the distinction that
+ the 
+\begin_inset Quotes eld
+\end_inset
+
+while
+\begin_inset Quotes erd
+\end_inset
+
+ structure always runs at least once, like a 
+\begin_inset Quotes eld
+\end_inset
+
+do-while
+\begin_inset Quotes erd
+\end_inset
+
+ construct).
+ In both cases, the looping construct appears in the UI as a frame inside
+ the graph.
+ This frame encloses a subgraph and controls its iteration.
+ The subgraph may produce one or more values that are sent out as the iteration
+ completes.
+\end_layout
+
+\begin_layout Standard
+Values may also be sent from one iteration of the loop to the next through
+ the use of 
+\emph on
+shift registers
+\emph default
+.
+ A shift register appears as a pair of small nodes at the edges of the loop
+ frame: one incoming connector at the right and one outgoing connector at
+ the left.
+ This is conceptually similar to how textual detaflow languages like Lucid
+ allow iteration, with 
+\family typewriter
+x
+\family default
+ and 
+\family typewriter
+\series bold
+next
+\series default
+ x
+\family default
+ holding distinct values.
+ The presence of a shift register denotes an implicit cycle in the graph.
+\end_layout
+
+\begin_layout Standard
+In short, feedback nodes are constructs for sending data through iterations
+ of the main graph when in continuous mode, and shift registers are constructs
+ for sending data through iterations of a loop subgraph.
+ It is notable that while functionally very similar, they have very different
+ representations in the UI.
+\end_layout
+
+\begin_layout Subsection
 Data types and wires
 \end_layout
 
@@ -9118,7 +9322,7 @@ clusters
 \end_layout
 
 \begin_layout Standard
-Controls, nodes and indicators are connected throw 
+Controls, nodes and indicators are connected through 
 \emph on
 wires
 \emph default
@@ -9131,21 +9335,25 @@ dynamic
 \begin_inset Quotes erd
 \end_inset
 
- wire which sees limited use as it demands special conversions, wires are
- generally statically typed: each wire has a static data type assigned to
- it.
+ wire which sees limited use in LabVIEW as it demands special conversions,
+ wires are in general statically typed: each wire has a data type assigned
+ to it.
  In the UI, the color, thickness and stripe pattern of the wire indicates
  its type: the color represents the base type (integer, floating point,
  array, cluster), the thickness represents data dimensions (scalar, single
  or multidimensional array) and additional styling such as stripe patterns
- are used for particular types, such as a waveform or error data, which
- are predefinitions for particular cluster types.
+ are used for particular types, such as waveforms and errors, which are
+ just predefinitions for particular cluster types.
  For example, a waveform is a cluster containing on array of data points,
  a numeric timestamp and a numeric interval value between data samples.
  Error data flows as a cluster of three values: a boolean indicator an error
  condition, a 32-bit integer with the error code, and a string containing
  source information.
- Not all types can be visually distinguished in the interface.
+ 
+\end_layout
+
+\begin_layout Standard
+Not all types can be visually distinguished in the interface.
  Apart from the especially predefined clusters like waveform and error,
  all user-defined cluster types look alike.
  For these wires, the contextual help window serves as a useful aid, describing
@@ -9175,87 +9383,6 @@ Some types support automatic coercions.
 nt input port.
  The resulting wire has integer type: coercion happens at the input edge
  of the wire.
-\end_layout
-
-\begin_layout Subsection
-Looping and cycles
-\end_layout
-
-\begin_layout Standard
-LabVIEW programs are directed graphs, and cycles are controlled via the
- use of explicit 
-\begin_inset Quotes eld
-\end_inset
-
-feedback nodes
-\begin_inset Quotes erd
-\end_inset
-
- and structured looping constructs.
- Program reuse can be achieved encapsulating sub-graphs into sub-VIs.
- LabVIEW supports running several VIs simultaneously, and it provides a
- form of global variables as a means to transfer data between them.
- 
-\end_layout
-
-\begin_layout Standard
-A 
-\begin_inset Quotes eld
-\end_inset
-
-for-loop
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-while-loop
-\begin_inset Quotes erd
-\end_inset
-
- construct appears in the UI as a frame inside the graph.
- This frame encloses a subgraph and controls its iteration.
- The subgraph may produce one or more values that are sent out as the iteration
- completes.
-\end_layout
-
-\begin_layout Standard
-Values may also be sent to the next iteration of the loop through the use
- of 
-\emph on
-shift registers
-\emph default
-.
- A shift register appears as a pair of small nodes at the edges of the loop
- frame: one incoming node at the right and one outgoing node at the left.
- This is conceptually similar to how textual detaflow languages like Lucid
- allow iteration, with 
-\family typewriter
-x
-\family default
- and 
-\family typewriter
-\series bold
-next
-\series default
- x
-\family default
- holding distinct values.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
-\end_layout
-
-\end_inset
-
- Recursion
 \end_layout
 
 \begin_layout Subsection
@@ -9709,6 +9836,21 @@ TODO:
 
 \end_inset
 
+Program reuse can be achieved encapsulating sub-graphs into sub-VIs.
+ LabVIEW supports running several VIs simultaneously, and it provides a
+ form of global variables as a means to transfer data between them.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: 
+\end_layout
+
+\end_inset
+
  XNodes and recursion
 \end_layout
 
@@ -9732,7 +9874,7 @@ input{LvInterpreter_text.tex}
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Demonstration
 \end_layout
 
@@ -12526,12 +12668,43 @@ TODO fechar a seção
 \end_layout
 
 \begin_layout Section
-Referential transparency
+Other issues
 \end_layout
 
-\begin_layout Standard
-Purity of functions vs.
+\begin_layout Description
+Referential
+\begin_inset space ~
+\end_inset
+
+transparency: Purity of functions vs.
  Undo
+\end_layout
+
+\begin_layout Description
+Ordering: Pure Data does not specify the order in which elements are triggered,
+ but as we saw in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Pure-Data"
+
+\end_inset
+
+, in some cases this order matters.
+ In practice, the implementation of Pure Data follows the order in which
+ objects are stored in the 
+\family typewriter
+.pd
+\family default
+ file, which matches the order in which elements were created.
+ Max/MSP, the commercial relative of Pure Data, does specify that the order
+ of message propagation follows that of the visual layout of a patch 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Gold2011MaxMSP"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Chapter
