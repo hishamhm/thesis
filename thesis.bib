@@ -1273,6 +1273,36 @@ To this end, this paper presents a graphical calculus called Uccello. Our key in
   Timestamp                = {2015-10-06}
 }
 
+@InProceedings{Foley-Bourgon:2016:EIC:2989225.2989235,
+  Title                    = {Efficiently Implementing the Copy Semantics of MATLAB's Arrays in JavaScript},
+  Author                   = {Foley-Bourgon, Vincent and Hendren, Laurie},
+  Booktitle                = {Proceedings of the 12th Symposium on Dynamic Languages},
+  Year                     = {2016},
+
+  Address                  = {New York, NY, USA},
+  Pages                    = {72--83},
+  Publisher                = {ACM},
+  Series                   = {DLS 2016},
+
+  __markedentry            = {[hisham:1]},
+  Abstract                 = {Compiling MATLAB---a dynamic, array-based language---to JavaScript is an attractive proposal: the output code can be deployed on a platform used by billions and can leverage the countless hours that have gone into making JavaScript JIT engines fast. But before that can happen, the original MATLAB code must be properly translated, making sure to bridge the semantic gaps of the two languages.
+
+An important area where MATLAB and JavaScript differ is in their handling of arrays: for example, in MATLAB, arrays are one-indexed and writing at an index beyond the end of an array extends it; in JavaScript, typed arrays are zero-indexed and writing out of bounds is a no-op. A MATLAB-to-JavaScript compiler must address these mismatches. Another salient and pervasive difference between the two languages is the assignment of arrays to variables: in MATLAB, this operation has value semantics, while in JavaScript is has reference semantics.
+
+In this paper, we present MatJuice --- a source-to-source, ahead-of-time compiler back-end for MATLAB --- and how it deals efficiently with this last issue. We present an intra-procedural data-flow analysis to track where each array variable may point to and which variables are possibly aliased. We also present the associated copy insertion transformation that uses the points-to information to insert explicit copies when necessary. The resulting JavaScript program respects the MATLAB value semantics and we show that it performs fewer run-time copies than some alternative approaches.},
+  Acmid                    = {2989235},
+  Doi                      = {10.1145/2989225.2989235},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/Efficiently Implementing the Copy Semantics of MATLABs Arrays in JavaScript.pdf:PDF},
+  ISBN                     = {978-1-4503-4445-6},
+  Keywords                 = {JavaScript, MATLAB, dataflow analysis, dynamic language semantics, program transformation},
+  Location                 = {Amsterdam, Netherlands},
+  Numpages                 = {12},
+  Owner                    = {hisham},
+  Review                   = {Practical example of work designed to avoid excessive array copying. Uses dataflow analysis.},
+  Timestamp                = {2017-03-09},
+  Url                      = {http://doi.acm.org/10.1145/2989225.2989235}
+}
+
 @InProceedings{Fonner2015comonads,
   Title                    = {{Functional Pearl: Getting a Quick Fix on Comonads}},
   Author                   = {Fonner, Kenneth},
@@ -1292,6 +1322,31 @@ From these elements, we construct a small embedded domain-specific language to e
   Review                   = {defines operations on comonads to allow sharing of computations, and builds a spreadsheet-like evaluation DSL on top of it. Cites The Essence of Dataflow Programming, which also deals with comonads for representing dataflow.},
   Timestamp                = {2015-10-05},
   Url                      = {https://github.com/kwf/GQFC}
+}
+
+@InProceedings{Foust:2015:GRP:2814204.2814207,
+  Title                    = {Generating Reactive Programs for Graphical User Interfaces from Multi-way Dataflow Constraint Systems},
+  Author                   = {Foust, Gabriel and J\"{a}rvi, Jaakko and Parent, Sean},
+  Booktitle                = {Proceedings of the 2015 ACM SIGPLAN International Conference on Generative Programming: Concepts and Experiences},
+  Year                     = {2015},
+
+  Address                  = {New York, NY, USA},
+  Pages                    = {121--130},
+  Publisher                = {ACM},
+  Series                   = {GPCE 2015},
+
+  __markedentry            = {[hisham:1]},
+  Abstract                 = {For a GUI to remain responsive, it must be able to schedule lengthy tasks to be executed asynchronously. In the traditional approach to GUI implementation--writing functions to handle individual user events--asynchronous programming easily leads to defects. Ensuring that all data dependencies are respected is difficult when new events arrive while prior events are still being handled. Reactive programming techniques, gaining popularity in GUI programming, help since they make data dependencies explicit and enforce them automatically as variables' values change. However, data dependencies in GUIs usually change along with its state. Reactive programming must therefore describe a GUI as a collection of many reactive programs, whose interaction the programmer must explicitly coordinate. This paper presents a declarative approach for GUI programming that relieves the programmer from coordinating asynchronous computations. The approach is based on our prior work on "property models", where GUI state is maintained by a dataflow constraint system. A property model responds to user events by atomically constructing new data dependencies and scheduling asynchronous computations to enforce those dependencies. In essence, a property model dynamically generates a reactive program, adding to it as new events occur. The approach gives the following guarantee: the same sequence of events produces the same results, regardless of the timing of those events.},
+  Acmid                    = {2814207},
+  Doi                      = {10.1145/2814204.2814207},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/Generating Reactive Programs for Graphical User Interfaces from Multi-way Dataflow Constraint Systems.pdf:PDF},
+  ISBN                     = {978-1-4503-3687-1},
+  Keywords                 = {Dataflow constraint systems, Graphical user interfaces, asynchronous programming},
+  Location                 = {Pittsburgh, PA, USA},
+  Numpages                 = {10},
+  Owner                    = {hisham},
+  Timestamp                = {2017-03-09},
+  Url                      = {http://doi.acm.org/10.1145/2814204.2814207}
 }
 
 @Book{Fowler:2010:DSL:1809745,
@@ -1471,7 +1526,7 @@ Threads are objects. Dynamic thread creation and synchronous (rendezvous) commun
   Organization             = {International Computer Music Association},
   Pages                    = {159--162},
 
-  Abstract                 = {Max/MSP is widely used for developing applications in music  and  art  yet  less  attention  has  been  given  to supporting developers working in this language than for more traditional languages such as Java. Technologies such as code-completion, reuse support, and refactoring may be helpful but are largely  unexplored. Such methods rely on detecting similarities between language elements. This paper presents a method for detecting similarities between Max/MSP patches (and sub-patches) based on clone detection techniques. The method has been implemented and a proof-of-concept evaluation has been undertaken by applying it to the set of Max tutorial patches supplied with Max/MSP 5. The results show that significant cloning takes place both within and outwith an individual patch and that, as clone constraints are relaxed, the number of clone pairs increases.},
+  Abstract                 = {Max/MSP is widely used for developing applications in music and art yet less attention has been given to supporting developers working in this language than for more traditional languages such as Java. Technologies such as code-completion, reuse support, and refactoring may be helpful but are largely unexplored. Such methods rely on detecting similarities between language elements. This paper presents a method for detecting similarities between Max/MSP patches (and sub-patches) based on clone detection techniques. The method has been implemented and a proof-of-concept evaluation has been undertaken by applying it to the set of Max tutorial patches supplied with Max/MSP 5. The results show that significant cloning takes place both within and outwith an individual patch and that, as clone constraints are relaxed, the number of clone pairs increases.},
   File                     = {:Users/hisham/ac/dr/reading/pdf/Cloning_in_MAX_MSP_Patches.pdf:PDF},
   Owner                    = {hisham},
   Review                   = {mentions that Max/MSP uses the visual layout to determine the order of message passing.},
@@ -2182,6 +2237,8 @@ Discussion of various examples.},
   Doi                      = {10.1109/ICSAMOS.2008.4664841},
   File                     = {:Users/hisham/ac/dr/reading/pdf/A_parameterized_dataflow_language_extension_for_embedded_streaming_systems.pdf:PDF},
   Keywords                 = {C++ language;code division multiple access;embedded systems;parallel languages;C++ programming language;DSP systems;W-CDMA wireless protocol;embedded compilation;embedded streaming systems;parameterized dataflow language extension;Computational modeling;Computer architecture;Computer languages;Concurrent computing;Digital signal processing;Embedded computing;Multiaccess communication;Parallel processing;Programming profession;Wireless application protocol},
+  Owner                    = {hisham},
+  Timestamp                = {2017-03-09},
   Url                      = {http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=4664841}
 }
 
@@ -2284,6 +2341,24 @@ Discussion of various examples.},
   Review                   = {Compares programming to cooking in page 26.},
   Timestamp                = {2015-01-14},
   Url                      = {https://books.google.com.br/books?id=FAe0utEYqKoC}
+}
+
+@Article{xorshift,
+  Title                    = {Xorshift RNGs},
+  Author                   = {George Marsaglia},
+  Journal                  = {Journal of Statistical Software},
+  Year                     = {2003},
+  Number                   = {1},
+  Pages                    = {1--6},
+  Volume                   = {8},
+
+  Abstract                 = {Description of a class of simple, extremely fast random number generators (RNGs) with periods 2k - 1 for k = 32, 64, 96, 128, 160, 192. These RNGs seem to pass tests of randomness very well.},
+  Doi                      = {10.18637/jss.v008.i14},
+  ISSN                     = {1548-7660},
+  Owner                    = {hisham},
+  Review                   = {simple PRNG used in the LvInterpreter},
+  Timestamp                = {2017-03-08},
+  Url                      = {https://www.jstatsoft.org/index.php/jss/article/view/v008i14}
 }
 
 @Article{DBLP:journals/corr/Martini15,
@@ -2451,6 +2526,32 @@ This paper discusses design issues and how they affect the implementation of thi
   Url                      = {http://dl.acm.org/citation.cfm?id=2577101.2577124}
 }
 
+@Article{Mosconi:2000:ICD:2245742.2245907,
+  Title                    = {Iteration Constructs in Data-flow Visual Programming Languages},
+  Author                   = {Mosconi, M. and Porta, M.},
+  Journal                  = {Comput. Lang.},
+  Year                     = {2000},
+
+  Month                    = jul,
+  Number                   = {2-4},
+  Pages                    = {67--104},
+  Volume                   = {26},
+
+  __markedentry            = {[hisham:1]},
+  Acmid                    = {2245907},
+  Address                  = {Tarrytown, NY, USA},
+  Doi                      = {10.1016/S0096-0551(01)00009-1},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/Iteration_Constructs_in_Data-flow-Visual_Programming_Languages.pdf:PDF},
+  ISSN                     = {0096-0551},
+  Issue_date               = {July, 2000},
+  Keywords                 = {Data-flow visual languages, Iterations, Visual programming},
+  Numpages                 = {38},
+  Owner                    = {hisham},
+  Publisher                = {Pergamon Press, Inc.},
+  Timestamp                = {2017-03-08},
+  Url                      = {http://dx.doi.org/10.1016/S0096-0551(01)00009-1}
+}
+
 @Article{Muhammad2007capis,
   Title                    = {C APIs in Extension and Extensible Languages},
   Author                   = {Hisham Muhammad and Roberto Ierusalimschy},
@@ -2468,6 +2569,33 @@ This paper discusses design issues and how they affect the implementation of thi
   Owner                    = {hisham},
   Timestamp                = {2015-03-29},
   Url                      = {http://www.jucs.org/jucs_13_6/c_apis_in_extension}
+}
+
+@InProceedings{Murray:2013:NTD:2517349.2522738,
+  Title                    = {Naiad: A Timely Dataflow System},
+  Author                   = {Murray, Derek G. and McSherry, Frank and Isaacs, Rebecca and Isard, Michael and Barham, Paul and Abadi, Mart\'{\i}n},
+  Booktitle                = {Proceedings of the Twenty-Fourth ACM Symposium on Operating Systems Principles},
+  Year                     = {2013},
+
+  Address                  = {New York, NY, USA},
+  Pages                    = {439--455},
+  Publisher                = {ACM},
+  Series                   = {SOSP '13},
+
+  Abstract                 = {Naiad is a distributed system for executing data parallel, cyclic dataflow programs. It offers the high throughput of batch processors, the low latency of stream processors, and the ability to perform iterative and incremental computations. Although existing systems offer some of these features, applications that require all three have relied on multiple platforms, at the expense of efficiency, maintainability, and simplicity. Naiad resolves the complexities of combining these features in one framework.
+
+A new computational model, timely dataflow, underlies Naiad and captures opportunities for parallelism across a wide class of algorithms. This model enriches dataflow computation with timestamps that represent logical points in the computation and provide the basis for an efficient, lightweight coordination mechanism.
+
+We show that many powerful high-level programming models can be built on Naiad's low-level primitives, enabling such diverse tasks as streaming data analysis, iterative machine learning, and interactive graph mining. Naiad outperforms specialized systems in their target application domains, and its unique features enable the development of new high-performance applications.},
+  Acmid                    = {2522738},
+  Doi                      = {10.1145/2517349.2522738},
+  ISBN                     = {978-1-4503-2388-8},
+  Location                 = {Farminton, Pennsylvania},
+  Numpages                 = {17},
+  Owner                    = {hisham},
+  Review                   = {"Structured loops" proposed here is exactly the same as LabVIEW loops.},
+  Timestamp                = {2017-03-09},
+  Url                      = {http://doi.acm.org/10.1145/2517349.2522738}
 }
 
 @InCollection{Myers1992LDUI,
@@ -3202,6 +3330,33 @@ My comment: reuse is easier when things are better specified.},
   Url                      = {http://www.sciencedirect.com/science/article/pii/074373159090039R}
 }
 
+@Article{Sui:2008:ART:1374752.1374755,
+  Title                    = {An Automated Refactoring Tool for Dataflow Visual Programming Language},
+  Author                   = {Sui, Yang Yi and Lin, Jun and Zhang, Xiao Tuo},
+  Journal                  = {SIGPLAN Not.},
+  Year                     = {2008},
+
+  Month                    = apr,
+  Number                   = {4},
+  Pages                    = {21--28},
+  Volume                   = {43},
+
+  __markedentry            = {[hisham:1]},
+  Abstract                 = {Refactoring tools are extremely important to prevent errors and reduce consumed time. But these tools only support text-based languages, especially in Object Oriented languages. In order to accommodate the situation that Dataflow Visual Programming Languages (DFVPLs) are more and more popular, an automated refactoring tool for DFVPL was proposed. DFVPL was divided into two layers---visual layer and dataflow layer. Two layers mutually evolved, which ensured correctness of visual elements and dataflow semantic during refactoring. Some algorithms like middle graph generation; terminal auto-generation and terminal auto-modification were proposed to implement the changes of two layers. This tool has been proved correct and efficient by some refactoring instances. In addition, we discussed some famous DFVPL like LabVIEW to expose lacking of automated refactoring tool forced refactoring by hand to be time-consuming and error-prone.},
+  Acmid                    = {1374755},
+  Address                  = {New York, NY, USA},
+  Doi                      = {10.1145/1374752.1374755},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/An Automated Refactoring Tool for Dataflow Visual Programming Language.pdf:PDF},
+  ISSN                     = {0362-1340},
+  Issue_date               = {April 2008},
+  Keywords                 = {dataflow, dataflow visual programming language, refactoring, software engineering},
+  Numpages                 = {8},
+  Owner                    = {hisham},
+  Publisher                = {ACM},
+  Timestamp                = {2017-03-08},
+  Url                      = {http://doi.acm.org/10.1145/1374752.1374755}
+}
+
 @Article{tanimoto1990liveness,
   Title                    = {{VIVA}: a visual language for image processing},
   Author                   = {S. L. Tanimoto},
@@ -3576,6 +3731,25 @@ UI hack: Haskell functions can be input from the Excel interface as cell comment
   Publisher                = {IEEE Educational Activities Department},
   Timestamp                = {2016-01-21},
   Url                      = {http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=329757}
+}
+
+@Article{Yazar2015,
+  Title                    = {Design of Dataflow},
+  Author                   = {Yazar, Tu{\u{g}}rul},
+  Journal                  = {Nexus Network Journal},
+  Year                     = {2015},
+  Number                   = {1},
+  Pages                    = {311--325},
+  Volume                   = {17},
+
+  __markedentry            = {[hisham:1]},
+  Abstract                 = {Design scripting is initially based on secondary syntactic mechanisms that control sequential executions of code. This model of computation, called control flow programming, was introduced to designers as the only way of creating algorithms. Dataflow represents a widespread alternative to control flow by utilizing concurrent streams of data. Dataflow programming languages are also considered to be pedagogical tools in fields where the coders are not expert computer programmers. In the last decade, new parametric modeling tools introduced this conception to design scripting, shifting its practical and educational foundations. Dataflow programming represents a promising platform for studying contemporary parametric modeling techniques in design, while architects and designers increasingly use it as their algorithmic sketchbooks. This paper describes a purpose to reflect this shift in design education, pursuing four pedagogical patterns derived from in-class experiments: ``explication'', ``kit of components'', ``objectification'', and ``re-generation''.},
+  Doi                      = {10.1007/s00004-014-0222-8},
+  ISSN                     = {1522-4600},
+  Owner                    = {hisham},
+  Review                   = {Architecture paper about dataflow. Author is an Architecture academic working on Computational Design.},
+  Timestamp                = {2017-03-08},
+  Url                      = {http://dx.doi.org/10.1007/s00004-014-0222-8}
 }
 
 @TechReport{Yoder94spreadsheetdataflow,

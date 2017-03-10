@@ -12707,59 +12707,44 @@ key "Gold2011MaxMSP"
 .
 \end_layout
 
-\begin_layout Chapter
-Conclusion
-\begin_inset CommandInset label
-LatexCommand label
-name "chap:Conclusion"
-
+\begin_layout Description
+Structured
+\begin_inset space ~
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-End-user languages for UI interaction are today in the state where scripting
- languages were in the 1980s: ad hoc languages, one for each application,
- with their implementation often mixed with that of the application itself,
- and their design reflecting an organic evolution
-\begin_inset Foot
-status collapsed
+loops: 
+\begin_inset Note Note
+status open
 
 \begin_layout Plain Layout
-In the case of scripting languages, many of those evolved out of either
- configuration files or interactive command-line prompts
+TODO Cite Naiad, reinvented LabVIEW loops
 \end_layout
 
 \end_inset
 
-.
- In the world of scripting, this has since been replaced by out-of-the-box
- implementations of widely used languages, reused among many applications,
- with their implementation clearly isolated from the application, and their
- design reflecting an evolution towards suitability for multiple domains.
- Most importantly, this notion of a 
-\begin_inset Quotes eld
-\end_inset
 
-scriptable application
-\begin_inset Quotes erd
-\end_inset
-
- composed by a low-level core and a scripting language extended with bindings
- to this core has become a common architectural pattern (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Architectural-patterns"
-
-\end_inset
-
-(a)).
 \end_layout
 
-\begin_layout Standard
-In this work, we aim to bring a similar evolution to end-user UI-level languages
- one step closer to reality, by means of two main contributions:
+\begin_layout Description
+Array
+\begin_inset space ~
+\end_inset
+
+copying: 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO Cite GPCE paper, MATLAB-to-JavaScript
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Discussion: An architectural pattern for end-user programmable applications
 \end_layout
 
 \begin_layout Standard
@@ -13026,6 +13011,154 @@ Architectural patterns of programmable applications
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO Fill this in
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The architecture of today's end-user programmable applications is typically
+ an extension of that of scriptable applications, adding an ad hoc end-user
+ language accessible via the application's interface (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(b)).
+ To move past ad hoc end-user languages and get us closer to the situation
+ we have in the scripting world, it is necessary to take into account the
+ fact that these languages need to be fully customized to their domain.
+ An approach for this is to produce a DSL on top of a reusable component,
+ as we advocated in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:A-Dataflow-Engine"
+
+\end_inset
+
+ (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(c)).
+\end_layout
+
+\begin_layout Standard
+One concern when exposing the functionality of an application as two different
+ languages is a possible discontinuity in the abstractions provided (termed
+ the semiotic continuum principle in 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "deSouza2001SemEngPrinciples"
+
+\end_inset
+
+), so that the scripting layer contains functionality that is unrepresentable
+ in the UI, or vice-versa.
+ 
+\end_layout
+
+\begin_layout Standard
+Such a possibility exists when there are different paths towards the application
+ core, which may be inconsistent (as in Figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(b) and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(c)).
+ A way to ensure this consistency between the end-user UI-level language
+ and the scripting language would be to share the application bindings,
+ thus providing a single path to the application core (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(d)).
+ There are interesting possibilities of how to achieve this, such as compatible
+ lower-level APIs or using the scripting language to implement the dataflow
+ engine.
+ 
+\end_layout
+
+\begin_layout Chapter
+Conclusion
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Conclusion"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+End-user languages for UI interaction are today in the state where scripting
+ languages were in the 1980s: ad hoc languages, one for each application,
+ with their implementation often mixed with that of the application itself,
+ and their design reflecting an organic evolution
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In the case of scripting languages, many of those evolved out of either
+ configuration files or interactive command-line prompts
+\end_layout
+
+\end_inset
+
+.
+ In the world of scripting, this has since been replaced by out-of-the-box
+ implementations of widely used languages, reused among many applications,
+ with their implementation clearly isolated from the application, and their
+ design reflecting an evolution towards suitability for multiple domains.
+ Most importantly, this notion of a 
+\begin_inset Quotes eld
+\end_inset
+
+scriptable application
+\begin_inset Quotes erd
+\end_inset
+
+ composed by a low-level core and a scripting language extended with bindings
+ to this core has become a common architectural pattern (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
+
+\end_inset
+
+(a)).
+\end_layout
+
+\begin_layout Standard
+In this work, we aim to bring a similar evolution to end-user UI-level languages
+ one step closer to reality, by means of two main contributions:
+\end_layout
+
 \begin_layout Description
 Mapping
 \begin_inset space ~
@@ -13071,101 +13204,7 @@ languages.
 \end_layout
 
 \begin_layout Description
-An
-\begin_inset space ~
-\end_inset
-
-architectural
-\begin_inset space ~
-\end_inset
-
-pattern
-\begin_inset space ~
-\end_inset
-
-for
-\begin_inset space ~
-\end_inset
-
-end-user
-\begin_inset space ~
-\end_inset
-
-programmable
-\begin_inset space ~
-\end_inset
-
-applications.
- The architecture of today's end-user programmable applications is typically
- an extension of that of scriptable applications, adding an ad hoc end-user
- language accessible via the application's interface (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Architectural-patterns"
-
-\end_inset
-
-(b)).
- To move past ad hoc end-user languages and get us closer to the situation
- we have in the scripting world, it is necessary to take into account the
- fact that these languages need to be fully customized to their domain.
- An approach for this is to produce a DSL on top of a reusable component,
- as we advocated in Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "chap:A-Dataflow-Engine"
-
-\end_inset
-
- (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Architectural-patterns"
-
-\end_inset
-
-(c)).
- One concern when exposing the functionality of an application as two different
- languages is a possible discontinuity in the abstractions provided (termed
- the semiotic continuum principle in 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "deSouza2001SemEngPrinciples"
-
-\end_inset
-
-), so that the scripting layer contains functionality that is unrepresentable
- in the UI, or vice-versa.
- Such a possibility exists when there are different paths towards the applicatio
-n core, which may be inconsistent (as in Figures 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Architectural-patterns"
-
-\end_inset
-
-(b) and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Architectural-patterns"
-
-\end_inset
-
-(c)).
- A way to ensure this consistency between the end-user UI-level language
- and the scripting language would be to share the application bindings,
- thus providing a single path to the application core (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Architectural-patterns"
-
-\end_inset
-
-(d)).
- There are interesting possibilities of how to achieve this, such as compatible
- lower-level APIs or using the scripting language to implement the dataflow
- engine.
- 
+And...?
 \end_layout
 
 \begin_layout Standard
