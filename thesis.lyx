@@ -1761,9 +1761,64 @@ dynamic
  Management of memory and processing units becomes more complicated, as
  it becomes necessary to tag tokens with bookkeping data, for managing concurren
 t flows of different iterations.
- There is a number of architectural challenges for implementing dynamic
- dataflow models efficiently: several models were proposed, and this continues
- to be an area of active research 
+ Tagged-token models support parallel loops by associating to each input
+ value a tag, indicating which iteration that value is a part of.
+ For example, a node 
+\series bold
+
+\begin_inset Formula $f$
+\end_inset
+
+
+\series default
+ with inputs 
+\begin_inset Formula $a,b,c$
+\end_inset
+
+ will feature three queues 
+\begin_inset Formula $q_{a},$
+\end_inset
+
+
+\begin_inset Formula $q_{b}$
+\end_inset
+
+, 
+\begin_inset Formula $q_{c}$
+\end_inset
+
+, containing tagged values of the form 
+\begin_inset Formula $(v,n)$
+\end_inset
+
+, indicating a value 
+\begin_inset Formula $v$
+\end_inset
+
+ for iteration 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ The graph will fire 
+\begin_inset Formula $f(v_{a},v_{b},v_{c})$
+\end_inset
+
+ when it is able to extract from the queues a complete set of tokens 
+\begin_inset Formula $((v_{a},n_{i})\in q_{a},(v_{b},n_{i})\in q_{b},(v_{c},n_{i})\in q_{c})$
+\end_inset
+
+ with the same tag 
+\begin_inset Formula $n_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+There is a number of architectural challenges for implementing dynamic dataflow
+ models efficiently: several models were proposed, and this continues to
+ be an area of active research 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "kavi2015dataflow"
@@ -1771,10 +1826,7 @@ key "kavi2015dataflow"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-The choice of dataflow execution model is not only an implementation issue.
+ The choice of dataflow execution model is not only an implementation issue.
  For one, it affects language design, as typical tagged-token models use
  explicit looping constructs, which mark points where loop iteration tags
  in tokens should be incremented or reset 
@@ -2336,46 +2388,139 @@ An extension to Hils's classification
 \end_layout
 
 \begin_layout Standard
-In addition to the axes of comparison proposed by Hils, we identify a number
- of other criteria to compare these languages:
+In addition to the axes of comparison proposed by Hils, we identified a
+ number of additional criteria to compare these languages.
+ This new list of design alternatives for dataflow languages both informed
+ and was informed by the study of existing end-user applications and their
+ languages that will be presented in the following chapters.
+ We hereby present an extension to the classification first proposed by
+ Hils, which we believe helps comparing end-user applications of different
+ domains and shines a light on the semantic aspects of their underlying
+ programming languages.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Subsection
+Dataflow model
+\end_layout
 
-\emph on
-dataflow model
-\emph default
-: whether the dataflow model of the language is static or dynamic, as discussed
- in Section 
+\begin_layout Standard
+Apart from the classification between data-driven and domain-driven dataflow,
+ perhaps the most important distinction in terms of semantics for a dataflow
+ language is whether its dataflow model is static or dynamic, according
+ to definitions presented in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Static-and-dynamic"
 
 \end_inset
 
-;
+.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
+The choice between static and dynamic dataflow models embodies typical computing
+ trade-offs.
+ The static model, with a single data token present per edge, is simpler,
+ and thus easier to implement and also keeps memory use under control.
+ The dynamic model, while more complex, may produce a more efficient execution,
+ maximizing the opportunities for exploiting parallelism.
+\end_layout
 
-\emph on
+\begin_layout Standard
+The question of which one is easier to understand, especially in the context
+ of end-user programming, is not at all obvious.
+ On one hand, the static model is conceptually simpler and program execution
+ may be easier to introspect.
+ On the other hand, to the user's point of view the restrictions may seem
+ arbitrary: in a number of situations the user may justifiably want to specify
+ cycles (iterative financial calculations, audio-delay feedback, etc.); the
+ dynamic model may present a more free-form experience for the user.
+ Still, misusing cycles is an easy way for the user to make their program
+ go haywire.
+\end_layout
+
+\begin_layout Subsection
 N-to-1 inputs
+\end_layout
+
+\begin_layout Standard
+A practical question that is closely related to the dataflow model is whether
+ the language allows what we will call 
+\begin_inset Quotes eld
+\end_inset
+
+N-to-1 inputs
+\begin_inset Quotes erd
+\end_inset
+
+ into a node.
+ A node in a dataflow graph represents a unit of functional execution and
+ may have multiple inputs, akin to a function 
+\begin_inset Formula $f(a,b,c)$
+\end_inset
+
+ with multiple input arguments.
+ The question here is whether the language allows multiple edges connecting
+ to a 
+\emph on
+single
 \emph default
-: does the language allow connecting multiple wires to a single input port
- in a node (when this is allowed, the language needs a policy for dealing
- with multiple tokens, such as queueing);
+ input port in a node — in our analogy, that would mean having multiple
+ incoming values for argument 
+\begin_inset Formula $a$
+\end_inset
+
+ available at the time of executing 
+\begin_inset Formula $f$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Traditional static dataflow models usually forbid N-to-1 inputs.
+ When two input signals are to be entered to a single input port, an explicit
+ 
+\begin_inset Quotes eld
+\end_inset
+
+merge
+\begin_inset Quotes erd
+\end_inset
+
+ node needs to be added, which applies some logic to decide which of the
+ inputs is forwarded to the node.
+ 
+\end_layout
+
+\begin_layout Standard
+When N-to-1 inputs are allowed, the language needs a policy for dealing
+ with them.
+ Languages employing a dynamic model featuring input queues may naturally
+ allow data from different sources into a single queue.
+ In static dataflow models, N-to-1 inputs may be allowed by making the merge
+ operation implicit.
+\end_layout
+
+\begin_layout Standard
+It is interesting to note that depending on the representation of the dataflow
+ graph, N-to-1 inputs can be not only semantically disallowed, but be made
+ impossible to express syntactically.
+ In a typical textual language, one simply cannot pass two different variables
+ at once to the first argument of a function.
+ That is the case, for example, in spreadsheet formula languages.
+\end_layout
+
+\begin_layout Subsection
+Separate program and UI
 \end_layout
 
 \begin_layout Itemize
-
-\emph on
-separate graph / UI
-\emph default
-: does the language present separate interfaces for editing the dataflow
- program and for using the resulting user-written program, or does the use
- of the program happen in the same interface where it is edited (note that
- this is different from having separate edit and use modes, which is the
- distinction between Tanimoto's liveness levels 2 and 3 
+does the language present separate interfaces for editing the dataflow program
+ and for using the resulting user-written program, or does the use of the
+ program happen in the same interface where it is edited (note that this
+ is different from having separate edit and use modes, which is the distinction
+ between Tanimoto's liveness levels 2 and 3 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "tanimoto1990liveness"
@@ -2385,40 +2530,39 @@ key "tanimoto1990liveness"
 );
 \end_layout
 
-\begin_layout Itemize
-
-\emph on
-time-based evaluation
-\emph default
-: does the evaluation of the dataflow graph happens at a time-controlled
- rate;
+\begin_layout Subsection
+Time-based evaluation
 \end_layout
 
 \begin_layout Itemize
+Does the evaluation of the dataflow graph happens at a time-controlled rate;
+\end_layout
 
-\emph on
-indirect connections
-\emph default
-: does the language allow data to flow between nodes without an explicit
- connection between them (such as a wire in box-wire models, or an explicit
- cell reference in a spreadsheet model);
+\begin_layout Subsection
+Indirect connections
 \end_layout
 
 \begin_layout Itemize
+Does the language allow data to flow between nodes without an explicit connectio
+n between them (such as a wire in box-wire models, or an explicit cell reference
+ in a spreadsheet model);
+\end_layout
 
-\emph on
-runtime-evaluated indirect connections
-\emph default
-: in the presence of indirect connections, can these be determined at runtime;
+\begin_layout Subsection
+Runtime-evaluated indirect connections
 \end_layout
 
 \begin_layout Itemize
+in the presence of indirect connections, can these be determined at runtime;
+\end_layout
 
-\emph on
-textual expression sub-language
-\emph default
-: does the language include a textual sub-language for representing mathematical
- expressions;
+\begin_layout Subsection
+Textual expression sub-language
+\end_layout
+
+\begin_layout Itemize
+Does the language include a textual sub-language for representing mathematical
+ expressions
 \end_layout
 
 \begin_layout Standard
@@ -8962,17 +9106,15 @@ key "Johnston:2004:ADP:1013208.1013209"
 The programming language of the LabVIEW environment is called G.
  However, since there are no other implementations of G or any specification
  other than the implementation of LabVIEW itself, it is customary to refer
- to the language as LabVIEW
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-[citation needed]
-\end_layout
+ to the language as LabVIEW or use both names interchangeably 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kaufmann:2009:FVL:1637837.1637851,Mok1998RTLLabVIEW"
 
 \end_inset
 
-; for simplicity, we will do the same here.
+; for simplicity, we will call the both the application and its language
+ LabVIEW throughout the text.
 \end_layout
 
 \begin_layout Section
@@ -9076,11 +9218,11 @@ indicators
 \emph default
 .
  This dichotomy leads to a much simpler model for UI programming, as opposed
- to typical GUI frameworks where one programs handlers to various events
- that read-write widgets may produce.
- Indicators appear as write-only in the block diagram and read-only in the
- front panel; contrariwise, controls appear as data-entry widgets in the
- front panel that are read-only in the block diagram.
+ to typical GUI frameworks where one needs to implement handlers to various
+ events that read-write widgets may produce.
+ Indicators appear as write-only nodes in the block diagram and read-only
+ widgets in the front panel; contrariwise, controls appear as data-entry
+ widgets in the front panel that are read-only nodes in the block diagram.
 \end_layout
 
 \begin_layout Standard
@@ -9892,7 +10034,7 @@ TODO explain that we produce an animation of the graph
 \end_layout
 
 \begin_layout Section
-Is LabVIEW end-user programming?
+Discussion: Is LabVIEW end-user programming?
 \end_layout
 
 \begin_layout Standard
@@ -9942,10 +10084,9 @@ both have context help windows
 \end_layout
 
 \begin_layout Standard
-While both LabVIEW and Pure Data are both graphical dataflow languages that
- presents programs as graph diagrams connecting node objects, the LabVIEW
- environment is a lot more similar to that of a typical programming language
- IDE.
+While both LabVIEW and Pure Data are visual dataflow languages that present
+ programs as graph diagrams connecting node objects, the LabVIEW environment
+ is a lot more similar to that of a typical programming language IDE.
  Beyond the visual presentation, a fundamental difference is that in LabVIEW
  the block diagram with the graph and front panel with the UI widgets are
  the 
