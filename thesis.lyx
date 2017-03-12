@@ -1745,7 +1745,21 @@ key "Dennis85Models"
 \end_inset
 
 .
- 
+ Synchronous languages such as Lustre 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Lustre"
+
+\end_inset
+
+ and Lucid 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Ashcroft:1977:LNL:359636.359715"
+
+\end_inset
+
+ implement static dataflow models.
 \end_layout
 
 \begin_layout Standard
@@ -2512,6 +2526,110 @@ It is interesting to note that depending on the representation of the dataflow
 \end_layout
 
 \begin_layout Subsection
+Time and rate-based evaluation
+\end_layout
+
+\begin_layout Standard
+An aspect of program evaluation that is not much a design decision as much
+ as it is a domain-dependent constraint is the need to take time into account.
+ If a programmable application needs to process events which happen in a
+ time-dependent rate, that needs to be reflected in its language.
+ Still, when this necessity arises there is still a design space to be explored
+ on how to handle it.
+\end_layout
+
+\begin_layout Standard
+There are two ways to consider the issue of time.
+ One is that of time-dependent nodes, that is, nodes that produce different
+ outputs depending on the time when they were fired.
+ The other is that of rate-based execution, which refers to the need of
+ consuming or producing data at a certain frequency.
+\end_layout
+
+\begin_layout Standard
+The handling of rate-dependent data often brings performance concerns.
+ Outside of the world of end-user programming, the signal-processing community
+ has been using dataflow models for decades for handling data streams efficientl
+y, while taming the complexity of dynamic dataflow models.
+ 
+\emph on
+Static dataflow
+\emph default
+ models have not only bounded memory, but their scheduling can also be determine
+d ahead-of-time, allowing for efficient compilation.
+ However, handling one token at a time is a severe limitation for stream
+ processing.
+ 
+\emph on
+Synchronous dataflow
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Lee1987synchdataflow"
+
+\end_inset
+
+ is an extension of the model in which the number of data samples produced
+ or consumed by each node on each invocation is specified a priori.
+ It still allows compile-time memory and scheduling analysis.
+ 
+\emph on
+Cyclo-static dataflow
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bilsen1995cyclo"
+
+\end_inset
+
+ is another extension which extends the expressiveness of the synchronous
+ model while retaining its analysis properties.
+ In it, the consumption and production rates for a node can vary over time,
+ respecting a predetermined cycle.
+ A number of other models have been proposed since to further extend the
+ model of computation: 
+\emph on
+quasi-static
+\emph default
+ models such as boolean-controlled dataflow 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Buck:1993:SDD:921086"
+
+\end_inset
+
+ and parameterized dataflow 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bhattacharya:2001:PDM:2197975.2202339"
+
+\end_inset
+
+ attempt to restrict dynamic scheduling to data-dependent nodes while statically
+ scheduling the rest of the graph, with further enhancements continuing
+ to be an area of research 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Falk:2013:RQS:2442116.2442124,Schwarzer:2015:TCD:2764967.2764972"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Time-dependency is closely related to rate-dependency, since predictable
+ rates at a known clock speed results in predictable times, but rate-based
+ evaluation may also be motivated by concerns other than time, such as memory
+ efficiency as buffer sizes can be are minimized with optimized schedules.
+ Time-dependent execution, on its turn, has its own set of concerns as it
+ can bring a level of indeterminacy to the evaluation (e.g.
+ when a node depends on system real-time clock).
+\end_layout
+
+\begin_layout Subsection
 Separate program and UI
 \end_layout
 
@@ -2528,14 +2646,6 @@ key "tanimoto1990liveness"
 \end_inset
 
 );
-\end_layout
-
-\begin_layout Subsection
-Time-based evaluation
-\end_layout
-
-\begin_layout Itemize
-Does the evaluation of the dataflow graph happens at a time-controlled rate;
 \end_layout
 
 \begin_layout Subsection
@@ -12175,7 +12285,7 @@ Yes
 \begin_inset Text
 
 \begin_layout Plain Layout
-Time-based evaluation
+Time/rate-based evaluation
 \end_layout
 
 \end_inset
@@ -12758,6 +12868,12 @@ They can be in the order of milliseconds or sometimes even tenths of seconds.
 
 \begin_layout Standard
 TODO: glitch
+\end_layout
+
+\begin_layout Standard
+In the context of end-user programming, an application with rate-dependent
+ data processing may combine rate-based and non-rate-based events (e.g.
+ handling audio streams and button clicks).
 \end_layout
 
 \begin_layout Section

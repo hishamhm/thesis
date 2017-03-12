@@ -430,6 +430,49 @@ and Sasson, Nada},
   Url                      = {http://doi.acm.org/10.1145/2379057.2379116}
 }
 
+@Article{Bhattacharya:2001:PDM:2197975.2202339,
+  Title                    = {Parameterized Dataflow Modeling for DSP Systems},
+  Author                   = {Bhattacharya, B. and Bhattacharyya, S.S.},
+  Journal                  = {Trans. Sig. Proc.},
+  Year                     = {2001},
+
+  Month                    = oct,
+  Number                   = {10},
+  Pages                    = {2408--2421},
+  Volume                   = {49},
+
+  Abstract                 = {Dataflow has proven to be an attractive computation model for programming digital signal processing (DSP) applications. A restricted version of dataflow, termed synchronous dataflow (SDF), that offers strong compile-time predictability properties, but has limited expressive power, has been studied extensively in the DSP context. Many extensions to synchronous dataflow have been proposed to increase its expressivity while maintaining its compile-time predictability properties as much as possible. We proposed a parameterized dataflow framework that can be applied as a meta-modeling technique to significantly improve the expressive power of any dataflow model that possesses a well-defined concept of a graph iteration, Indeed, the parameterized dataflow framework is compatible with many of the existing dataflow models for DSP including SDF, cyclo-static dataflow, scalable synchronous dataflow, and Boolean dataflow. In this paper, we develop precise, formal semantics for parameterized synchronous dataflow (PSDF)-the application of our parameterized modeling framework to SDF-that allows data-dependent, dynamic DSP systems to be modeled in a natural and intuitive fashion. Through our development of PSDF, we demonstrate that desirable properties of a DSP modeling environment such as dynamic reconfigurability and design reuse emerge as inherent characteristics of our parameterized framework. An example of a speech compression application is used to illustrate the efficacy of the PSDF approach and its amenability to efficient software synthesis techniques. In addition, we illustrate the generality of our parameterized framework by discussing its application to cyclo-static dataflow, which is a popular alternative to the SDF model},
+  Acmid                    = {2202339},
+  Address                  = {Piscataway, NJ, USA},
+  Doi                      = {10.1109/78.950795},
+  ISSN                     = {1053-587X},
+  Issue_date               = {October 2001},
+  Numpages                 = {14},
+  Owner                    = {hisham},
+  Publisher                = {IEEE Press},
+  Timestamp                = {2017-03-12},
+  Url                      = {http://dx.doi.org/10.1109/78.950795}
+}
+
+@InProceedings{Bilsen1995cyclo,
+  Title                    = {Cyclo-static data flow},
+  Author                   = {G. Bilsen and M. Engels and R. Lauwereins and J. A. Peperstraete},
+  Booktitle                = {1995 International Conference on Acoustics, Speech, and Signal Processing},
+  Year                     = {1995},
+  Month                    = {May},
+  Pages                    = {3255-3258 vol.5},
+  Volume                   = {5},
+
+  __markedentry            = {[hisham:1]},
+  Abstract                 = {The high sample-rates involved in many DSP-applications, require the use of static schedulers wherever possible. The construction of static schedules however is classically limited to applications that fit in the synchronous data flow model. In this paper we present cyclo-static data flow as a model to describe applications with a cyclically changing behaviour. We give both a necessary and sufficient condition for the existence of a static schedule for a cyclo-static data flow graph and show how such a schedule can be constructed. The example of a video encoder is used to illustrate the importance of cyclo-static data flow for real-life DSP-systems},
+  Doi                      = {10.1109/ICASSP.1995.479579},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/Cyclo-static dataflow.pdf:PDF},
+  ISSN                     = {1520-6149},
+  Keywords                 = {data flow graphs;processor scheduling;signal sampling;video coding;video equipment;DSP systems;DSP-applications;cyclically changing behaviour;cyclo-static data flow graph;high sample-rates;necessary condition;static schedule;static schedulers;sufficient condition;synchronous data flow model;video encoder;Costs;Digital signal processing;Dynamic scheduling;Emulation;Flow graphs;Hardware;Processor scheduling;Prototypes;Runtime;Sufficient conditions},
+  Owner                    = {hisham},
+  Timestamp                = {2017-03-12}
+}
+
 @InProceedings{Blackwell1999,
   Title                    = {Investment of attention as an analytic approach to cognitive dimensions},
   Author                   = {Blackwell, Alan F and Green, Thomas RG},
@@ -547,6 +590,24 @@ SEQUEL (which became SQL) is also presented in a short section as a syntactic va
   Owner                    = {hisham},
   Posted-at                = {2007-03-28 16:04:43},
   Timestamp                = {2015-03-08}
+}
+
+@PhdThesis{Buck:1993:SDD:921086,
+  Title                    = {Scheduling Dynamic Dataflow Graphs with Bounded Memory Using the Token Flow Model},
+  Author                   = {Buck, Joseph Tobin},
+  Year                     = {1993},
+  Note                     = {AAI9431898},
+
+  Abstract                 = {This thesis presents an analytical model of the behavior of dataflow graphs with data-dependent control flow. In this model, the number of tokens produced or consumed by each actor is given as a symbolic function of the Boolean-valued tokens in the system. Several definitions of consistency are discussed and compared. Necessary and sufficient conditions for bounded-length schedules, as well as sufficient conditions for determining whether a dataflow graph can be scheduled in bounded memory are given. These are obtained by analyzing the properties of minimal cyclic schedules, defined as minimal sequences of actor executions that return the dataflow graph to its original state. Additional analysis techniques, including a clustering algorithm that reduces graphs to standard control structures (such as "if-then-else" and "do-while") and a state enumeration procedure, are also described. Relationships between these techniques and those used in Petri net analysis, as well as in the theory of certain stream languages, are discussed.
+
+Finally, an implementation of these techniques using Ptolemy, an object-oriented simulation and software prototyping platform, is described. Given a dynamic dataflow graph, the implementation is capable either of simulating the execution of the graph, or generating efficient code for it (in an assembly language or higher level language).},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/Scheduling dynamic dataflow graphs with bounded memory.pdf:PDF},
+  Owner                    = {hisham},
+  Publisher                = {University of California, Berkeley},
+  Review                   = {Boolean Data Flow (BDF)
+
+Cited in \cite{Wipliez2010}},
+  Timestamp                = {2017-03-12}
 }
 
 @InProceedings{Burlet:2015:ESE:2820518.2820554,
@@ -1199,6 +1260,33 @@ To this end, this paper presents a graphical calculus called Uccello. Our key in
   Url                      = {http://doi.acm.org/10.1145/1814433.1814453}
 }
 
+@Article{Falk:2013:RQS:2442116.2442124,
+  Title                    = {A Rule-based Quasi-static Scheduling Approach for Static Islands in Dynamic Dataflow Graphs},
+  Author                   = {Falk, Joachim and Zebelein, Christian and Haubelt, Christian and Teich, J\"{u}rgen},
+  Journal                  = {ACM Trans. Embed. Comput. Syst.},
+  Year                     = {2013},
+
+  Month                    = apr,
+  Number                   = {3},
+  Pages                    = {74:1--74:31},
+  Volume                   = {12},
+
+  Abstract                 = {In this article, an efficient rule-based clustering algorithm for static dataflow subgraphs in a dynamic dataflow graph is presented. The clustered static dataflow actors are quasi-statically scheduled, in such a way that the global performance in terms of latency and throughput is improved compared to a dynamically scheduled execution, while avoiding the introduction of deadlocks as generated by naive static scheduling approaches. The presented clustering algorithm outperforms previously published approaches by a faster computation and more compact representation of the derived quasi-static schedule. This is achieved by a rule-based approach, which avoids an explicit enumeration of the state space. A formal proof of the correctness of the presented clustering approach is given. Experimental results show significant improvements in both, performance and code size, compared to a state-of-the-art clustering algorithm.},
+  Acmid                    = {2442124},
+  Address                  = {New York, NY, USA},
+  Articleno                = {74},
+  Doi                      = {10.1145/2442116.2442124},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/A Rule-based Quasi-static Scheduling Approach for Static Islands in Dynamic Dataflow Graphs.pdf:PDF},
+  ISSN                     = {1539-9087},
+  Issue_date               = {March 2013},
+  Keywords                 = {Data flow analysis, actor-oriented design, clustering, scheduling},
+  Numpages                 = {31},
+  Owner                    = {hisham},
+  Publisher                = {ACM},
+  Timestamp                = {2017-03-12},
+  Url                      = {http://doi.acm.org/10.1145/2442116.2442124}
+}
+
 @Article{JOT:issue_2014_09/article1,
   Title                    = {Specifying and Solving Constraints on Object Behavior},
   Author                   = {Tim Felgentreff and Alan Borning and Robert Hirschfeld},
@@ -1685,6 +1773,28 @@ Need for process: problem-solving methods
 Non-programming environment: MediaText
 Programming environment: GPCeditor - environment forces top-down design - "I am seeing GPC in my mind when I write THINK [Pascal]"},
   Timestamp                = {2014-08-28}
+}
+
+@Article{Lustre,
+  Title                    = {The synchronous data flow programming language LUSTRE},
+  Author                   = {N. Halbwachs and P. Caspi and P. Raymond and D. Pilaud},
+  Journal                  = {Proceedings of the IEEE},
+  Year                     = {1991},
+
+  Month                    = {Sep},
+  Number                   = {9},
+  Pages                    = {1305-1320},
+  Volume                   = {79},
+
+  __markedentry            = {[hisham:1]},
+  Abstract                 = {The authors describe LUSTRE, a data flow synchronous language designed for programming reactive systems-such as automatic control and monitoring systems-as well as for describing hardware. The data flow aspect of LUSTRE makes it very close to usual description tools in these domains (block-diagrams, networks of operators, dynamical sample-systems, etc.), and its synchronous interpretation makes it well suited for handling time in programs. Moreover, this synchronous interpretation allows it to be compiled into an efficient sequential program. The LUSTRE formalism is very similar to temporal logics. This allows the language to be used for both writing programs and expressing program properties, which results in an original program verification methodology},
+  Doi                      = {10.1109/5.97300},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/Lustre.pdf:PDF},
+  ISSN                     = {0018-9219},
+  Keywords                 = {parallel languages;program verification;temporal logic;LUSTRE;description tools;program verification methodology;reactive systems;sequential program;synchronous data flow programming language;temporal logics;Aerospace control;Automatic programming;Computer languages;Computerized monitoring;Delay;Design methodology;Frequency synchronization;Hardware design languages;Protocols;Real time systems},
+  Owner                    = {hisham},
+  Timestamp                = {2017-03-11},
+  Url                      = {http://www6.in.tum.de/pub/Main/TeachingWs2009Echtzeitsysteme/procieee1991-3.pdf}
 }
 
 @InCollection{HartsonBrandenburgHix1992LDUI,
@@ -2197,6 +2307,25 @@ Discussion of various examples.},
   Owner                    = {hisham},
   Timestamp                = {2017-01-12},
   Url                      = {https://camazotz.com/docs/vpl.pdf}
+}
+
+@Article{Lee1987synchdataflow,
+  Title                    = {Synchronous data flow},
+  Author                   = {E. A. Lee and D. G. Messerschmitt},
+  Journal                  = {Proceedings of the IEEE},
+  Year                     = {1987},
+
+  Month                    = {Sept},
+  Number                   = {9},
+  Pages                    = {1235-1245},
+  Volume                   = {75},
+
+  Abstract                 = {Data flow is a natural paradigm for describing DSP applications for concurrent implementation on parallel hardware. Data flow programs for signal processing are directed graphs where each node represents a function and each arc represents a signal path. Synchronous data flow (SDF) is a special case of data flow (either atomic or large grain) in which the number of data samples produced or consumed by each node on each invocation is specified a priori. Nodes can be scheduled statically (at compile time) onto single or parallel programmable processors so the run-time overhead usually associated with data flow evaporates. Multiple sample rates within the same system are easily and naturally handled. Conditions for correctness of SDF graph are explained and scheduling algorithms are described for homogeneous parallel processors sharing memory. A preliminary SDF software system for automatically generating assembly language code for DSP microcomputers is described. Two new efficiency techniques are introduced, static buffering and an extension to SDF to efficiently implement conditionals.},
+  Doi                      = {10.1109/PROC.1987.13876},
+  ISSN                     = {0018-9219},
+  Keywords                 = {Assembly systems;Digital signal processing;Flow graphs;Hardware;Microcomputers;Processor scheduling;Runtime;Scheduling algorithm;Signal processing;Software systems},
+  Owner                    = {hisham},
+  Timestamp                = {2017-03-12}
 }
 
 @InProceedings{Leshed:2008:CAS:1357054.1357323,
@@ -2829,6 +2958,24 @@ notably lacks specification of array formulas},
   Url                      = {http://dx.doi.org/10.1109/2.660187}
 }
 
+@InProceedings{Parks95SDFvsCSDF,
+  Title                    = {A comparison of synchronous and cycle-static dataflow},
+  Author                   = {T. M. Parks and J. L. Pino and E. A. Lee},
+  Booktitle                = {Conference Record of The Twenty-Ninth Asilomar Conference on Signals, Systems and Computers},
+  Year                     = {1995},
+  Month                    = {Oct},
+  Pages                    = {204-210 vol.1},
+  Volume                   = {1},
+
+  __markedentry            = {[hisham:1]},
+  Abstract                 = {We compare synchronous dataflow (SDF) and cyclo-static dataflow (CSDF), which are each special cases of a model of computation we call dataflow process networks. In SDF actors have static firing rules: they consume and produce a fixed number of data tokens in each firing. This model is well suited to multirate signal processing applications and lends itself to efficient static scheduling, avoiding the run-time scheduling overhead incurred by general implementations of process networks. In CSDF which is a generalization of SDF actors have cyclically changing firing rules. In some situations, the added generality of CSDF can unnecessarily complicate the scheduling. We show how higher-order functions can be used to transform a CSDF graph into a SDF graph, simplifying the scheduling problem. In other situations, CSDF has a genuine advantage over SDF: simpler precedence constraints. We show how this makes it possible to eliminate unnecessary computations and expose additional parallelism. We use digital sample rate conversion as an example to illustrate these advantages of CSDF.},
+  Doi                      = {10.1109/ACSSC.1995.540541},
+  ISSN                     = {1058-6393},
+  Keywords                 = {data flow computing;data flow graphs;scheduling;signal sampling;CSDF graph;SDF graph;computation model;cycle-static dataflow;data tokens;dataflow process networks;digital sample rate conversion;higher-order functions;multirate signal processing applications;parallelism;precedence constraints;scheduling problem;static firing rules;static scheduling;synchronous dataflow;Communication channels;Computational modeling;Computer networks;Concurrent computing;Fires;Parallel processing;Processor scheduling;Signal processing;Streaming media;Video signal processing},
+  Owner                    = {hisham},
+  Timestamp                = {2017-03-12}
+}
+
 @Article{patterno2013eud,
   Title                    = {End User Development: Survey of an Emerging Field for Empowering People},
   Author                   = {Fabio Paternò},
@@ -3091,6 +3238,31 @@ This article presents some of the errors in creating and using electronic tables
   Owner                    = {hisham},
   Timestamp                = {2015-05-18},
   Url                      = {http://doi.acm.org/10.1145/2384592.2384594}
+}
+
+@InProceedings{Schwarzer:2015:TCD:2764967.2764972,
+  Title                    = {Throughput-optimizing Compilation of Dataflow Applications for Multi-Cores Using Quasi-Static Scheduling},
+  Author                   = {Schwarzer, Tobias and Falk, Joachim and Gla\ss, Michael and Teich, J\"{u}rgen and Zebelein, Christian and Haubelt, Christian},
+  Booktitle                = {Proceedings of the 18th International Workshop on Software and Compilers for Embedded Systems},
+  Year                     = {2015},
+
+  Address                  = {New York, NY, USA},
+  Pages                    = {68--75},
+  Publisher                = {ACM},
+  Series                   = {SCOPES '15},
+
+  __markedentry            = {[hisham:1]},
+  Abstract                 = {Application modeling using dynamic dataflow graphs is well-suited for multi-core platforms. However, there is often a mismatch between the fine granularity of the application and the platform. Tailoring this granularity to the platform promises performance gains by (a) reducing dynamic scheduling overhead and (b) exploiting compiler optimizations. In this paper, we propose a throughput-optimizing compilation approach that uses Quasi-Static Schedules (QSSs) to combine actors of static dataflow subgraphs. Our proposed approach combines core allocation, QSSs, and actor binding in a Design Space Exploration (DSE), optimizing the throughput for a number of available cores. During the DSE, each implementation candidate is compiled to and evaluated on the target hardware---here an Intel i7 and an ARM Cortex-A9. Experimental results including synthetic benchmarks as well as a real-world control application show that our proposed holistic compilation approach outperforms classic DSEs that are agnostic of QSS as well as a DSE that employs QSS as a post-processing step. Amongst others, we show a case where the compilation approach obtains a speedup of 9.91 x for a 4-core implementation, while a classic DSE only obtains a speedup of 2.12 x.},
+  Acmid                    = {2764972},
+  Doi                      = {10.1145/2764967.2764972},
+  ISBN                     = {978-1-4503-3593-5},
+  Keywords                 = {Clustering, Compilation, Dataflow, Design Space Exploration, Multi-Core},
+  Location                 = {Sankt Goar, Germany},
+  Numpages                 = {8},
+  Owner                    = {hisham},
+  Review                   = {recent paper on quasi-static dataflow},
+  Timestamp                = {2017-03-12},
+  Url                      = {http://doi.acm.org/10.1145/2764967.2764972}
 }
 
 @TechReport{Sestoft06SpreadsheetCore,
@@ -3731,6 +3903,23 @@ UI hack: Haskell functions can be input from the Excel interface as cell comment
   Publisher                = {IEEE Educational Activities Department},
   Timestamp                = {2016-01-21},
   Url                      = {http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=329757}
+}
+
+@PhdThesis{Wipliez2010,
+  Title                    = {Compilation infrastructure for dataflow programs},
+  Author                   = {Matthieu Wipliez},
+  School                   = {INSA de Rennes},
+  Year                     = {2010},
+
+  Abstract                 = {The work presented in this thesis takes place in a context of growing demand for better video quality (High-Definition TV, home cinema...) and unprecedented concern for  power consumption. The limitations and lack of flexibility of current video standards make it increasingly long and complicated to implement standards, particularly on embedded systems. A new standard called Reconfigurable Video Coding aims to solve these problems by describing video decoders with dynamic dataflow programs.
+
+A dataflow program is a program represented as a directed graph where vertices are computational units (or actors) and edges represent the flow of data between vertices. A Model of Computation (MoC) defines thesemantics of dataflow programs as a subset of the most general Dataflow Process Network (DPN) model. There are different MoCs that offer different trade-offs between expressiveness and compile-time predictability. For instance, the SDF model is the most restrictive subset of DPN with respect to expressiveness, but it is also the most predictable: it is possible to map and schedule SDF graphs onto multi-processors at compile-time while minimizing memory consumption. A dynamic dataflow program that respects the unrestricted DPN model, however, is not schedulable at compile-time and memory consumption may not be bounded in all cases.
+
+The work described in this thesis is a compilation infrastructure for dataflow programs. The dataflow programs considered are dynamic dataflow programs, and the thesis shows how actors of these programs can be represented in a simple, high-level Intermediate Representation (IR). The IR of actors can be automatically analyzed by a classification method presented in the thesis, which annotates the actors that can behave according to a MoC that is more restricted than the general DPN model. The infrastructure is also capable of transforming such actors at a higher-level of description. Finally, the thesis shows how dynamic dataflow programs can be transformed to several languages, from C to hardware description languages, and presents results about the performance of the generated code.},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/Compilation infrastructure for dataflow programs.pdf:PDF},
+  Owner                    = {hisham},
+  Review                   = {incudes an example with classification between static, cyclo-static, quasi-static, dynamic and time-dependent actors in a MPEG decoder},
+  Timestamp                = {2017-03-12}
 }
 
 @Article{Yazar2015,
