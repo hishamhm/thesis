@@ -2541,7 +2541,14 @@ An aspect of program evaluation that is not much a design decision as much
 \begin_layout Standard
 There are two ways to consider the issue of time.
  One is that of time-dependent nodes, that is, nodes that produce different
- outputs depending on the time when they were fired.
+ outputs depending on the time when they were fired 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Wipliez2010"
+
+\end_inset
+
+.
  The other is that of rate-based execution, which refers to the need of
  consuming or producing data at a certain frequency.
 \end_layout
