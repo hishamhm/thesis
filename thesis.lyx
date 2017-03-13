@@ -942,6 +942,16 @@ The three-layer architecture in end-user programmable applications
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:three-layer"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 When programming support is added in a peripheral role to an application,
  it is usually to provide advanced flexibility beyond what the base feature
  set of the application offers: composition of features to automate workflows,
@@ -2851,18 +2861,44 @@ Time-dependency is closely related to rate-dependency, since predictable
 \end_layout
 
 \begin_layout Subsection
-Separate program and UI
+Separate programming and use views
 \end_layout
 
 \begin_layout Standard
 Another design decision that is worth observing in an end-user programmable
- application is whether it presents separate interfaces for editing the
- dataflow program and for using the resulting user-written program, or if
- use of the program happens in the same interface where it is edited.
+ application is whether it presents separate interface views for editing
+ the dataflow program and for using the resulting user-written program,
+ or if use of the program happens in the same interface where it is edited.
+ By 
+\begin_inset Quotes eld
+\end_inset
+
+separate interface views
+\begin_inset Quotes erd
+\end_inset
+
+ we mean here completely distinct presentations: for example, one 
+\begin_inset Quotes eld
+\end_inset
+
+edit
+\begin_inset Quotes erd
+\end_inset
+
+ view presenting a box-line diagram as the user constructs their program
+ and a 
+\begin_inset Quotes eld
+\end_inset
+
+use
+\begin_inset Quotes erd
+\end_inset
+
+ view presenting a form when they use it.
 \end_layout
 
 \begin_layout Standard
-Note that this is different from having separate 
+Note that this is different from the question having separate 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2878,8 +2914,8 @@ use
 \begin_inset Quotes erd
 \end_inset
 
- modes, which is the distinction between Tanimoto's liveness levels 2 and
- 3 
+ modes in the first place, which is the distinction between Tanimoto's liveness
+ levels 2 and 3 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "tanimoto1990liveness"
@@ -2887,7 +2923,7 @@ key "tanimoto1990liveness"
 \end_inset
 
 .
- These design aspects are orthogonal: an application may present separaate
+ These design aspects are orthogonal: an application may present separate
  
 \begin_inset Quotes eld
 \end_inset
@@ -2904,13 +2940,14 @@ use
 \begin_inset Quotes erd
 \end_inset
 
- modes with the same UI, characterizing liveness level 2; or it could feature
- separate views for usage and editing and yet allow those to be used simultaneou
-sly and in a responsive manner matching liveness level 3 or 4.
+ modes within a single UI paradigm, characterizing liveness level 2; or
+ it could feature distinct UIs for use and editing and yet allow those to
+ be used simultaneously and in a responsive, non-modal, manner matching
+ liveness level 3 or 4.
 \end_layout
 
 \begin_layout Standard
-While strictly speaking having separate UIs for development and use this
+While strictly speaking having separate views for development and use this
  is a matter of presentation, and hence with immediate effects on syntax,
  we claim that this design decision is most closely related to a language's
  pragmatics: having the 
@@ -2929,6 +2966,24 @@ source program
  roles.
  Most important to our concerns, here, is whether this design choice for
  the application affects the overall design of its programming language.
+\end_layout
+
+\begin_layout Standard
+It is also important to note that having separate UIs for creating the user-deve
+loped program and using it doesn't mean that the language is at a lower
+ layer according to the architecture discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:three-layer"
+
+\end_inset
+
+.
+ The language continues to be UI-level as long as the main interface for
+ producing documents in the application consists of the environment for
+ interacting with the language.
+ This does not change if once the user is done composing the document (that
+ is, writing the program), they switch to another UI mode for using it.
 \end_layout
 
 \begin_layout Subsection
@@ -2966,46 +3021,71 @@ key "complangvisual"
 \end_layout
 
 \begin_layout Standard
-It is important to clarify here that the issue of indirect connections is
- not exclusive to visual languages.
-\end_layout
-
-\begin_layout Itemize
-in the presence of indirect connections, can these be determined at runtime;
-\end_layout
-
-\begin_layout Itemize
-like pointers
-\end_layout
-
-\begin_layout Itemize
-scheduling becomes dynamic
+This is not only a matter of representation, and this becomes clearer when
+ we consider the most popular example of indirect connection in textual
+ languages: a pointer.
+ Indirect connections whose targets are determined at runtime, such as pointers
+ and references, increase the expressive power of the language.
+ This can also have far-reaching impacts to its semantics.
+ For one, node scheduling can no longer be performed statically.
+ In opposition, if the target of an indirect connection is constant, this
+ indirect connection is not unlike a connector in old flowcharts, used to
+ transfer flow from one page to the next.
 \end_layout
 
 \begin_layout Subsection
-Textual expression sub-language
-\end_layout
-
-\begin_layout Itemize
-Does the language include a textual sub-language for representing mathematical
- expressions
-\end_layout
-
-\begin_layout Itemize
-functional or imperative
+Textual sub-language
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
+The final dimension of design we enumerated is the presence or absence of
+ a textual sub-language included within the UI-level language presented
+ to the user.
+\end_layout
+
+\begin_layout Standard
+The presence of textual sub-languages is a common pattern, even in visual
+ languages.
+ A typical use for them is representing mathematical expressions, since
+ textual syntax based on mathematics such as 
+\family typewriter
+a - b + 5
+\family default
+ is natural and even some computer conventions such as 
+\family typewriter
+*
+\family default
+ and 
+\family typewriter
+/
+\family default
+ for multiplication and division have become broadly understood.
+\begin_inset Foot
+status collapsed
 
 \begin_layout Plain Layout
-TODO Extend the explanation of our dimensions.
+One might argue that even in typical programming languages, the sub-grammar
+ of mathematical expressions (including relational and logical operators)
+ is an embedded domain-specific sub-language of its own, as it usually contains
+ a number of syntactic rules that do not apply anywhere else in the language,
+ such as infix operators and precedence rules, and which are often similar
+ even in languages which otherwise vary widely.
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+We are also interested in the paradigm of this textual sub-language, as
+ it is indicative of the level of integration with the dataflow language
+ as a whole.
+ A functional sub-language is a natural match to the host dataflow language,
+ representing solely a syntactic shortcut.
+ If the textual sub-language includes imperative features, however, this
+ necessarily means that it goes beyond dataflow and extends the core language's
+ semantics.
 \end_layout
 
 \begin_layout Section
@@ -3106,9 +3186,21 @@ Case studies
 
 \begin_layout Standard
 In the following chapters, we will present in-depth case studies analyzing
- the semantics of three of the languages discussed above: Pure Data, the
- spreadsheet formula language (Excel) and LabVIEW.
- 
+ the semantics of three of the end-user programmable applications:
+\end_layout
+
+\begin_layout Itemize
+Pure Data, a multimedia application focused on audio synthesis widely used
+ by the computer music community;
+\end_layout
+
+\begin_layout Itemize
+the spreadsheet formula language, as used in Excel, LibreOffice and Google
+ Sheets;
+\end_layout
+
+\begin_layout Itemize
+and LabVIEW, an engineering application focused on data acquisition.
 \end_layout
 
 \begin_layout Standard
@@ -3126,9 +3218,11 @@ d.
 \begin_layout Standard
 The interpreters do not intend to be a complete specification of each language,
  but aim to capture the notable features of their semantics.
- We will discuss the extent to which these languages are purely declarative;
- how time affects the flow graph; the semantics of iteration constructs;
- support for abstraction.
+ We will discuss the languages in terms of the various design dimensions
+ presented in this chapter.
+ We will see to which extent to which these languages are purely declarative,
+ how time affects the flow graph, the semantics of iteration constructs,
+ their support for abstraction, and so on.
  In these studies, we identify what are the common patterns that are present,
  assessing to which extent those languages are 
 \begin_inset Quotes eld
@@ -3138,15 +3232,16 @@ variations on a theme
 \begin_inset Quotes erd
 \end_inset
 
-; and pinpoint aspects where their ad hoc designs show.
+.
+ We also pinpoint aspects where their ad hoc designs show.
 \end_layout
 
 \begin_layout Standard
 The underlying goal is to understand what is the required functionality
  expected by applications for dataflow-based interfaces and how different
  languages solve similar problems.
- Also, the interpreters allow us to reason on the designs of those languages
- under similar terms.
+ Also, having these interpreters side-by-side allows us to reason on the
+ designs of those languages under similar terms.
 \end_layout
 
 \begin_layout Chapter
@@ -12368,7 +12463,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Tabular
-<lyxtabular version="3" rows="10" columns="6">
+<lyxtabular version="3" rows="9" columns="6">
 <features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -12843,16 +12938,16 @@ indirect connections
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-Textual expression
+Textual sub-language
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -12861,7 +12956,7 @@ No
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -12870,7 +12965,7 @@ Yes
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -12879,7 +12974,7 @@ Yes
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -12888,67 +12983,11 @@ Yes
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Yes
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-sub-language
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
 \end_layout
 
 \end_inset
