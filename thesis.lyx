@@ -2408,9 +2408,223 @@ In addition to the axes of comparison proposed by Hils, we identified a
  and was informed by the study of existing end-user applications and their
  languages that will be presented in the following chapters.
  We hereby present an extension to the classification first proposed by
- Hils, which we believe helps comparing end-user applications of different
- domains and shines a light on the semantic aspects of their underlying
- programming languages.
+ Hils, summarized in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Additional-design-dimensions"
+
+\end_inset
+
+, which we believe helps comparing end-user applications of different domains
+ and shines a light on the semantic aspects of their underlying programming
+ languages.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="2">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Design dimension
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Design alternatives
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dataflow model
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+static; dynamic
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N-to-1 inputs
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+no; yes (auto-merge); yes (queueing)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time-based evaluation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+no; yes
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rate-based evaluation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+no; synchronous; cyclo-static; quasi-static; dynamic
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Separate program and UI
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+no; yes
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Indirect connections
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+no; yes (static); yes (runtime-evaluated)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Textual sub-language
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+no; yes (functional); yes (imperative)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Additional-design-dimensions"
+
+\end_inset
+
+Additional design dimensions for dataflow end-user languages
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -2640,37 +2854,132 @@ Time-dependency is closely related to rate-dependency, since predictable
 Separate program and UI
 \end_layout
 
-\begin_layout Itemize
-does the language present separate interfaces for editing the dataflow program
- and for using the resulting user-written program, or does the use of the
- program happen in the same interface where it is edited (note that this
- is different from having separate edit and use modes, which is the distinction
- between Tanimoto's liveness levels 2 and 3 
+\begin_layout Standard
+Another design decision that is worth observing in an end-user programmable
+ application is whether it presents separate interfaces for editing the
+ dataflow program and for using the resulting user-written program, or if
+ use of the program happens in the same interface where it is edited.
+\end_layout
+
+\begin_layout Standard
+Note that this is different from having separate 
+\begin_inset Quotes eld
+\end_inset
+
+edit
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+use
+\begin_inset Quotes erd
+\end_inset
+
+ modes, which is the distinction between Tanimoto's liveness levels 2 and
+ 3 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "tanimoto1990liveness"
 
 \end_inset
 
-);
+.
+ These design aspects are orthogonal: an application may present separaate
+ 
+\begin_inset Quotes eld
+\end_inset
+
+edit
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+use
+\begin_inset Quotes erd
+\end_inset
+
+ modes with the same UI, characterizing liveness level 2; or it could feature
+ separate views for usage and editing and yet allow those to be used simultaneou
+sly and in a responsive manner matching liveness level 3 or 4.
+\end_layout
+
+\begin_layout Standard
+While strictly speaking having separate UIs for development and use this
+ is a matter of presentation, and hence with immediate effects on syntax,
+ we claim that this design decision is most closely related to a language's
+ pragmatics: having the 
+\begin_inset Quotes eld
+\end_inset
+
+source program
+\begin_inset Quotes erd
+\end_inset
+
+ always visible or not is a clear indicator of the language's intended mode
+ of use.
+ A language which conflates the use and programming interfaces clearly intends
+ the user and programmer to be one and the same, while a language with separate
+ interfaces for these two scenarios may also steer people towards different
+ roles.
+ Most important to our concerns, here, is whether this design choice for
+ the application affects the overall design of its programming language.
 \end_layout
 
 \begin_layout Subsection
 Indirect connections
 \end_layout
 
-\begin_layout Itemize
-Does the language allow data to flow between nodes without an explicit connectio
-n between them (such as a wire in box-wire models, or an explicit cell reference
- in a spreadsheet model);
+\begin_layout Standard
+Dataflow programs are constructed as graphs, and applications using this
+ model need to employ some representation to depict nodes and their connections.
+ The explicitness of relationships between units of computations is arguably
+ a big part of the appeal of dataflow for end-user programming.
+ However, as programs grow in size, graph representations can grow unwieldy.
+ Scalability in visual representations is a concern, embodied in the folk
+ aphorism known as the 
+\begin_inset Quotes eld
+\end_inset
+
+Deutsch limit
+\begin_inset Quotes erd
+\end_inset
+
+, which states that visual languages cannot have effectively more than 50
+ visual primitives on screen at the same time 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "complangvisual"
+
+\end_inset
+
+.
+ A way around this issue is to introduce indirect connections.
+ This presents a trade-off, however: while it reduces visual clutter, it
+ does away with the aforementioned explicitness of relationships.
+ 
 \end_layout
 
-\begin_layout Subsection
-Runtime-evaluated indirect connections
+\begin_layout Standard
+It is important to clarify here that the issue of indirect connections is
+ not exclusive to visual languages.
 \end_layout
 
 \begin_layout Itemize
 in the presence of indirect connections, can these be determined at runtime;
+\end_layout
+
+\begin_layout Itemize
+like pointers
+\end_layout
+
+\begin_layout Itemize
+scheduling becomes dynamic
 \end_layout
 
 \begin_layout Subsection
@@ -2680,6 +2989,10 @@ Textual expression sub-language
 \begin_layout Itemize
 Does the language include a textual sub-language for representing mathematical
  expressions
+\end_layout
+
+\begin_layout Itemize
+functional or imperative
 \end_layout
 
 \begin_layout Standard
@@ -2781,7 +3094,7 @@ https://docs.unrealengine.com/latest/INT/Engine/Blueprints/
  engine.
  There are different kinds of edges in the graph, representing either data
  connections in dataflow style, or control-flow sequencing.
- The semantics of Blueprints, therefore, is of an imperative nature, and
+ Typical Blueprints programs, however, are of an imperative nature, and
  the resulting graph resembles a traditional flowchart.
  This kind of language, therefore, falls beyond our intended scope in the
  discussion of dataflow semantics.
@@ -13005,6 +13318,18 @@ TODO Cite GPCE paper, MATLAB-to-JavaScript
 \end_inset
 
 
+\end_layout
+
+\begin_layout Description
+Indirect
+\begin_inset space ~
+\end_inset
+
+connections: in the case of a box-wire diagram, what was once an explicit
+ connection with a visual, spatial representation, becomes an implicit one
+ with a symbolic representation.
+ The use of symbolic representations over visual ones is not the crux of
+ the matter: spreadsheets are an example of ...
 \end_layout
 
 \begin_layout Section
