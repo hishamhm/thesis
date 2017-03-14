@@ -1,0 +1,428 @@
+%BEGIN LYX DEMO
+
+To wrap up the presentation of the interpreter modeling Pure Data, we present
+a demonstration of its use. We build a simple synthesizer with both frequency
+and amplitude controllable via events, and use it to play a simple tune.
+First, we define a few constants corresponding to the frequency in Hertz of
+some musical notes:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{9}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{cSharp}{}\<[9]%
+\>[9]{}\mathrel{=}\mathrm{554.37}{}\<[E]%
+\\
+\>[B]{}\Varid{aSharp}{}\<[9]%
+\>[9]{}\mathrel{=}\mathrm{932.33}{}\<[E]%
+\\
+\>[B]{}\Varid{g}{}\<[9]%
+\>[9]{}\mathrel{=}\mathrm{783.99}{}\<[E]%
+\\
+\>[B]{}\Varid{gSharp}{}\<[9]%
+\>[9]{}\mathrel{=}\mathrm{830.61}{}\<[E]%
+\\
+\>[B]{}\Varid{f}{}\<[9]%
+\>[9]{}\mathrel{=}\mathrm{698.46}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Then, we construct the patch that corresponds to the following graph:
+
+\begin{center}
+\includegraphics[width=0.75\columnwidth]{puredata_example}
+\par\end{center}
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{29}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{38}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{43}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{62}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{71}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{76}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{95}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{104}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{example}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Conid{PdPatch}\;({}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{fromList}\;[\mskip1.5mu {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdAtomBox}\;{}\<[21]%
+\>[21]{}(\Conid{PdFloat}\;\mathrm{0}),\mbox{\onelinecomment  0}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 osc\char126 \char34},\Conid{PdFloat}\;\Varid{gSharp}\mskip1.5mu]\;\mathrm{2}\;\mathrm{1},\mbox{\onelinecomment  1}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdMsgBox}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdCommand}\;\Conid{PdToOutlet}\;(\Varid{map}\;(\Conid{PdTAtom}\mathbin{\circ}\Conid{PdFloat})\;[\mskip1.5mu \mathrm{0.5},\mathrm{1000}\mskip1.5mu])\mskip1.5mu],\mbox{\onelinecomment  2}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdMsgBox}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdCommand}\;\Conid{PdToOutlet}\;(\Varid{map}\;(\Conid{PdTAtom}\mathbin{\circ}\Conid{PdFloat})\;[\mskip1.5mu \mathrm{0},\mathrm{100}\mskip1.5mu])\mskip1.5mu],\mbox{\onelinecomment  3}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 line\char126 \char34}\mskip1.5mu]\;\mathrm{2}\;\mathrm{1},\mbox{\onelinecomment  4}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 *\char126 \char34}\mskip1.5mu]\;\mathrm{2}\;\mathrm{1},\mbox{\onelinecomment  5}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 dac\char126 \char34}\mskip1.5mu]\;\mathrm{1}\;\mathrm{0},\mbox{\onelinecomment  6}{}\<[E]%
+\\[\blanklineskip]%
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 receive\char34},\Conid{PdSymbol}\;\text{\tt \char34 MyMetro\char34}\mskip1.5mu]\;\mathrm{0}\;\mathrm{1},\mbox{\onelinecomment  7}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 metro\char34},\Conid{PdFloat}\;\mathrm{500}\mskip1.5mu]\;\mathrm{2}\;\mathrm{1},\mbox{\onelinecomment  8}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 delay\char34},\Conid{PdFloat}\;\mathrm{5}\mskip1.5mu]\;\mathrm{2}\;\mathrm{1},\mbox{\onelinecomment  9}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 list\char34},\Conid{PdFloat}\;\mathrm{0.5},\Conid{PdFloat}\;\mathrm{0.1}\mskip1.5mu]\;\mathrm{2}\;\mathrm{1},\mbox{\onelinecomment  10}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 list\char34},\Conid{PdFloat}\;\mathrm{0},\Conid{PdFloat}\;\mathrm{500}\mskip1.5mu]\;\mathrm{2}\;\mathrm{1},\mbox{\onelinecomment  11}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 line\char126 \char34}\mskip1.5mu]\;\mathrm{1}\;\mathrm{1},\mbox{\onelinecomment  12}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 osc\char126 \char34},\Conid{PdFloat}\;(\Varid{gSharp}\mathbin{/}\mathrm{2})\mskip1.5mu]\;\mathrm{1}\;\mathrm{1},\mbox{\onelinecomment  13}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 *\char126 \char34}\mskip1.5mu]\;\mathrm{2}\;\mathrm{1},\mbox{\onelinecomment  14}{}\<[E]%
+\\[\blanklineskip]%
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdMsgBox}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdCommand}\;\Conid{PdToOutlet}\;{}\<[E]%
+\\
+\>[21]{}\hsindent{6}{}\<[27]%
+\>[27]{}[\mskip1.5mu \Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 list\char34}),\Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 bang\char34})\mskip1.5mu]\mskip1.5mu],\mbox{\onelinecomment  15}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdMsgBox}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdCommand}\;\Conid{PdToOutlet}\;{}\<[E]%
+\\
+\>[21]{}\hsindent{6}{}\<[27]%
+\>[27]{}[\mskip1.5mu \Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 list\char34}),\Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 stop\char34})\mskip1.5mu]\mskip1.5mu],\mbox{\onelinecomment  16}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdMsgBox}\;{}\<[21]%
+\>[21]{}[\mskip1.5mu \Conid{PdCommand}\;(\Conid{PdReceiver}\;\text{\tt \char34 MyMetro\char34})\;[\mskip1.5mu \Conid{PdTDollar}\;\mathrm{1}\mskip1.5mu]\mskip1.5mu]\mskip1.5mu]\mbox{\onelinecomment  17}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{})\;(\Varid{fromList}\;[\mskip1.5mu {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}((\mathrm{0},{}\<[29]%
+\>[29]{}\mathrm{0})\rhd (\mathrm{1},{}\<[38]%
+\>[38]{}\mathrm{0})),{}\<[43]%
+\>[43]{}((\mathrm{1},{}\<[62]%
+\>[62]{}\mathrm{0})\rhd (\mathrm{5},{}\<[71]%
+\>[71]{}\mathrm{0})),{}\<[76]%
+\>[76]{}((\mathrm{2},{}\<[95]%
+\>[95]{}\mathrm{0})\rhd (\mathrm{4},{}\<[104]%
+\>[104]{}\mathrm{0})),{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}((\mathrm{3},{}\<[29]%
+\>[29]{}\mathrm{0})\rhd (\mathrm{4},{}\<[38]%
+\>[38]{}\mathrm{0})),{}\<[43]%
+\>[43]{}((\mathrm{4},{}\<[62]%
+\>[62]{}\mathrm{0})\rhd (\mathrm{5},{}\<[71]%
+\>[71]{}\mathrm{1})),{}\<[76]%
+\>[76]{}((\mathrm{5},{}\<[95]%
+\>[95]{}\mathrm{0})\rhd (\mathrm{6},{}\<[104]%
+\>[104]{}\mathrm{0})),{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}((\mathrm{7},{}\<[29]%
+\>[29]{}\mathrm{0})\rhd (\mathrm{8},{}\<[38]%
+\>[38]{}\mathrm{0})),{}\<[43]%
+\>[43]{}((\mathrm{8},{}\<[62]%
+\>[62]{}\mathrm{0})\rhd (\mathrm{9},{}\<[71]%
+\>[71]{}\mathrm{0})),{}\<[76]%
+\>[76]{}((\mathrm{8},{}\<[95]%
+\>[95]{}\mathrm{0})\rhd (\mathrm{10},{}\<[104]%
+\>[104]{}\mathrm{0})),{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}((\mathrm{9},{}\<[29]%
+\>[29]{}\mathrm{0})\rhd (\mathrm{11},{}\<[38]%
+\>[38]{}\mathrm{0})),{}\<[43]%
+\>[43]{}((\mathrm{10},{}\<[62]%
+\>[62]{}\mathrm{0})\rhd (\mathrm{12},{}\<[71]%
+\>[71]{}\mathrm{0})),{}\<[76]%
+\>[76]{}((\mathrm{11},{}\<[95]%
+\>[95]{}\mathrm{0})\rhd (\mathrm{12},{}\<[104]%
+\>[104]{}\mathrm{0})),{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}((\mathrm{12},{}\<[29]%
+\>[29]{}\mathrm{0})\rhd (\mathrm{14},{}\<[38]%
+\>[38]{}\mathrm{0})),{}\<[43]%
+\>[43]{}((\mathrm{13},{}\<[62]%
+\>[62]{}\mathrm{0})\rhd (\mathrm{14},{}\<[71]%
+\>[71]{}\mathrm{1})),{}\<[76]%
+\>[76]{}((\mathrm{14},{}\<[95]%
+\>[95]{}\mathrm{0})\rhd (\mathrm{6},{}\<[104]%
+\>[104]{}\mathrm{0})),{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}((\mathrm{15},{}\<[29]%
+\>[29]{}\mathrm{0})\rhd (\mathrm{17},{}\<[38]%
+\>[38]{}\mathrm{0})),{}\<[43]%
+\>[43]{}((\mathrm{16},{}\<[62]%
+\>[62]{}\mathrm{0})\rhd (\mathrm{17},{}\<[71]%
+\>[71]{}\mathrm{0}))\mskip1.5mu]{}\<[E]%
+\\[\blanklineskip]%
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{})\;[\mskip1.5mu \mathrm{1},\mathrm{4},\mathrm{5},\mathrm{12},\mathrm{13},\mathrm{14},\mathrm{6}\mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+This is the sequence of input events that corresponds to playing the tune:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{44}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{main}\mathbin{::}\Conid{IO}\;(){}\<[E]%
+\\
+\>[B]{}\Varid{main}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{\Conid{ByteString}.putStr}\mathbin{\$}\Varid{runPut}\;(\Varid{putWav}\;\Varid{output}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{output}\mathrel{=}\Varid{genOutput}\mathbin{\$}\Varid{runSteps}\;\mathrm{10000}\;\Varid{example}\;[\mskip1.5mu {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{1000}\;\mathrm{15}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),\mbox{\onelinecomment  MyMetro bang}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{1010}\;\mathrm{2}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),{}\<[44]%
+\>[44]{}\mbox{\onelinecomment  0.1 1000}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{1900}\;\mathrm{3}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),\mbox{\onelinecomment  0 100}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{2001}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{cSharp}\mskip1.5mu]),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{2002}\;\mathrm{2}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),{}\<[44]%
+\>[44]{}\mbox{\onelinecomment  0.1 1000}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{2900}\;\mathrm{3}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),\mbox{\onelinecomment  0 100}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{3001}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{g}\mskip1.5mu]),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{3002}\;\mathrm{2}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),{}\<[44]%
+\>[44]{}\mbox{\onelinecomment  0.1 1000}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{4660}\;\mathrm{3}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),\mbox{\onelinecomment  0 100}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{4749}\;\mathrm{2}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),{}\<[44]%
+\>[44]{}\mbox{\onelinecomment  0.1 1000}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{4750}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{gSharp}\mskip1.5mu]),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{4875}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{aSharp}\mskip1.5mu]),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{5000}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{gSharp}\mskip1.5mu]),{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{5333}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{f}\mskip1.5mu]),{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{5666}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{cSharp}\mskip1.5mu]),{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{6000}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{g}\mskip1.5mu]),{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{6650}\;\mathrm{3}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),\mbox{\onelinecomment  0 100}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{6745}\;\mathrm{2}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),{}\<[44]%
+\>[44]{}\mbox{\onelinecomment  0.1 1000}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{6750}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{gSharp}\mskip1.5mu]),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{6875}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{aSharp}\mskip1.5mu]),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{7000}\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{gSharp}\mskip1.5mu]),{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{7000}\;\mathrm{16}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]),\mbox{\onelinecomment  MyMetro stop}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdEvent}\;\mathrm{8000}\;\mathrm{3}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu])\mskip1.5mu]\mbox{\onelinecomment  0 100}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+In Pure Data, the sound card is represented by the \texttt{dac\textasciitilde{}} object. Our
+interpreter does nat handle actual audio output natively, but we can extract
+the inlet data from that node from the list of states, and convert it to an
+audio \texttt{wav} file format, that is then sent to standard output.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{convertData}\mathbin{::}\Conid{PdNodeState}\to [\mskip1.5mu \Conid{Integer}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{convertData}\;(\Conid{PdNodeState}\;\Varid{ins}\;\anonymous )\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}\;\Varid{inlet}\mathrel{=}\Varid{index}\;\Varid{ins}\;\mathrm{0}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}\;\Varid{map}\;(\lambda (\Conid{PdFloat}\;\Varid{f})\to \Varid{floor}\;(\Varid{f}\mathbin{*}\mathrm{32768}))\;\Varid{inlet}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{everyOther}\mathbin{::}[\mskip1.5mu \Varid{a}\mskip1.5mu]\to [\mskip1.5mu \Varid{a}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{everyOther}\;(\Varid{x}\mathbin{:}(\Varid{y}\mathbin{:}\Varid{xs}))\mathrel{=}\Varid{x}\mathbin{:}\Varid{everyOther}\;\Varid{xs}{}\<[E]%
+\\
+\>[B]{}\Varid{everyOther}\;\Varid{x}\mathrel{=}\Varid{x}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{genOutput}\;\Varid{x}\mathrel{=}\Varid{concat}\mathbin{\$}\Varid{everyOther}{}\<[E]%
+\\
+\>[B]{}\hsindent{22}{}\<[22]%
+\>[22]{}\mathbin{\$}\Varid{toList}{}\<[E]%
+\\
+\>[B]{}\hsindent{22}{}\<[22]%
+\>[22]{}\mathbin{\$}\Varid{fmap}\;(\lambda (\Conid{PdState}\;\anonymous \;\Varid{nss}\;\anonymous \;\anonymous )\to \Varid{convertData}\mathbin{\$}\Varid{index}\;\Varid{nss}\;\mathrm{6})\;\Varid{x}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{putWav}\;\Varid{vs}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{riff}{}\<[13]%
+\>[13]{}\mathrel{=}\mathrm{0}\;\Varid{x46464952}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{wave}{}\<[13]%
+\>[13]{}\mathrel{=}\mathrm{0}\;\Varid{x45564157}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{fmts}{}\<[13]%
+\>[13]{}\mathrel{=}\mathrm{0}\;\Varid{x20746d66}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{datx}{}\<[13]%
+\>[13]{}\mathrel{=}\mathrm{0}\;\Varid{x61746164}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{formatHeaderLen}\mathrel{=}\mathrm{16}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{fileSize}\mathrel{=}(\mathrm{44}\mathbin{+}(\Varid{length}\;\Varid{vs})\mathbin{*}\mathrm{2}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{bitsPerSample}\mathrel{=}\mathrm{16}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{format}\mathrel{=}\mathrm{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{channels}\mathrel{=}\mathrm{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sampleRate}\mathrel{=}\mathrm{32000}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}\;\mathbf{do}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord32le}\;\Varid{riff}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord32le}\;(\Varid{fromIntegral}\;\Varid{fileSize}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord32le}\;\Varid{wave}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord32le}\;\Varid{fmts}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord32le}\;\Varid{formatHeaderLen}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord16le}\;\Varid{format}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord16le}\;\Varid{channels}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord32le}\;\Varid{sampleRate}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord32le}\;(\Varid{sampleRate}\mathbin{*}\Varid{bitsPerSample}\mathbin{*}(\Varid{fromIntegral}\;\Varid{channels})\mathbin{\Varid{`div`}}\mathrm{8}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord16le}\;(((\Varid{fromIntegral}\;\Varid{bitsPerSample})\mathbin{*}\Varid{channels})\mathbin{\Varid{`div`}}\mathrm{8}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord16le}\;(\Varid{fromIntegral}\;\Varid{bitsPerSample}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord32le}\;\Varid{datx}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putWord32le}\;(\Varid{fromIntegral}\;((\Varid{length}\;\Varid{vs})\mathbin{*}\mathrm{2})){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{mapM\char95 }\;(\Varid{putWord16le}\mathbin{\circ}\Varid{fromIntegral})\;\Varid{vs}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+%END LYX DEMO

@@ -1,0 +1,1639 @@
+%BEGIN LYX TEXT
+
+This implementation uses only standard modules included in the Haskell Platform:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Sequence}\;(\Conid{Seq},\Varid{fromList},\Varid{index},\Varid{update},\Varid{foldlWithIndex}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Varid{qualified}\;\Conid{\Conid{Data}.Sequence}\;\Varid{as}\;\Conid{Seq}\;(\Varid{length}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Foldable}\;(\Varid{foldl'},\Varid{toList}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.List}\;(\Varid{sort},\Varid{intercalate},\Varid{find}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Text}.Printf}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Fixed}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.\Conid{Binary}.Put}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Varid{qualified}\;\Conid{\Conid{Data}.\Conid{ByteString}.Lazy}\;\Varid{as}\;\Conid{ByteString}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Control}.Monad}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Debug}.Trace}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Representation of programs}
+
+A Pure Data program (called a ``patch'') is represented with the
+\ensuremath{\Conid{PdPatch}} data type in our model, which contains a sequence of nodes, a
+sequence of connections between nodes, and the pre-computed topological sort
+of audio connections (stored as a list of integer indices).
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{30}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{PdPatch}\mathrel{=}{}\<[17]%
+\>[17]{}\Conid{PdPatch}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{pNodes}{}\<[30]%
+\>[30]{}\mathbin{::}\Conid{Seq}\;\Conid{PdNode},{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{pConns}{}\<[30]%
+\>[30]{}\mathbin{::}\Conid{Seq}\;(\cdot \rhd \cdot ),{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{pDspSort}{}\<[30]%
+\>[30]{}\mathbin{::}[\mskip1.5mu \Conid{Int}\mskip1.5mu]{}\<[E]%
+\\
+\>[17]{}\mskip1.5mu\}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The primitive values in Pure Data are called ``atoms'': they can be numbers,
+strings (called ``symbols'') or opaque pointers. Opaque pointers are used by
+graphical objects only, so those will be omitted here.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{14E}{@{}l@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{25}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{29}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{PdAtom}{}\<[14]%
+\>[14]{}\mathrel{=}{}\<[14E]%
+\>[17]{}\Conid{PdFloat}\;{}\<[29]%
+\>[29]{}\Conid{Double}{}\<[E]%
+\\
+\>[14]{}\mid {}\<[14E]%
+\>[17]{}\Conid{PdSymbol}\;{}\<[29]%
+\>[29]{}\Conid{String}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;(\Conid{Eq},\Conid{Ord}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{instance}\;\Conid{Show}\;\Conid{PdAtom}\;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\Conid{PdFloat}\;\Varid{f}){}\<[25]%
+\>[25]{}\mathrel{=}\Varid{show}\;\Varid{f}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\Conid{PdSymbol}\;\Varid{s}){}\<[25]%
+\>[25]{}\mathrel{=}\Varid{s}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Nodes may be objects, atom boxes or message boxes. In Pure Data, objects are
+initialized via ``creation arguments'': a string of arguments, represented
+here as a list of atoms. We also store in an object its number of inlets and
+outlets. Atom boxes and message boxes always have one inlet and one outlet
+each.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{14E}{@{}l@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{PdNode}{}\<[14]%
+\>[14]{}\mathrel{=}{}\<[14E]%
+\>[17]{}\Conid{PdObj}\;{}\<[28]%
+\>[28]{}[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\;\Conid{Int}\;\Conid{Int}{}\<[E]%
+\\
+\>[14]{}\mid {}\<[14E]%
+\>[17]{}\Conid{PdAtomBox}\;{}\<[28]%
+\>[28]{}\Conid{PdAtom}{}\<[E]%
+\\
+\>[14]{}\mid {}\<[14E]%
+\>[17]{}\Conid{PdMsgBox}\;{}\<[28]%
+\>[28]{}[\mskip1.5mu \Conid{PdCommand}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Message boxes contain commands written in the textual sub-language of Pure
+Data. Here, we represent commands not as a string, but in parsed form,
+consisting of a receiver and a list of tokens (which may be literal values or
+numbered references to inlet data (written \texttt{\$\emph{n}} in the textual language).
+Note that a single message box may contain a number of messages.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{15}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{15E}{@{}l@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{29}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{PdCommand}\mathrel{=}\Conid{PdCommand}\;\Conid{PdReceiver}\;[\mskip1.5mu \Conid{PdToken}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{data}\;\Conid{PdReceiver}{}\<[18]%
+\>[18]{}\mathrel{=}{}\<[21]%
+\>[21]{}\Conid{PdToOutlet}{}\<[E]%
+\\
+\>[18]{}\mid {}\<[21]%
+\>[21]{}\Conid{PdReceiver}\;\Conid{String}{}\<[E]%
+\\
+\>[18]{}\mid {}\<[21]%
+\>[21]{}\Conid{PdRDollar}\;\Conid{Int}{}\<[E]%
+\\
+\>[18]{}\mid {}\<[21]%
+\>[21]{}\Conid{PdReceiverErr}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{data}\;\Conid{PdToken}{}\<[15]%
+\>[15]{}\mathrel{=}{}\<[15E]%
+\>[18]{}\Conid{PdTDollar}\;{}\<[29]%
+\>[29]{}\Conid{Int}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{PdTAtom}\;{}\<[29]%
+\>[29]{}\Conid{PdAtom}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Finally, we represent the connections of the graph as a sequence of adjacency
+pairs, where each pair is represented as a \ensuremath{(\cdot \rhd \cdot )} value, itself
+composed of two pairs: the node index and outlet index for the source, and the
+node index and inlet index for the destination. Throughout the interpreter, we
+will often use the names $(src, outl)$ and $(dst, inl)$ to refer to those
+indices.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;(\cdot \rhd \cdot )\mathrel{=}((\Conid{Int},\Conid{Int})\rhd (\Conid{Int},\Conid{Int})){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Representation of states}
+
+The representation of a state in our interpreter is a structure containing the
+following values: the step count, which will double as our timestamp, since
+Pure Data has time-based execution; the state for each node; the text contents
+of the Pd logger window; and future events scheduled by the interpreter.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{30}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{PdState}\mathrel{=}{}\<[17]%
+\>[17]{}\Conid{PdState}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{sTs}{}\<[30]%
+\>[30]{}\mathbin{::}\Conid{Int},{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{sNStates}{}\<[30]%
+\>[30]{}\mathbin{::}(\Conid{Seq}\;\Conid{PdNodeState}),{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{sLog}{}\<[30]%
+\>[30]{}\mathbin{::}[\mskip1.5mu \Conid{String}\mskip1.5mu],{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{sSched}{}\<[30]%
+\>[30]{}\mathbin{::}[\mskip1.5mu \Conid{PdEvent}\mskip1.5mu]{}\<[E]%
+\\
+\>[17]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The state for each node, on its turn, contains a sequence of atom buffers,
+one for each inlet, and an internal memory (represented as a list of atoms).
+Memory consumption during execution is therefore variable, characterizing
+a dynamic dataflow model.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{PdNodeState}\mathrel{=}\Conid{PdNodeState}\;(\Conid{Seq}\;[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu])\;[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+We represent events with a timestamp, the node index indicating which node was
+triggered, and a list of atoms representing the event data (such as the number
+entered by the user in an atom box).
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{PdEvent}\mathrel{=}{}\<[17]%
+\>[17]{}\Conid{PdEvent}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{eTs}{}\<[27]%
+\>[27]{}\mathbin{::}\Conid{Int},{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{eNidx}{}\<[27]%
+\>[27]{}\mathbin{::}\Conid{Int},{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{eArg}{}\<[27]%
+\>[27]{}\mathbin{::}[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]{}\<[E]%
+\\
+\>[17]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;(\Conid{Show},\Conid{Eq},\Conid{Ord}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Execution}
+
+The execution mode of Pure Data is data-driven. The user triggers events via
+its interface, and those events cause a cascading series of firings. The user
+may trigger events by clicking nodes, entering numbers (or using MIDI devices,
+which are equivalent to entering numbers).
+
+\subsubsection{Main loop}
+
+The execution of the interpreter, therefore, is a loop of evaluation steps.
+The driver function takes a number of steps, the patch to run, a list of timed
+events, accumulating a list of states. We are interested in all states, not
+only the final one, because we want to be able to inspect the results of the
+execution over time.
+
+Note that the patch itself, \ensuremath{\Varid{p}}, remains unchanged over time. This
+is typical of a language with liveness level 2: the patch cannot be modified
+during execution.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runSteps}\mathbin{::}\Conid{Int}\to \Conid{PdPatch}\to [\mskip1.5mu \Conid{PdEvent}\mskip1.5mu]\to [\mskip1.5mu \Conid{PdState}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{runSteps}\;\Varid{nSteps}\;\Varid{p}\;\Varid{events}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{reverse}\mathbin{\$}\Varid{snd}\mathbin{\$}\Varid{foldl'}\;\Varid{acc}\;(\Varid{events},[\mskip1.5mu \Varid{initialState}\;\Varid{p}\mskip1.5mu])\;[\mskip1.5mu \mathrm{0}\mathinner{\ldotp\ldotp}(\Varid{nSteps}\mathbin{-}\mathrm{1})\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{absTime}\mathbin{::}[\mskip1.5mu \Conid{PdEvent}\mskip1.5mu]\to \Conid{Int}\to [\mskip1.5mu \Conid{PdEvent}\mskip1.5mu]{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{absTime}\;\Varid{evs}\;\Varid{ts}\mathrel{=}\Varid{map}\;(\lambda \Varid{e}\to \Varid{e}\;\{\mskip1.5mu \Varid{eTs}\mathrel{=}(\Varid{eTs}\;\Varid{e})\mathbin{+}\Varid{ts}\mskip1.5mu\})\;\Varid{evs}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{acc}\mathbin{::}([\mskip1.5mu \Conid{PdEvent}\mskip1.5mu],[\mskip1.5mu \Conid{PdState}\mskip1.5mu])\to \Conid{Int}\to ([\mskip1.5mu \Conid{PdEvent}\mskip1.5mu],[\mskip1.5mu \Conid{PdState}\mskip1.5mu]){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{acc}\;(\Varid{events},\Varid{states}\mathord{@}(\Varid{s}\mathbin{:}\Varid{ss}))\;\Varid{step}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\Varid{sort}\;(events_{next}\plus \Varid{absTime}\;(\Varid{sSched}\;\Varid{s'})\;\Varid{step}),\Varid{s'}\mathbin{:}\Varid{states}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}(events_{curr},events_{next})\mathrel{=}\Varid{span}\;(\lambda (\Conid{PdEvent}\;\Varid{ts}\;\anonymous \;\anonymous )\to \Varid{ts}\equiv \Varid{step})\;\Varid{events}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{s'}\mathrel{=}\Varid{runStep}\;\Varid{p}\;(\Varid{s}\;\{\mskip1.5mu \Varid{sSched}\mathrel{=}[\mskip1.5mu \mskip1.5mu]\mskip1.5mu\})\;events_{curr}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The loop above extracts the sublist of relevant events for the current
+timestamp, and hands it over to the main evaluation function, \ensuremath{\Varid{runStep}},
+which, given a patch, the current state, and a list of events, produces
+a new state.
+
+Processing a step may produce new future events to be scheduled. These are
+sorted along with the existing events of the input. Runtime events are
+produced by the interpreter using relative timestamps (where 0 means ``now''),
+so we adjust them to absolute time using auxiliary function \ensuremath{\Varid{adjTime}}.
+
+The function \ensuremath{\Varid{runStep}} processes events and the DSP tree. Following the
+specified semantics of Pure Data, this happens in an alternating fashion: all
+pending messages for a given timestamp are handled, and then the entire DSP
+tree is processed.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runStep}\mathbin{::}\Conid{PdPatch}\to \Conid{PdState}\to [\mskip1.5mu \Conid{PdEvent}\mskip1.5mu]\to \Conid{PdState}{}\<[E]%
+\\
+\>[B]{}\Varid{runStep}\;\Varid{p}\;\Varid{s}\;\Varid{events}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{s'}\mathrel{=}\Varid{runImmediateEvents}\;\Varid{p}\mathbin{\$}\Varid{foldl'}\;(\Varid{runEvent}\;\Varid{p})\;\Varid{s}\;\Varid{events}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{s''}\mathrel{=}\mathbf{if}\;(\Varid{sTs}\;\Varid{s})\mathbin{\Varid{`mod`}}\mathrm{2}\equiv \mathrm{0}{}\<[E]%
+\\
+\>[7]{}\hsindent{6}{}\<[13]%
+\>[13]{}\mathbf{then}\;\Varid{runDspTree}\;\Varid{p}\;\Varid{s'}{}\<[E]%
+\\
+\>[7]{}\hsindent{6}{}\<[13]%
+\>[13]{}\mathbf{else}\;\Varid{s'}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{s''}\;\{\mskip1.5mu \Varid{sTs}\mathrel{=}(\Varid{sTs}\;\Varid{s})\mathbin{+}\mathrm{1}\mskip1.5mu\}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+In our model, the DSP tree is processed at half the rate of the message-based
+events (hence, \ensuremath{\Varid{runDspTree}} is called at every other run of
+\ensuremath{\Varid{runStep}}). Assuming that a step in our interpreter is 1~ms, this means
+the DSP engine runs once every 2~ms (the default configuration of Pd runs the
+engine every 1.45~ms; with a 64-sample buffer, this amounts to an audio sample
+rate of 44,100~Hz \textemdash{} with this simplification in our interpreter, we get
+36,000~Hz).
+
+The Pure Data documentation specifies that "In the middle of a message cascade
+you may schedule another one at a delay of zero. This delayed cascade happens
+after the present cascade has finished, but at the same logical time". So,
+events scheduled during the current step with a relative timestamp set to zero
+are immediately executed before running the DSP tree:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runImmediateEvents}\mathbin{::}\Conid{PdPatch}\to \Conid{PdState}\to \Conid{PdState}{}\<[E]%
+\\
+\>[B]{}\Varid{runImmediateEvents}\;\Varid{p}\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}\;\Varid{z}\mathrel{=}[\mskip1.5mu \Varid{ev}\mid \Varid{ev}\leftarrow (\Varid{sSched}\;\Varid{s}),\Varid{eTs}\;\Varid{ev}\equiv \mathrm{0}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}\;\mathbf{if}\;\Varid{z}\equiv [\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{then}\;\Varid{s}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{else}\;\Varid{runStep}\;\Varid{p}\;\Varid{s}\;\Varid{z}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Event processing}
+
+Two kinds of events can be triggered by the user. Message boxes may be
+clicked, processing all commands stored inside them, or new numeric values
+may be entered into atom boxes. We do it producing a synthetic firing
+of the relevant node.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runEvent}\mathbin{::}\Conid{PdPatch}\to \Conid{PdState}\to \Conid{PdEvent}\to \Conid{PdState}{}\<[E]%
+\\
+\>[B]{}\Varid{runEvent}\;\Varid{p}\;\Varid{s}\;\Varid{event}\mathord{@}(\Conid{PdEvent}\;\Varid{ts}\;i_{N}\;\Varid{args})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{fire}\;\Varid{p}\;(\Varid{index}\;(\Varid{pNodes}\;\Varid{p})\;i_{N})\;\Varid{args}\;(i_{N},\mathrm{0})\;\Varid{s}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The \ensuremath{\Varid{fire}} function invokes the appropriate action for a node, producing
+a new state.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{fire}\mathbin{::}\Conid{PdPatch}\to \Conid{PdNode}\to [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\to (\Conid{Int},\Conid{Int})\to \Conid{PdState}\to \Conid{PdState}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Depending on the type of node, we perform different actions. For message
+boxes, we feed the incoming atoms into the inlet, and then we fold over its
+triggering its commands, like when they are clicked by the user. As we will
+see below in the definition of \ensuremath{\Varid{runCommand}}, this may fire further nodes
+either directly or indirectly.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{fire}\;\Varid{p}\;(\Conid{PdMsgBox}\;\Varid{cmds})\;\Varid{atoms}\;(i_{N},\Varid{inl})\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mathrel{=}\Varid{index}\;(\Varid{sNStates}\;\Varid{s})\;i_{N}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns'}\mathrel{=}\Conid{PdNodeState}\;(\Varid{update}\;\Varid{inl}\;\Varid{atoms}\;\Varid{ins})\;\Varid{mem}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{s'}\mathrel{=}\Varid{s}\;\{\mskip1.5mu \Varid{sNStates}\mathrel{=}(\Varid{update}\;i_{N}\;\Varid{ns'}\;(\Varid{sNStates}\;\Varid{s}))\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{foldl'}\;(\Varid{runCommand}\;\Varid{p}\;i_{N})\;\Varid{s'}\;\Varid{cmds}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+For objects and atom boxes, we hand over the incoming data to the
+\ensuremath{\Varid{sendMsg}} handler function, which implements the various behaviors
+supported by different Pure Data objects. The function \ensuremath{\Varid{sendMsg}}
+returns a tuple with the updated node state, log outputs produced (if any),
+data to be sent via outlets and new events to be scheduled. We update the
+state with this data, adjusting the node index of the returned events to point
+them to that of the current node (\ensuremath{i_{N}}): a node can only schedule events for
+itself. Finally, we propagate the data through the outlets, processing them
+from right to left, as mandated by the Pure Data specification.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{34}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{fire}\;\Varid{p}\;\Varid{node}\;\Varid{atoms}\;(i_{N},\Varid{inl})\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns}\mathrel{=}\Varid{index}\;(\Varid{sNStates}\;\Varid{s})\;i_{N}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{ns'},\Varid{logw'},\Varid{outlets},\Varid{evs})\mathrel{=}\Varid{sendMsg}\;\Varid{node}\;\Varid{atoms}\;\Varid{inl}\;\Varid{ns}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{s'}\mathrel{=}\Varid{s}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{sNStates}{}\<[20]%
+\>[20]{}\mathrel{=}\Varid{update}\;i_{N}\;\Varid{ns'}\;(\Varid{sNStates}\;\Varid{s}),{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{sLog}{}\<[20]%
+\>[20]{}\mathrel{=}(\Varid{sLog}\;\Varid{s}){}\<[34]%
+\>[34]{}\plus \Varid{logw'},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{sSched}{}\<[20]%
+\>[20]{}\mathrel{=}(\Varid{sSched}\;\Varid{s}){}\<[34]%
+\>[34]{}\plus (\Varid{map}\;(\lambda \Varid{e}\to \Varid{e}\;\{\mskip1.5mu \Varid{eNidx}\mathrel{=}i_{N}\mskip1.5mu\})\;\Varid{evs}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mskip1.5mu\}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{propagate}\mathbin{::}\Conid{PdState}\to ([\mskip1.5mu \Conid{PdAtom}\mskip1.5mu],\Conid{Int})\to \Conid{PdState}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{propagate}\;\Varid{s}\;(\Varid{atoms},\Varid{outl})\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{if}\;\Varid{atoms}\equiv [\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{then}\;\Varid{s}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{else}\;\Varid{forEachInOutlet}\;\Varid{p}\;(i_{N},\Varid{outl})\;\Varid{atoms}\;\Varid{s}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{foldl'}\;\Varid{propagate}\;\Varid{s'}\;(\Varid{zip}\;(\Varid{reverse}\;\Varid{outlets})\;[\mskip1.5mu \Varid{length}\;\Varid{outlets}\mathbin{-}\mathrm{1}\mathinner{\ldotp\ldotp}\mathrm{0}\mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+When propagating data, we send it to every connected outlet of a node. A node
+may have multiple outlets and multiple nodes can be connected to a single
+outlet. This function takes the patch, a $\left(node, outlet\right)$ pair of
+indices indicating the source of the data, the data itself (a list of atoms),
+and the current state. It folds over the list of connections of the patch,
+firing the data to the appropriate inlets of all matching connections.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{29}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{forEachInOutlet}\mathbin{::}\Conid{PdPatch}\to (\Conid{Int},\Conid{Int})\to [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\to \Conid{PdState}\to \Conid{PdState}{}\<[E]%
+\\
+\>[B]{}\Varid{forEachInOutlet}\;\Varid{p}\;\Varid{srcPair}\;\Varid{atoms}\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{foldl'}\;\Varid{handle}\;\Varid{s}\;(\Varid{pConns}\;\Varid{p}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{handle}\mathbin{::}\Conid{PdState}\to (\cdot \rhd \cdot )\to \Conid{PdState}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{handle}\;\Varid{s}\;(\Varid{from}\rhd (\Varid{to}\mathord{@}(\Varid{dst},\Varid{inl}))){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid \Varid{srcPair}\equiv \Varid{from}{}\<[29]%
+\>[29]{}\mathrel{=}\Varid{fire}\;\Varid{p}\;(\Varid{index}\;(\Varid{pNodes}\;\Varid{p})\;\Varid{dst})\;\Varid{atoms}\;\Varid{to}\;\Varid{s}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid \Varid{otherwise}{}\<[29]%
+\>[29]{}\mathrel{=}\Varid{s}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Pure Data commands are written in its textual language. Commands may include
+references to data obtained via inlets of the node using the $\$n$ notation.
+For example, sending \texttt{10 20} to a message box containing \texttt{pitch
+\$2 velocity \$1} connected to an object box \texttt{print} will print to the
+log window the string \texttt{pitch 20 velocity 10}.
+
+In function \ensuremath{\Varid{runCommand}} below, we run a given command \ensuremath{\Varid{cmd}} on a
+node (with index \ensuremath{i_{N}}) by first obtaining the inlet data currently
+stored in the node state. Then we perform $\$$-expansion on the command's
+tokens. Then, based on the receiver of the message, we route it through the
+graph (forwarding it to every outlet, in a classic dataflow fashion) or
+symbolically, sending it to all objects configured as a receivers for the
+given name.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runCommand}\mathbin{::}\Conid{PdPatch}\to \Conid{Int}\to \Conid{PdState}\to \Conid{PdCommand}\to \Conid{PdState}{}\<[E]%
+\\
+\>[B]{}\Varid{runCommand}\;\Varid{p}\;i_{N}\;(\Conid{PdState}\;\Varid{ts}\;\Varid{nss}\;\Varid{logw}\;\Varid{evs})\;\Varid{cmd}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mathrel{=}\Varid{index}\;\Varid{nss}\;i_{N}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{inletData}\mathrel{=}\Varid{index}\;\Varid{ins}\;\mathrm{0}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{recv},\Varid{atoms})\mathrel{=}\Varid{dollarExpansion}\;\Varid{cmd}\;\Varid{inletData}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns'}\mathrel{=}\Conid{PdNodeState}\;(\Varid{update}\;\mathrm{0}\;[\mskip1.5mu \mskip1.5mu]\;\Varid{ins})\;\Varid{mem}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nss'}\mathrel{=}\Varid{update}\;i_{N}\;\Varid{ns'}\;\Varid{nss}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{s'}\mathrel{=}\Conid{PdState}\;\Varid{ts}\;\Varid{nss'}\;\Varid{logw}\;\Varid{evs}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{case}\;\Varid{recv}\;\mathbf{of}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{PdToOutlet}\to {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{forEachInOutlet}\;\Varid{p}\;(i_{N},\mathrm{0})\;\Varid{atoms}\;\Varid{s'}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{PdReceiver}\;\Varid{r}\to {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{forEachReceiver}\;\Varid{p}\;\Varid{r}\;\Varid{atoms}\;\Varid{s'}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{PdReceiverErr}\to {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{printOut}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 \$1:~symbol~needed~as~message~destination\char34}\mskip1.5mu]\;\Varid{s'}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The process of $\$$-expansion is a simple substitution, where the receiver
+must be a string. Invalid indices are converted to zero. (In Pure Data, they
+also produce an error message to the log window, but here we omit this for
+brevity.) We also handle here a few syntactic shortcuts: a messages with a
+sole number like \texttt{1.0} expands to \texttt{float 1.0}; lists starting
+with a number get the prefix \texttt{list}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{41}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{ffor}\;\Varid{a}\;\Varid{f}\mathrel{=}\Varid{fmap}\;\Varid{f}\;\Varid{a}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{dollarExpansion}\mathbin{::}\Conid{PdCommand}\to [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\to (\Conid{PdReceiver},[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]){}\<[E]%
+\\
+\>[B]{}\Varid{dollarExpansion}\;(\Conid{PdCommand}\;\Varid{recv}\;\Varid{tokens})\;\Varid{inlData}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Varid{recv'},\Varid{atoms'}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{inlAt}\;\Varid{n}\mathrel{=}\mathbf{if}\;\Varid{n}\mathbin{<}\Varid{length}\;\Varid{inlData}\;\mathbf{then}\;\Varid{inlData}\mathbin{!!}\Varid{n}\;\mathbf{else}\;\Conid{PdFloat}\;\mathrm{0}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{recv'}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;\Varid{recv}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdRDollar}\;\Varid{n}\to {}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mathbf{case}\;\Varid{inlAt}\;\Varid{n}\;\mathbf{of}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\Conid{PdSymbol}\;\Varid{s}{}\<[28]%
+\>[28]{}\to \Conid{PdReceiver}\;\Varid{s}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\anonymous {}\<[28]%
+\>[28]{}\to \Conid{PdReceiverErr}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\anonymous \to \Varid{recv}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{atoms'}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{normalize}\mathbin{\$}\Varid{ffor}\;\Varid{tokens}\;(\lambda \Varid{token}\to {}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mathbf{case}\;\Varid{token}\;\mathbf{of}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{PdTDollar}\;\Varid{n}{}\<[27]%
+\>[27]{}\to \Varid{inlAt}\;\Varid{n}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{PdTAtom}\;\Varid{atom}{}\<[27]%
+\>[27]{}\to \Varid{atom}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{normalize}\;\Varid{atoms}\mathord{@}[\mskip1.5mu \Conid{PdFloat}\;\Varid{f}\mskip1.5mu]{}\<[41]%
+\>[41]{}\mathrel{=}(\Conid{PdSymbol}\;\text{\tt \char34 float\char34}\mathbin{:}\Varid{atoms}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{normalize}\;\Varid{atoms}\mathord{@}(\Conid{PdFloat}\;\Varid{f}\mathbin{:}\Varid{xs}){}\<[41]%
+\>[41]{}\mathrel{=}(\Conid{PdSymbol}\;\text{\tt \char34 list\char34}\mathbin{:}\Varid{atoms}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{normalize}\;\Varid{atoms}{}\<[41]%
+\>[41]{}\mathrel{=}\Varid{atoms}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Indirect connections are handled similarly to outlet connections, but instead
+of folding over the list of connections, we fold over the list of nodes,
+looking for objects declared as \texttt{receive $name$}. Note that the search
+happens over the statically-declared list of nodes of the patch. While it is
+possible construct a message at runtime and determine the receiver
+dynamically, it is not possible to change the identifier of a \texttt{receive}
+node at runtime.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{29}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{forEachReceiver}\mathbin{::}\Conid{PdPatch}{}\<[29]%
+\>[29]{}\to \Conid{String}{}\<[E]%
+\\
+\>[29]{}\to [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]{}\<[E]%
+\\
+\>[29]{}\to \Conid{PdState}\to \Conid{PdState}{}\<[E]%
+\\
+\>[B]{}\Varid{forEachReceiver}\;\Varid{p}\;\Varid{name}\;\Varid{atoms}\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{foldlWithIndex}\;\Varid{handle}\;\Varid{s}\;(\Varid{pNodes}\;\Varid{p}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{handle}\mathbin{::}\Conid{PdState}\to \Conid{Int}\to \Conid{PdNode}\to \Conid{PdState}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{handle}\;\Varid{s}\;\Varid{dst}\;(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 receive\char34}\mathbin{:}(\Conid{PdSymbol}\;\Varid{rname}\mathbin{:}\anonymous ))\;\anonymous \;\anonymous ){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid \Varid{name}\equiv \Varid{rname}\mathrel{=}\Varid{forEachInOutlet}\;\Varid{p}\;(\Varid{dst},\mathrm{0})\;\Varid{atoms}\;\Varid{s}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{handle}\;\Varid{s}\;\anonymous \;\anonymous \mathrel{=}\Varid{s}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Audio processing}
+
+The processing of audio nodes is very different from that of message nodes.
+Before execution, the audio nodes are topologically sorted, producing an
+order according to which they are evaluated on each DSP update. For simplicity,
+we do not compute this order at the beginning of execution, and merely assume
+it is given as an input (in the \ensuremath{\Varid{dspSort}} field of \ensuremath{\Varid{p}}).
+
+As the list of nodes is traversed, each object is triggered (applying the
+\ensuremath{\Varid{performDsp}} function) and then the new computed value of its audio
+buffer is propagated to the inlets of the nodes to which they are connected. 
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{31}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runDspTree}\mathbin{::}\Conid{PdPatch}\to \Conid{PdState}\to \Conid{PdState}{}\<[E]%
+\\
+\>[B]{}\Varid{runDspTree}\;\Varid{p}\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{s}\;\{\mskip1.5mu \Varid{sNStates}\mathrel{=}\Varid{nss'}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nss'}\mathrel{=}\Varid{foldl'}\;\Varid{handle}\;(\Varid{zeroDspInlets}\;(\Varid{sNStates}\;\Varid{s})\;(\Varid{pDspSort}\;\Varid{p}))\;(\Varid{pDspSort}\;\Varid{p}){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{handle}\mathbin{::}(\Conid{Seq}\;\Conid{PdNodeState})\to \Conid{Int}\to (\Conid{Seq}\;\Conid{PdNodeState}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{handle}\;\Varid{nss}\;i_{N}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{foldl'}\;(\Varid{propagate}\;\Varid{outputs})\;\Varid{nss''}\;(\Varid{pConns}\;\Varid{p}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{obj}\mathrel{=}\Varid{index}\;(\Varid{pNodes}\;\Varid{p})\;i_{N}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{ns}\mathord{@}(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mathrel{=}\Varid{index}\;\Varid{nss}\;i_{N}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}(\Varid{outputs},\Varid{mem'})\mathrel{=}\Varid{performDsp}\;\Varid{obj}\;\Varid{ns}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{nss''}\mathrel{=}\Varid{update}\;i_{N}\;(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem'})\;\Varid{nss}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{propagate}\mathbin{::}[\mskip1.5mu [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\mskip1.5mu]\to (\Conid{Seq}\;\Conid{PdNodeState})\to (\cdot \rhd \cdot )\to (\Conid{Seq}\;\Conid{PdNodeState}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{propagate}\;\Varid{outputs}\;\Varid{nss}\;((\Varid{src},\Varid{outl})\rhd (\Varid{dst},\Varid{inl})){}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mid \Varid{src}\equiv i_{N}{}\<[31]%
+\>[31]{}\mathrel{=}\Varid{addToInlet}\;(\Varid{dst},\Varid{inl})\;(\Varid{outputs}\mathbin{!!}\Varid{outl})\;\Varid{nss}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mid \Varid{otherwise}{}\<[31]%
+\>[31]{}\mathrel{=}\Varid{nss}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Each audio node has a 64-sample buffer that needs to be cleared before each
+traversal. Note that this is different from handling inlets in message
+objects: for message objects, the inlets become empty once consumed. Here, we
+need the inlet buffers to be filled with zeros.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{26}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{32}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{36}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{42}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{zeroDspInlets}\mathbin{::}(\Conid{Seq}\;\Conid{PdNodeState})\to [\mskip1.5mu \Conid{Int}\mskip1.5mu]\to (\Conid{Seq}\;\Conid{PdNodeState}){}\<[E]%
+\\
+\>[B]{}\Varid{zeroDspInlets}\;\Varid{nss}\;\Varid{dspSort}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{fromList}\mathbin{\$}\Varid{clearNodes}\;\mathrm{0}\;(\Varid{toList}\;\Varid{nss})\;(\Varid{sort}\;\Varid{dspSort}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{where}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{zeroInlets}\mathbin{::}\Conid{Int}\to (\Conid{Seq}\;[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{zeroInlets}\;\Varid{n}\mathrel{=}\Varid{fromList}\mathbin{\$}\Varid{replicate}\;\Varid{n}\;(\Varid{replicate}\;\mathrm{64}\;(\Conid{PdFloat}\;\mathrm{0.0})){}\<[E]%
+\\[\blanklineskip]%
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{zeroState}\mathbin{::}\Conid{PdNodeState}\to \Conid{PdNodeState}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{zeroState}\;(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mathrel{=}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{PdNodeState}\;(\Varid{zeroInlets}\;(\Varid{\Conid{Seq}.length}\;\Varid{ins}))\;\Varid{mem}{}\<[E]%
+\\[\blanklineskip]%
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{clearNodes}\mathbin{::}\Conid{Int}\to [\mskip1.5mu \Conid{PdNodeState}\mskip1.5mu]\to [\mskip1.5mu \Conid{Int}\mskip1.5mu]\to [\mskip1.5mu \Conid{PdNodeState}\mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{clearNodes}\;i_{N}\;(\Varid{st}\mathbin{:}\Varid{sts})\;\Varid{indices}\mathord{@}(\Varid{i}\mathbin{:}\Varid{is}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mid i_{N}\equiv \Varid{i}{}\<[26]%
+\>[26]{}\mathrel{=}\Varid{zeroState}\;\Varid{st}{}\<[42]%
+\>[42]{}\mathbin{:}\Varid{clearNodes}\;(i_{N}\mathbin{+}\mathrm{1})\;\Varid{sts}\;\Varid{is}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mid \Varid{otherwise}{}\<[26]%
+\>[26]{}\mathrel{=}\Varid{st}{}\<[42]%
+\>[42]{}\mathbin{:}\Varid{clearNodes}\;(i_{N}\mathbin{+}\mathrm{1})\;\Varid{sts}\;\Varid{indices}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{clearNodes}\;i_{N}\;{}\<[27]%
+\>[27]{}\Varid{nss}\;{}\<[32]%
+\>[32]{}[\mskip1.5mu \mskip1.5mu]{}\<[36]%
+\>[36]{}\mathrel{=}\Varid{nss}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{clearNodes}\;i_{N}\;{}\<[27]%
+\>[27]{}[\mskip1.5mu \mskip1.5mu]\;{}\<[32]%
+\>[32]{}\anonymous {}\<[36]%
+\>[36]{}\mathrel{=}[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The reason why we fill the inlets with zeros is because when multiple
+nodes connect to the same inlet in a DSP object, additive synthesis
+is performed: the values of the incoming buffer are added to the
+current contents of the inlet buffer, subject to saturation (audio
+values are internally floats between -1.0 and 1.0).
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{addToInlet}\mathbin{::}(\Conid{Int},\Conid{Int})\to [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\to (\Conid{Seq}\;\Conid{PdNodeState})\to (\Conid{Seq}\;\Conid{PdNodeState}){}\<[E]%
+\\
+\>[B]{}\Varid{addToInlet}\;(\Varid{dst},\Varid{inl})\;\Varid{atoms}\;\Varid{nss}\mathrel{=}\Varid{update}\;\Varid{dst}\;\Varid{ns'}\;\Varid{nss}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{saturate}\;(\Conid{PdFloat}\;\Varid{f})\mathrel{=}\Conid{PdFloat}\;(\Varid{max}\;(\mathbin{-}\mathrm{1.0})\;(\Varid{min}\;\mathrm{1.0}\;\Varid{f})){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{satSum}\;(\Conid{PdFloat}\;\Varid{a},\Conid{PdFloat}\;\Varid{b})\mathrel{=}\Varid{saturate}\mathbin{\$}\Conid{PdFloat}\;(\Varid{a}\mathbin{+}\Varid{b}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns}\mathord{@}(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mathrel{=}\Varid{index}\;\Varid{nss}\;\Varid{dst}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}atoms_{old}\mathrel{=}\Varid{index}\;\Varid{ins}\;\Varid{inl}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}atoms_{new}\mathrel{=}\Varid{fmap}\;\Varid{satSum}\;(\Varid{zip}\;atoms_{old}\;\Varid{atoms}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns'}\mathrel{=}\Conid{PdNodeState}\;(\Varid{update}\;\Varid{inl}\;atoms_{new}\;\Varid{ins})\;\Varid{mem}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+In Section~\ref{dsps} we will present \ensuremath{\Varid{performDsp}}, which implements the
+various DSP objects supported by this interpreter.
+
+\subsubsection{Initial state}
+
+Finally, for completeness of the execution model, we present here the
+functions that create the initial state.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{30}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{64}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{emptyInlets}\mathbin{::}\Conid{Int}\to \Conid{Seq}\;[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{emptyInlets}\;\Varid{n}\mathrel{=}\Varid{fromList}\;(\Varid{replicate}\;\Varid{n}\;[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{initialState}\mathbin{::}\Conid{PdPatch}\to \Conid{PdState}{}\<[E]%
+\\
+\>[B]{}\Varid{initialState}\;(\Conid{PdPatch}\;\Varid{nodes}\;\anonymous \;\anonymous )\mathrel{=}\Conid{PdState}\;\mathrm{0}\;(\Varid{fmap}\;\Varid{emptyNode}\;\Varid{nodes})\;[\mskip1.5mu \mskip1.5mu]\;[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{emptyNode}\;\Varid{node}\mathrel{=}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{case}\;\Varid{node}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdAtomBox}\;{}\<[21]%
+\>[21]{}\Varid{atom}{}\<[30]%
+\>[30]{}\to \Conid{PdNodeState}\;(\Varid{emptyInlets}\;\mathrm{1})\;{}\<[64]%
+\>[64]{}[\mskip1.5mu \Varid{atom}\mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdObj}\;{}\<[21]%
+\>[21]{}\anonymous \;\Varid{inl}\;\anonymous {}\<[30]%
+\>[30]{}\to \Conid{PdNodeState}\;(\Varid{emptyInlets}\;\Varid{inl})\;{}\<[64]%
+\>[64]{}[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{PdMsgBox}\;{}\<[21]%
+\>[21]{}\anonymous {}\<[30]%
+\>[30]{}\to \Conid{PdNodeState}\;(\Varid{emptyInlets}\;\mathrm{1})\;{}\<[64]%
+\>[64]{}[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Operations}
+
+The graphical language of Pure Data is graph-based and contains only nodes and
+edges. The contents of nodes (object boxes, message boxes and atom boxes) are
+textual. Like there are two kinds of edges (message and audio), there are also
+two kinds of objects. Audio-handling objects are identified by a \texttt{\textasciitilde{}}
+suffix in their names (the Pure Data documentation calls them ``tilde
+objects''. In our interpreter, plain objects are implemented in the
+\ensuremath{\Varid{sendMsg}} function (Section~\ref{msgs}) and tilde objects are
+implemented in the \ensuremath{\Varid{performDsp}} function (Section~\ref{dsps}).
+
+For printing to the log, we present a simple auxiliary function that adds to
+the output log of the state value.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{printOut}\mathbin{::}[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\to \Conid{PdState}\to \Conid{PdState}{}\<[E]%
+\\
+\>[B]{}\Varid{printOut}\;\Varid{atoms}\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{s}\;\{\mskip1.5mu \Varid{sLog}\mathrel{=}(\Varid{sLog}\;\Varid{s})\plus [\mskip1.5mu \Varid{intercalate}\;\text{\tt \char34 ~\char34}\mathbin{\$}\Varid{map}\;\Varid{show}\;\Varid{atoms}\mskip1.5mu]\mskip1.5mu\}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The implementation of all non-audio nodes is done in the \ensuremath{\Varid{sendMsg}}
+function, which pattern-matches on the structure of the node (which includes
+the parsed representation of its textual definition). 
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{sendMsg}\mathbin{::}{}\<[13]%
+\>[13]{}\Conid{PdNode}\to [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\to \Conid{Int}\to \Conid{PdNodeState}{}\<[E]%
+\\
+\>[13]{}\to (\Conid{PdNodeState},[\mskip1.5mu \Conid{String}\mskip1.5mu],[\mskip1.5mu [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\mskip1.5mu],[\mskip1.5mu \Conid{PdEvent}\mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Unlike the \ensuremath{\Varid{runCommand}} function used in the firing of message boxes,
+which causes global effects to the graph evaluation (via indirect connections)
+and therefore needs access to the whole state, \ensuremath{\Varid{sendMsg}} accesses
+only the node's private state, producing a triple containing the new private
+node state, any text produced for the output log, a list of messages to
+be sent via the node's outlets and any new events to be scheduled.
+
+Similarly to \ensuremath{\Varid{sendMsg}}, we define a single function that performs the
+operations for all audio-processing objects:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{performDsp}\mathbin{::}\Conid{PdNode}\to \Conid{PdNodeState}\to ([\mskip1.5mu [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\mskip1.5mu],[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The \ensuremath{\Varid{performDsp}} function takes the object, its node state and
+outputs the audio buffer to be sent at the node's outlets, and the
+updated internal data for the node.
+
+We did not implement the full range of objects supported by Pure Data since
+our goal was not to produce a full-fledged computer music application, but
+we included a few representative objects that allow us to demonstrate the
+interpreter and the various behaviors of objects.
+
+\subsubsection{Atom boxes}
+
+When given a float, atom boxes update their internal memory and propagate the
+value. When given a \texttt{bang}, they just propagate the value.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{sendMsg}\;(\Conid{PdAtomBox}\;\anonymous )\;(\Conid{PdSymbol}\;\text{\tt \char34 float\char34}\mathbin{:}\Varid{fl})\;\mathrm{0}\;\anonymous \mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Conid{PdNodeState}\;(\Varid{fromList}\;[\mskip1.5mu \mskip1.5mu])\;\Varid{fl},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34}\mathbin{:}\Varid{fl}\mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{sendMsg}\;(\Conid{PdAtomBox}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\;\mathrm{0}\;\Varid{ns}\mathord{@}(\Conid{PdNodeState}\;\anonymous \;\Varid{mem})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Varid{ns},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34}\mathbin{:}\Varid{mem}\mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{An object with side-effects: \texttt{print}}
+
+The \texttt{print} object accepts data through its inlet and prints it to
+the log console. It demonstrates the use of the log console as a global
+side-effect.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{sendMsg}\;(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 print\char34}\mathbin{:}\Varid{xs})\;\anonymous \;\anonymous )\;(\Conid{PdSymbol}\;\text{\tt \char34 float\char34}\mathbin{:}\Varid{fs})\;\mathrm{0}\;\Varid{ns}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Varid{ns},[\mskip1.5mu \text{\tt \char34 print:~\char34}\plus (\Varid{intercalate}\;\text{\tt \char34 ~\char34}\mathbin{\$}\Varid{map}\;\Varid{show}\;(\Varid{xs}\plus \Varid{fs}))\mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{sendMsg}\;(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 print\char34}\mathbin{:}\Varid{xs})\;\anonymous \;\anonymous )\;(\Conid{PdSymbol}\;\text{\tt \char34 list\char34}\mathbin{:}\Varid{ls})\;\mathrm{0}\;\Varid{ns}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Varid{ns},[\mskip1.5mu \text{\tt \char34 print:~\char34}\plus (\Varid{intercalate}\;\text{\tt \char34 ~\char34}\mathbin{\$}\Varid{map}\;\Varid{show}\;(\Varid{xs}\plus \Varid{ls}))\mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{sendMsg}\;(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 print\char34}\mathbin{:}\Varid{xs})\;\anonymous \;\anonymous )\;\Varid{atoms}\;\mathrm{0}\;\Varid{ns}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Varid{ns},[\mskip1.5mu \text{\tt \char34 print:~\char34}\plus (\Varid{intercalate}\;\text{\tt \char34 ~\char34}\mathbin{\$}\Varid{map}\;\Varid{show}\;\Varid{atoms})\mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{An object with hot and cold inlets: \texttt{+}}
+
+In Pure Data, the first inlet of a node is the ``hot'' inlet; when data is
+received through it, the action of the node is performed. When data arrives in
+``cold'' inlets, it stays queued until the ``hot'' inlet causes the object to
+be evaluated.
+
+The \texttt{+} object demonstrates the behavior of hot and cold inlets. 
+When a number arrives in the hot inlet, it sums the values in inlets 0 and 1
+and sends it through its outlet. When a \texttt{bang} arrives in the hot outlet,
+the most recently received values in the inlet buffers are used for the sum instead.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{sendMsg}\;{}\<[10]%
+\>[10]{}(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 +\char34},\Varid{n}\mskip1.5mu]\;\anonymous \;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Varid{fl}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
+\\
+\>[10]{}\hsindent{4}{}\<[14]%
+\>[14]{}(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdFloat}\;val_0)\mathrel{=}\Varid{fl}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}inlet_1\mathrel{=}\Varid{index}\;\Varid{ins}\;\mathrm{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdFloat}\;val_1)\mathrel{=}\mathbf{if}\;inlet_1\equiv [\mskip1.5mu \mskip1.5mu]\;\mathbf{then}\;\Varid{n}\;\mathbf{else}\;\Varid{head}\;inlet_1{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{mem'}\mathrel{=}[\mskip1.5mu \Conid{PdFloat}\;(val_0\mathbin{+}val_1)\mskip1.5mu]{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns'}\mathrel{=}\Conid{PdNodeState}\;(\Varid{update}\;\mathrm{0}\;[\mskip1.5mu \Varid{fl}\mskip1.5mu]\;\Varid{ins})\;\Varid{mem'}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{ns'},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34}\mathbin{:}\Varid{mem'}\mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{sendMsg}\;{}\<[10]%
+\>[10]{}(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 +\char34},\Varid{n}\mskip1.5mu]\;\anonymous \;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
+\\
+\>[10]{}\hsindent{4}{}\<[14]%
+\>[14]{}(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}inlet_0\mathrel{=}\Varid{index}\;\Varid{ins}\;\mathrm{0}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdFloat}\;val_0)\mathrel{=}\mathbf{if}\;inlet_0\equiv [\mskip1.5mu \mskip1.5mu]\;\mathbf{then}\;(\Conid{PdFloat}\;\mathrm{0})\;\mathbf{else}\;\Varid{head}\;inlet_0{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}inlet_1\mathrel{=}\Varid{index}\;\Varid{ins}\;\mathrm{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdFloat}\;val_1)\mathrel{=}\mathbf{if}\;inlet_1\equiv [\mskip1.5mu \mskip1.5mu]\;\mathbf{then}\;\Varid{n}\;\mathbf{else}\;\Varid{head}\;inlet_1{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{mem'}\mathrel{=}[\mskip1.5mu \Conid{PdFloat}\;(val_0\mathbin{+}val_1)\mskip1.5mu]{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns'}\mathrel{=}\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem'}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{ns'},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34}\mathbin{:}\Varid{mem'}\mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Objects producing timed events: \text{\tt delay} and \text{\tt metro}}
+
+The \texttt{delay} object demonstrates how objects generate future events.
+We handle four cases: receiving a \texttt{bang} message schedules a
+\texttt{tick} event. When received, it outputs a \texttt{bang} to the 
+node's outlets.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{sendMsg}\;(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 delay\char34},\Conid{PdFloat}\;\Varid{time}\mskip1.5mu]\;\Varid{inl}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\;\mathrm{0}\;\Varid{ns}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Varid{ns},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \Conid{PdEvent}\;(\Varid{floor}\;\Varid{time})\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 tick\char34}\mskip1.5mu]\mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{sendMsg}\;(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 delay\char34}\mathbin{:}\Varid{t})\;\Varid{inl}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 tick\char34}\mskip1.5mu]\;\mathrm{0}\;\Varid{ns}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Varid{ns},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu [\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The \texttt{metro} node, on its turn, expands on the \texttt{delay}
+functionality, implementing a metronome: it sends a series of \texttt{bang}
+messages at regular time intervals. It also has a second inlet which allows
+updating the interval.
+
+We handle four cases: receiving a \texttt{bang} message to start the
+metronome, receiving a \texttt{stop} message to stop it, and receiving the
+internally-scheduled \texttt{tick} when the metronome is either on or off.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{sendMsg}\;{}\<[10]%
+\>[10]{}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 metro\char34}\mathbin{:}\Varid{xs})\;\Varid{inl}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
+\\
+\>[10]{}\hsindent{4}{}\<[14]%
+\>[14]{}(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}inlet_1\mathrel{=}\Varid{index}\;\Varid{ins}\;\mathrm{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdFloat}\;\Varid{time})\mathrel{=}\Varid{head}\;(inlet_1\plus \Varid{mem}\plus \Varid{xs}\plus [\mskip1.5mu \Conid{PdFloat}\;\mathrm{1000}\mskip1.5mu]){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns'}\mathrel{=}\Conid{PdNodeState}\;(\Varid{emptyInlets}\;\Varid{inl})\;[\mskip1.5mu \Conid{PdFloat}\;\Varid{time},\Conid{PdSymbol}\;\text{\tt \char34 on\char34}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{ns'},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu [\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\mskip1.5mu],[\mskip1.5mu \Conid{PdEvent}\;(\Varid{floor}\;\Varid{time})\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 tick\char34}\mskip1.5mu]\mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{sendMsg}\;{}\<[10]%
+\>[10]{}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 metro\char34}\mathbin{:}\Varid{xs})\;\Varid{inl}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 stop\char34}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
+\\
+\>[10]{}\hsindent{4}{}\<[14]%
+\>[14]{}(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \Conid{PdFloat}\;\Varid{time},\Conid{PdSymbol}\;\text{\tt \char34 on\char34}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \Conid{PdFloat}\;\Varid{time},\Conid{PdSymbol}\;\text{\tt \char34 off\char34}\mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{sendMsg}\;{}\<[10]%
+\>[10]{}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 metro\char34}\mathbin{:}\Varid{xs})\;\Varid{inl}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 tick\char34}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
+\\
+\>[10]{}\hsindent{4}{}\<[14]%
+\>[14]{}\Varid{ns}\mathord{@}(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \Conid{PdFloat}\;\Varid{time},\Conid{PdSymbol}\;\text{\tt \char34 on\char34}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Varid{ns},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu [\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\mskip1.5mu],[\mskip1.5mu \Conid{PdEvent}\;(\Varid{floor}\;\Varid{time})\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 tick\char34}\mskip1.5mu]\mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{sendMsg}\;{}\<[10]%
+\>[10]{}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 metro\char34}\mathbin{:}\Varid{xs})\;\Varid{inl}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 tick\char34}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
+\\
+\>[10]{}\hsindent{4}{}\<[14]%
+\>[14]{}\Varid{ns}\mathord{@}(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \anonymous ,\Conid{PdSymbol}\;\text{\tt \char34 off\char34}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Varid{ns},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Message handlers for audio objects: \text{\tt osc\char126{}} and \text{\tt line\char126{}}}
+\label{linemsg}
+
+Some audio objects in Pure Data also accept messages. The \texttt{osc\textasciitilde{}} object
+implements a sinewave oscillator. Sending a float to it, we configure its
+frequency, which is stored in the node's internal memory. Note that the actual
+oscillator is not implemented here, but in the DSP handler for this object
+type in function \ensuremath{\Varid{performDsp}}, in Section~\ref{oscdsp}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{sendMsg}\;{}\<[10]%
+\>[10]{}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 osc\char126 \char34}\mathbin{:}\anonymous )\;\anonymous \;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{freq}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
+\\
+\>[10]{}\hsindent{4}{}\<[14]%
+\>[14]{}(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \anonymous ,\Varid{position}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \Conid{PdFloat}\;((\mathrm{2}\mathbin{*}\Varid{pi})\mathbin{/}(\mathrm{32000}\mathbin{/}\Varid{freq})),\Varid{position}\mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The \texttt{line\textasciitilde{}} object implements a linear function over time. It can be used,
+for example, to implement gradual changes of frequency or amplitude. Its internal
+memory stores values $current$, $target$ and $delta$. It accepts a message with
+two floats, indicating the new target value and the time interval to take ramping
+from the current value to the new target.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{sendMsg}\;{}\<[10]%
+\>[10]{}(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 line\char126 \char34}\mskip1.5mu]\;\anonymous \;\anonymous )\;{}\<[E]%
+\\
+\>[10]{}\hsindent{4}{}\<[14]%
+\>[14]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 list\char34},\Conid{PdFloat}\;\Varid{amp},\Conid{PdFloat}\;\Varid{time}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
+\\
+\>[10]{}\hsindent{4}{}\<[14]%
+\>[14]{}(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}[\mskip1.5mu \Conid{PdFloat}\;\Varid{current},\Conid{PdFloat}\;\Varid{target},\Conid{PdFloat}\;\Varid{delta}\mskip1.5mu]\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{if}\;\Varid{mem}\not\equiv [\mskip1.5mu \mskip1.5mu]\;\mathbf{then}\;\Varid{mem}\;\mathbf{else}\;[\mskip1.5mu \Conid{PdFloat}\;\mathrm{0},\Conid{PdFloat}\;\mathrm{0},\Conid{PdFloat}\;\mathrm{0}\mskip1.5mu]{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{mem'}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}[\mskip1.5mu \Conid{PdFloat}\;\Varid{current},\Conid{PdFloat}\;\Varid{amp},\Conid{PdFloat}\;((\Varid{amp}\mathbin{-}\Varid{current})\mathbin{/}(\Varid{time}\mathbin{*}\mathrm{32}))\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem'},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Cold inlets}
+
+Since cold inlets are passive and only store the incoming data in the inlet
+buffer without executing any node-specific operation, the implementation for
+cold inlets can be shared by all types of node.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{sendMsg}\;\Varid{node}\;(\Conid{PdSymbol}\;\text{\tt \char34 float\char34}\mathbin{:}\Varid{fs})\;\Varid{inl}\;(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mid \Varid{inl}\mathbin{>}\mathrm{0}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Conid{PdNodeState}\;(\Varid{update}\;\Varid{inl}\;\Varid{fs}\;\Varid{ins})\;\Varid{mem},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{sendMsg}\;\Varid{node}\;\Varid{atoms}\;\Varid{inl}\;(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mid \Varid{inl}\mathbin{>}\mathrm{0}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Conid{PdNodeState}\;(\Varid{update}\;\Varid{inl}\;\Varid{atoms}\;\Varid{ins})\;\Varid{mem},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Data objects: \texttt{float} and \texttt{list}}
+
+The \texttt{float} and \texttt{list} objects store and forward data of their
+respective types. They have two inlets for accepting new data. When given data
+through its first inlet, the object stores it in its internal memory and
+outputs the value through the outlet. When given data through its second
+inlet, it only stores the value. When given a unit event (called \texttt{bang}
+in Pure Data), it outputs the most recently received value (or the one given
+in its creation argument, or zero as a fallback).
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{12}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{sendMsg}\;\Varid{cmd}\mathord{@}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 float\char34}\mathbin{:}\Varid{xs})\;\Varid{inl}\;\anonymous )\;\Varid{atoms}\;\mathrm{0}\;\Varid{ns}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{dataObject}\;\Varid{cmd}\;\Varid{atoms}\;\Varid{ns}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{sendMsg}\;\Varid{cmd}\mathord{@}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 list\char34}\mathbin{:}\Varid{xs})\;\Varid{inl}\;\anonymous )\;\Varid{atoms}\;\mathrm{0}\;\Varid{ns}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{dataObject}\;\Varid{cmd}\;\Varid{atoms}\;\Varid{ns}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{dataObject}\;(\Conid{PdObj}\;(\Conid{PdSymbol}\;\Varid{a}\mathbin{:}\Varid{xs})\;\Varid{inl}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[B]{}\hsindent{12}{}\<[12]%
+\>[12]{}(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}inlet_1\mathrel{=}\Varid{index}\;\Varid{ins}\;\mathrm{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{Just}\;\Varid{mem'}\mathrel{=}\Varid{find}\;(\not\equiv [\mskip1.5mu \mskip1.5mu])\;[\mskip1.5mu inlet_1,\Varid{mem},\Varid{xs},[\mskip1.5mu \Conid{PdFloat}\;\mathrm{0}\mskip1.5mu]\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{PdNodeState}\;(\Varid{emptyInlets}\;\Varid{inl})\;\Varid{mem'},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \Conid{PdSymbol}\;\Varid{a}\mathbin{:}\Varid{mem'}\mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{dataObject}\;(\Conid{PdObj}\;(\Conid{PdSymbol}\;\Varid{a}\mathbin{:}\Varid{xs})\;\Varid{inl}\;\anonymous )\;(\Conid{PdSymbol}\;\Varid{b}\mathbin{:}\Varid{fl})\;\anonymous \mid \Varid{a}\equiv \Varid{b}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Conid{PdNodeState}\;(\Varid{emptyInlets}\;\Varid{inl})\;\Varid{fl},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \Conid{PdSymbol}\;\Varid{a}\mathbin{:}\Varid{fl}\mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Audio handling operations: \text{\tt osc\char126{}}, \text{\tt line\char126{}} and \text{\tt \char42{}\char126{}}}
+\label{dsps}
+\label{oscdsp}
+
+Audio handling is performed by function \ensuremath{\Varid{performDsp}}, which implements
+cases for each type of audio object.
+
+Object \texttt{osc\textasciitilde{}} is the sinewave oscillator. It holds two values in its
+internal memory, \ensuremath{\Varid{delta}} and \ensuremath{\Varid{position}}, through which a wave describing a
+sine function is incrementally computed.
+
+We handle two cases here: when the internal memory is empty, the parameters
+are initialized according to the \ensuremath{\Varid{freq}} creation argument; when the 
+memory is initialized, we produce the new buffer calculating
+64 new values, determine the next position to start the wave in the next
+iteration, store this value in the internal memory, and output the buffer
+through the node's outlet.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{performDsp}\;\Varid{obj}\mathord{@}(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 osc\char126 \char34},\Conid{PdFloat}\;\Varid{freq}\mskip1.5mu]\;\anonymous \;\anonymous )\;(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{performDsp}\;\Varid{obj}\;(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \Conid{PdFloat}\;((\mathrm{2}\mathbin{*}\Varid{pi})\mathbin{/}(\mathrm{32000}\mathbin{/}\Varid{freq})),\Conid{PdFloat}\;\mathrm{0}\mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{performDsp}\;{}\<[13]%
+\>[13]{}(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 osc\char126 \char34},\anonymous \mskip1.5mu]\;\anonymous \;\anonymous )\;{}\<[E]%
+\\
+\>[13]{}(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \Conid{PdFloat}\;\Varid{delta},\Conid{PdFloat}\;\Varid{position}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{osc}\mathbin{::}\Conid{Double}\to \Conid{Double}\to \Conid{Double}\to \Conid{Double}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{osc}\;\Varid{position}\;\Varid{delta}\;\Varid{idx}\mathrel{=}(\Varid{position}\mathbin{+}(\Varid{delta}\mathbin{*}\Varid{idx}))\mathbin{`\Varid{mod'}`}(\mathrm{2}\mathbin{*}\Varid{pi}){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{output}\mathrel{=}\Varid{map}\;(\Conid{PdFloat}\mathbin{\circ}\Varid{sin}\mathbin{\circ}\Varid{osc}\;\Varid{position}\;\Varid{delta})\;[\mskip1.5mu \mathrm{0}\mathinner{\ldotp\ldotp}\mathrm{63}\mskip1.5mu]{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nextPosition}\mathrel{=}\Varid{osc}\;\Varid{position}\;\Varid{delta}\;\mathrm{64}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{mem'}\mathrel{=}[\mskip1.5mu \Conid{PdFloat}\;\Varid{delta},\Conid{PdFloat}\;\Varid{nextPosition}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}([\mskip1.5mu \Varid{output}\mskip1.5mu],\Varid{mem'}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+As described in Section~\ref{linemsg}, the \texttt{line\textasciitilde{}} object implements a
+linear ramp over time. As in \texttt{osc\textasciitilde{}} we handle two cases: when the internal
+memory of the object is empty, in which case we initialize it; and when it is
+initialized with \ensuremath{\Varid{current}}, \ensuremath{\Varid{target}} and \ensuremath{\Varid{delta}} values. The
+function varies linearly over time from \ensuremath{\Varid{current}} to \ensuremath{\Varid{target}}, after
+which, it stays constant at \ensuremath{\Varid{target}}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{performDsp}\;\Varid{obj}\mathord{@}(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 line\char126 \char34}\mskip1.5mu]\;\anonymous \;\anonymous )\;(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{performDsp}\;\Varid{obj}\;(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \Conid{PdFloat}\;\mathrm{0},\Conid{PdFloat}\;\mathrm{0},\Conid{PdFloat}\;\mathrm{0}\mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{performDsp}\;{}\<[13]%
+\>[13]{}(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 line\char126 \char34}\mskip1.5mu]\;\anonymous \;\anonymous )\;{}\<[E]%
+\\
+\>[13]{}(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \Conid{PdFloat}\;\Varid{current},\Conid{PdFloat}\;\Varid{target},\Conid{PdFloat}\;\Varid{delta}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{limiter}\mathrel{=}\mathbf{if}\;\Varid{delta}\mathbin{>}\mathrm{0}\;\mathbf{then}\;\Varid{min}\;\mathbf{else}\;\Varid{max}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{output}\mathrel{=}{}\<[17]%
+\>[17]{}\Varid{map}\;\Conid{PdFloat}\mathbin{\$}\Varid{tail}\mathbin{\$}\Varid{take}\;\mathrm{65}{}\<[E]%
+\\
+\>[17]{}\mathbin{\$}\Varid{iterate}\;(\lambda \Varid{v}\to \Varid{limiter}\;\Varid{target}\;(\Varid{v}\mathbin{+}\Varid{delta}))\;\Varid{current}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{mem'}\mathrel{=}[\mskip1.5mu \Varid{last}\;\Varid{output},\Conid{PdFloat}\;\Varid{target},\Conid{PdFloat}\;\Varid{delta}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}([\mskip1.5mu \Varid{output}\mskip1.5mu],\Varid{mem'}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The \text{\tt \char42{}\char126{}} object multiplies the data from inlets 0 and 1. It is used, for example,
+to modify the amplitude of an audio wave.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{performDsp}\;(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 *\char126 \char34}\mskip1.5mu]\;\anonymous \;\anonymous )\;(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{mult}\;(\Conid{PdFloat}\;\Varid{a})\;(\Conid{PdFloat}\;\Varid{b})\mathrel{=}\Conid{PdFloat}\;(\Varid{a}\mathbin{*}\Varid{b}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{output}\mathrel{=}\Varid{zipWith}\;\Varid{mult}\;(\Varid{index}\;\Varid{ins}\;\mathrm{0})\;(\Varid{index}\;\Varid{ins}\;\mathrm{1}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}([\mskip1.5mu \Varid{output}\mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Finally, this is a default handler for \ensuremath{\Varid{performDsp}} that merely produces
+a silent audio buffer.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{performDsp}\;\Varid{obj}\;\Varid{ns}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}([\mskip1.5mu \Varid{toList}\mathbin{\$}\Varid{replicate}\;\mathrm{64}\mathbin{\$}\Conid{PdFloat}\;\mathrm{0.0}\mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+%END LYX TEXT

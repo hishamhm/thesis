@@ -1,0 +1,2629 @@
+%BEGIN LYX TEXT
+
+This implementation uses only standard modules included in the Haskell Platform:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{module}\;\Conid{LvInterpreter}\;\mathbf{where}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Sequence}\;(\Conid{Seq},\Varid{fromList},\Varid{index},\Varid{update},\Varid{elemIndexL}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Varid{qualified}\;\Conid{\Conid{Data}.Sequence}\;\Varid{as}\;\Conid{Seq}\;(\Varid{length},\Varid{take}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Char}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.List}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Maybe}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Bits}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Foldable}\;(\Varid{toList}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.\Conid{Generics}.Aliases}\;(\Varid{orElse}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Representation of programs}
+
+A program in LabVIEW (called a VI, or Virtual Instrument) is a graph
+connecting different kinds of objects. In LabVIEW terminology, these objects
+are called \emph{controls}, which are input-only, \emph{indicators}, which are
+output-only, and \emph{nodes}, which are all other operations. Throughout the
+implementation, we will use this nomenclature; in particular the name ``node''
+will be used only for graph objects which are not controls or indicators.
+Graph objects are connected through wires. To avoid confusion with objects
+in the interpreter implementation, we will refer to graph objects (controls,
+indicators and nodes) as \emph{elements}.
+
+We represent a VI as a record containing a series of lists, enumerating
+controls, indicators, nodes and wires. Controls, indicators and nodes are
+paired with their names for display purposes only. The list of wires
+constitutes an adjacency list for the graph connections.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{25}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{LvVI}\mathrel{=}{}\<[14]%
+\>[14]{}\Conid{LvVI}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[14]{}\hsindent{2}{}\<[16]%
+\>[16]{}\Varid{vCtrls}{}\<[25]%
+\>[25]{}\mathbin{::}[\mskip1.5mu (\Conid{String},\Conid{LvControl})\mskip1.5mu],{}\<[E]%
+\\
+\>[14]{}\hsindent{2}{}\<[16]%
+\>[16]{}\Varid{vIndics}{}\<[25]%
+\>[25]{}\mathbin{::}[\mskip1.5mu (\Conid{String},\Conid{LvIndicator})\mskip1.5mu],{}\<[E]%
+\\
+\>[14]{}\hsindent{2}{}\<[16]%
+\>[16]{}\Varid{vNodes}{}\<[25]%
+\>[25]{}\mathbin{::}[\mskip1.5mu (\Conid{String},\Conid{LvNode})\mskip1.5mu],{}\<[E]%
+\\
+\>[14]{}\hsindent{2}{}\<[16]%
+\>[16]{}\Varid{vWires}{}\<[25]%
+\>[25]{}\mathbin{::}[\mskip1.5mu \Conid{LvWire}\mskip1.5mu]{}\<[E]%
+\\
+\>[14]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+A control in LabVIEW is an input widget in the VI's front panel, which also
+gets a representation as an object in the block diagram. However, since
+LabVIEW includes structured graphs composed of subgraphs representing
+structures such as for- and while-loops, we build these graphs in the
+interpreter recursively, declaring subgraphs as \ensuremath{\Conid{LvVI}} objects. For this
+reason, we use controls and indicators not only to represent GUI objects of
+the front panel, but also inputs and outputs of subgraphs. To do this, we
+declare a number of types of controls: a plain control that corresponds to a
+GUI object; an ``auto'' control that represents an automatically-generated input
+value, such as the increment count in a for-loop; a ``tunnel'' control, which is
+an input that connects data from the enclosing graph to the subgraph; and a
+``shift-register'' control, which is the input terminator for shift registers (a
+construct to send data across iterations of a loop).
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{17E}{@{}l@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{LvControl}{}\<[17]%
+\>[17]{}\mathrel{=}{}\<[17E]%
+\>[20]{}\Conid{LvControl}\;\Conid{LvValue}{}\<[E]%
+\\
+\>[17]{}\mid {}\<[17E]%
+\>[20]{}\Conid{LvAutoControl}{}\<[E]%
+\\
+\>[17]{}\mid {}\<[17E]%
+\>[20]{}\Conid{LvTunControl}{}\<[E]%
+\\
+\>[17]{}\mid {}\<[17E]%
+\>[20]{}\Conid{LvSRControl}\;\Conid{LvValue}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+An indicator in LabVIEW is an output widget in the VI's front panel. Like
+controls, indicators are represented both in the front panel (as a GUI widget)
+and in the block diagram (as a connectable object). For the same reasons as
+explained above for controls, we have different kinds of indicators: the plain
+indicator, which represents a GUI indicator proper; the ``shift-register''
+indicator, which sends data to its respective shift-register control (represented
+by the numeric index of the control in its constructor) for the next execution
+of a loop; and the ``tunnel'' indicator, which sends data out of the subgraph back
+to the enclosing graph.
+
+Tunnel indicators can be of different types: ``last value'', which sends out the
+value produced by the last iteration of the subgraph; ``auto-indexing'', which
+produces an array accumulating all values received by the tunnel across all
+iterations of the subgraph; and ``concatenating'', which concatenates all
+values received. Here, we implement the ``last value'' and ``auto-indexing''
+modes, since the ``concatenating'' mode is a mere convenience that could be
+achieved by concatenating the values of the array returned in the
+``auto-indexing'' mode.
+
+The LabVIEW interface enables auto-indexing by default when sending data
+out of for-loops, but this can be overridden by the user in the UI.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{19E}{@{}l@{}}%
+\column{20}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{20E}{@{}l@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{23}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{LvIndicator}{}\<[19]%
+\>[19]{}\mathrel{=}{}\<[19E]%
+\>[22]{}\Conid{LvIndicator}\;\Conid{LvValue}{}\<[E]%
+\\
+\>[19]{}\mid {}\<[19E]%
+\>[22]{}\Conid{LvSRIndicator}\;\Conid{Int}{}\<[E]%
+\\
+\>[19]{}\mid {}\<[19E]%
+\>[22]{}\Conid{LvTunIndicator}\;\Conid{LvTunnelMode}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{data}\;\Conid{LvTunnelMode}{}\<[20]%
+\>[20]{}\mathrel{=}{}\<[20E]%
+\>[23]{}\Conid{LvAutoIndexing}{}\<[E]%
+\\
+\>[20]{}\mid {}\<[20E]%
+\>[23]{}\Conid{LvLastValue}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+There are several kinds of nodes in LabVIEW. The vast majority are functions,
+but there are also control structures, constants and feedback nodes.
+
+Functions are identified in our implementation by their their names. They can
+have zero or more input ports, and zero or more output ports.
+
+There are various kinds of control structures. Due to the fact that many of
+them share code in our implementation, we grouped them in the \ensuremath{\Conid{LvStructure}}
+type constructor: those are while-loops, for-loops, sequences, and sub-VIs.
+The case-structure controls a list of sub-VIs, and for this reason is handled
+separately with the \ensuremath{\Conid{LvCase}} constructor.
+
+A constant is a node that holds a value. It has a single output port and
+immediately fires its value.
+
+A feedback node holds the value it receives through its input port and fires
+it the next time the program is executed, when running in continuous mode
+as explained in Section~\ref{sub:LabVIEW-execution-modes}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{14E}{@{}l@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{LvNode}{}\<[14]%
+\>[14]{}\mathrel{=}{}\<[14E]%
+\>[17]{}\Conid{LvFunction}\;\Conid{String}{}\<[E]%
+\\
+\>[14]{}\mid {}\<[14E]%
+\>[17]{}\Conid{LvStructure}\;\Conid{LvStrucType}\;\Conid{LvVI}{}\<[E]%
+\\
+\>[14]{}\mid {}\<[14E]%
+\>[17]{}\Conid{LvCase}\;[\mskip1.5mu \Conid{LvVI}\mskip1.5mu]{}\<[E]%
+\\
+\>[14]{}\mid {}\<[14E]%
+\>[17]{}\Conid{LvConstant}\;\Conid{LvValue}{}\<[E]%
+\\
+\>[14]{}\mid {}\<[14E]%
+\>[17]{}\Conid{LvFeedbackNode}\;\Conid{LvValue}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{data}\;\Conid{LvStrucType}{}\<[19]%
+\>[19]{}\mathrel{=}\Conid{LvWhile}{}\<[E]%
+\\
+\>[19]{}\mid \Conid{LvFor}{}\<[E]%
+\\
+\>[19]{}\mid \Conid{LvSequence}{}\<[E]%
+\\
+\>[19]{}\mid \Conid{LvSubVI}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+LabVIEW supports a large number of primitive numeric types: single, double and
+extended-precision floating-point numbers; fixed-point numbers; signed and
+unsigned integers of 8, 16, 32 and 64 bits; single, double and
+extended-precision complex numbers. We chose to implement only one
+floating-point and one integer type.
+
+Besides these, the interpreter also supports the following types: strings;
+booleans; the \emph{clusters}, which are a heterogeneous tuple of values
+(working like a record or ``struct''); and homogeneous arrays.
+
+Unlike LabVIEW, our implementation allows arbitrarily recursive types (e.g. we
+support a cluster of arrays of arrays of clusters). Since we assume that input
+programs are properly type-checked, implementing the same restrictions that
+LabVIEW enforces to aggregate data types could be easily done in the
+type-checking step.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{15}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{15E}{@{}l@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{LvValue}{}\<[15]%
+\>[15]{}\mathrel{=}{}\<[15E]%
+\>[18]{}\Conid{LvDBL}\;\Conid{Double}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{LvI32}\;\Conid{Int}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{LvSTR}\;\Conid{String}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{LvBool}\;\Conid{Bool}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{LvCluster}\;[\mskip1.5mu \Conid{LvValue}\mskip1.5mu]{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{LvArr}\;[\mskip1.5mu \Conid{LvValue}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;(\Conid{Show},\Conid{Eq},\Conid{Ord}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+A wire is a connection between two objects, represented as a
+source-destination pair of port addresses. Each port address, denoted
+\ensuremath{\llparenthesis \Varid{t}, \Varid{e}, \Varid{p}\rrparenthesis }, is a triple containing the element type (control, indicator
+or node), the element index and the port index within the element. For the
+source tuple, the port index denotes the element's output port; for the
+destination tuple, it denotes the input port. 
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{18}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{18E}{@{}l@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{LvWire}\mathrel{=}{}\<[16]%
+\>[16]{}\Conid{LvWire}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}\Varid{wSrc}\mathbin{::}\llparenthesis \cdot , \cdot , \cdot \rrparenthesis ,{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}\Varid{wDst}\mathbin{::}\llparenthesis \cdot , \cdot , \cdot \rrparenthesis {}\<[E]%
+\\
+\>[16]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{data}\;\llparenthesis \cdot , \cdot , \cdot \rrparenthesis \mathrel{=}\llparenthesis \Conid{LvElemType}, \Conid{Int}, \Conid{Int}\rrparenthesis {}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Eq}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{instance}\;\Conid{Show}\;\llparenthesis \cdot , \cdot , \cdot \rrparenthesis \;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;\llparenthesis \Varid{typ}, \Varid{eidx}, \Varid{pidx}\rrparenthesis \mathrel{=}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\text{\tt \char34 \char123 \char34}\plus \Varid{show}\;\Varid{typ}\plus \text{\tt \char34 ~\char34}\plus \Varid{show}\;\Varid{eidx}\plus \text{\tt \char34 ,~\char34}\plus \Varid{show}\;\Varid{pidx}\plus \text{\tt \char34 \char125 \char34}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{data}\;\Conid{LvElemType}{}\<[18]%
+\>[18]{}\mathrel{=}{}\<[18E]%
+\>[21]{}\Conid{LvC}{}\<[E]%
+\\
+\>[18]{}\mid {}\<[18E]%
+\>[21]{}\Conid{LvI}{}\<[E]%
+\\
+\>[18]{}\mid {}\<[18E]%
+\>[21]{}\Conid{LvN}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;(\Conid{Show},\Conid{Eq}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Representation of state}
+
+The representation of a state in our interpreter is a record containing the
+following values: the timestamp, a scheduler queue listing the next elements
+that need to be processed, and three sequences that store the internal states
+of nodes, controls and indicators. For controls and indicators, the sequences
+store their values. A VI always initializes controls and indicators with
+default values. Elements in the scheduler queue are denoted as \ensuremath{\llparenthesis \Varid{t}, \Varid{e}\rrparenthesis }, where \ensuremath{\Varid{t}} is the type of the element (control, indicator or node) and \ensuremath{\Varid{e}}
+is the numeric index of the element in its appropriate list in the \ensuremath{\Conid{LvVI}}
+object.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{32}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\hyperlink{LvState}{LvState}\mathrel{=}{}\<[17]%
+\>[17]{}\hyperlink{LvState}{LvState}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{sTs}{}\<[32]%
+\>[32]{}\mathbin{::}\Conid{Int},{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{sPrng}{}\<[32]%
+\>[32]{}\mathbin{::}\Conid{Int},{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{sSched}{}\<[32]%
+\>[32]{}\mathbin{::}[\mskip1.5mu \llparenthesis \cdot , \cdot \rrparenthesis \mskip1.5mu],{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{sNStates}{}\<[32]%
+\>[32]{}\mathbin{::}\Conid{Seq}\;\Conid{LvNodeState},{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{sCtrlVals}{}\<[32]%
+\>[32]{}\mathbin{::}\Conid{Seq}\;\Conid{LvValue},{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{sIndicVals}{}\<[32]%
+\>[32]{}\mathbin{::}\Conid{Seq}\;\Conid{LvValue}{}\<[E]%
+\\
+\>[17]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{data}\;\llparenthesis \cdot , \cdot \rrparenthesis \mathrel{=}\llparenthesis \Conid{LvElemType}, \Conid{Int}\rrparenthesis {}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Eq}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{instance}\;\Conid{Show}\;\llparenthesis \cdot , \cdot \rrparenthesis \;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;\llparenthesis \Varid{typ}, \Varid{eidx}\rrparenthesis \mathrel{=}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\text{\tt \char34 \char123 \char34}\plus \Varid{show}\;\Varid{typ}\plus \text{\tt \char34 ~\char34}\plus \Varid{show}\;\Varid{eidx}\plus \text{\tt \char34 \char125 \char34}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+For node states, the interpreter stores the contents of the input ports and an
+optional continuation. Each input port may be either empty or contain a single
+value, in accordance with the static dataflow model.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{34}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{LvNodeState}\mathrel{=}{}\<[21]%
+\>[21]{}\Conid{LvNodeState}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[21]{}\hsindent{3}{}\<[24]%
+\>[24]{}\Varid{nsInputs}{}\<[34]%
+\>[34]{}\mathbin{::}\Conid{Seq}\;(\Conid{Maybe}\;\Conid{LvValue}),{}\<[E]%
+\\
+\>[21]{}\hsindent{3}{}\<[24]%
+\>[24]{}\Varid{nsCont}{}\<[34]%
+\>[34]{}\mathbin{::}\Conid{Maybe}\;\Conid{LvCont}{}\<[E]%
+\\
+\>[21]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+For functions, we use continuations to model computations that run over time.
+An operation that needs to continue running beyond the current timestamp
+implements the rest of the computation as a separate function, which will be
+scheduled to run at the next time tick. In the \ensuremath{\Conid{LvKFunction}} constructor we
+store the continuation function itself (\ensuremath{\Varid{kFn}}) and the values that will be
+passed to it (\ensuremath{\Varid{kArgs}}). These values act as the operation's internal memory.
+A continuation function returns either \ensuremath{\Conid{LvReturn}}, which contains the result
+values to be sent through the function's output ports, or \ensuremath{\Conid{LvContinue}}, which
+encapsulates the next continuation to be executed as the operation resumes
+running.
+
+For subgraph structures, such as loops, the continuation of its execution is
+the state of the sub-VI. Note that, this way, the interpreter models a
+hierarchical tree of scheduler queues, as each structure node keeps an
+\ensuremath{\hyperlink{LvState}{LvState}} with its own \ensuremath{\Varid{sSched}} queue. This way, multiple subgraphs can run
+concurrently.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{14E}{@{}l@{}}%
+\column{16}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{16E}{@{}l@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{31}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{LvCont}{}\<[14]%
+\>[14]{}\mathrel{=}{}\<[14E]%
+\>[17]{}\Conid{LvKFunction}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{kFn}{}\<[27]%
+\>[27]{}\mathbin{::}\Conid{LvWorld}\to [\mskip1.5mu \Conid{LvValue}\mskip1.5mu]\to (\Conid{LvWorld},\Conid{LvReturn}),{}\<[E]%
+\\
+\>[17]{}\hsindent{3}{}\<[20]%
+\>[20]{}\Varid{kArgs}{}\<[27]%
+\>[27]{}\mathbin{::}[\mskip1.5mu \Conid{LvValue}\mskip1.5mu]{}\<[E]%
+\\
+\>[17]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[14]{}\mid {}\<[14E]%
+\>[17]{}\Conid{LvKState}\;\hyperlink{LvState}{LvState}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{instance}\;\Conid{Show}\;\Conid{LvCont}\;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\Conid{LvKFunction}\;\anonymous \;\Varid{args}){}\<[31]%
+\>[31]{}\mathrel{=}\text{\tt \char34 KFunction(\char34}\plus \Varid{show}\;\Varid{args}\plus \text{\tt \char34 )\char34}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\Conid{LvKState}\;\Varid{s}){}\<[31]%
+\>[31]{}\mathrel{=}\text{\tt \char34 KState[\char34}\plus \Varid{show}\;\Varid{s}\plus \text{\tt \char34 ]\char34}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{data}\;\Conid{LvReturn}{}\<[16]%
+\>[16]{}\mathrel{=}{}\<[16E]%
+\>[19]{}\Conid{LvReturn}\;[\mskip1.5mu \Conid{LvValue}\mskip1.5mu]{}\<[E]%
+\\
+\>[16]{}\mid {}\<[16E]%
+\>[19]{}\Conid{LvContinue}\;\Conid{LvCont}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+In all functions implementing LabVIEW nodes, we include an additional argument
+and an additional result representing access to side-effects that affect the
+state of the external world.
+
+These extra values allow us to model impure functions whose effects depend not
+only on the inputs received through wires in the dataflow graph. In
+particular, this allows us to model the relationship between graph evaluation
+and time.
+
+In our model, a simplified view of this ``external world'' is implemented as
+the \ensuremath{\Conid{LvWorld}} type. It consists of a read-only timestamp, which we will use as
+a model of a ``system clock'' for timer-based functions, and the read-write
+pseudo-random number generator (PRNG) state, which can be consumed and
+updated.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{15}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{15E}{@{}l@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{LvWorld}{}\<[15]%
+\>[15]{}\mathrel{=}{}\<[15E]%
+\>[18]{}\Conid{LvWorld}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[18]{}\hsindent{3}{}\<[21]%
+\>[21]{}\Varid{wTs}\mathbin{::}\Conid{Int},{}\<[E]%
+\\
+\>[18]{}\hsindent{3}{}\<[21]%
+\>[21]{}\Varid{wPrng}\mathbin{::}\Conid{Int}{}\<[E]%
+\\
+\>[18]{}\mskip1.5mu\}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Note that \ensuremath{\Conid{LvWorld}} is a subset of our \ensuremath{\hyperlink{LvState}{LvState}} object, which represents the
+memory of the VI being executed. In this sense, this is the part of the
+outside world that is visible to the function.
+
+\subsection{Execution}
+
+The execution mode of LabVIEW is data-driven. The user enters data via
+controls, which propagate their values through other nodes, eventually
+reaching indicators, which provide feedback to the user via their
+representations in the front panel.
+
+This interpreter models a single-shot execution (as discussed in
+Section~\ref{sub:LabVIEW-execution-modes}). Continuous execution is
+semantically equivalent as enclosing the entire VI in a while-loop.
+
+\subsubsection{Main loop}
+
+The execution of the interpreter is a loop of evaluation steps, which starts
+from an initial state defined for the VI and runs producing new states until a
+final state with an empty scheduler queue is produced.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{11}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{15}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runVI}\mathbin{::}\Conid{LvVI}\to \Conid{IO}\;(){}\<[E]%
+\\
+\>[B]{}\Varid{runVI}\;\Varid{vi}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{loop}\;(\Varid{initialState}\;\mathrm{0}\;\mathrm{42}\;\Varid{vi}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{loop}\;\Varid{s}\mathrel{=}\mathbf{do}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{print}\;\Varid{s}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;\Varid{sSched}\;\Varid{s}\;\mathbf{of}{}\<[E]%
+\\
+\>[10]{}\hsindent{1}{}\<[11]%
+\>[11]{}[\mskip1.5mu \mskip1.5mu]{}\<[15]%
+\>[15]{}\to \Varid{return}\;(){}\<[E]%
+\\
+\>[10]{}\hsindent{1}{}\<[11]%
+\>[11]{}\anonymous {}\<[15]%
+\>[15]{}\to \Varid{loop}\;(\Varid{run}\;\Varid{s}\;\Varid{vi}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Initial state}
+\label{initialstate}
+
+The initial state consists of the input values entered for controls,
+the initial values of indicators, and empty states for each node, containing
+the appropriate number of empty slots corresponding to their input ports.
+It also contains the initial schedule, which is the initial list of graph
+elements to be executed.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{33}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{37}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{39}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{41}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{42}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{52}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{53}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{58}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{initialState}\mathbin{::}\Conid{Int}\to \Conid{Int}\to \Conid{LvVI}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\\
+\>[B]{}\Varid{initialState}\;\Varid{ts}\;\Varid{prng}\;\Varid{vi}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\hyperlink{LvState}{LvState}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sTs}{}\<[19]%
+\>[19]{}\mathrel{=}\Varid{ts}\mathbin{+}\mathrm{1},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sPrng}{}\<[19]%
+\>[19]{}\mathrel{=}\Varid{prng},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sCtrlVals}{}\<[19]%
+\>[19]{}\mathrel{=}\Varid{fromList}\mathbin{\$}\Varid{map}\;(\Varid{makeCtrlVal}\mathbin{\circ}\Varid{snd})\;{}\<[58]%
+\>[58]{}(\Varid{vCtrls}\;\Varid{vi}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sIndicVals}{}\<[19]%
+\>[19]{}\mathrel{=}\Varid{fromList}\mathbin{\$}\Varid{map}\;(\Varid{makeIndicVal}\mathbin{\circ}\Varid{snd})\;{}\<[58]%
+\>[58]{}(\Varid{vIndics}\;\Varid{vi}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sNStates}{}\<[19]%
+\>[19]{}\mathrel{=}\Varid{fromList}\mathbin{\$}\Varid{mapIdx}\;\Varid{makeNState}\;{}\<[58]%
+\>[58]{}(\Varid{vNodes}\;\Varid{vi}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sSched}{}\<[19]%
+\>[19]{}\mathrel{=}\Varid{initialSchedule}\;\Varid{vi}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{makeNState}\mathbin{::}(\Conid{Int},(\Conid{String},\Conid{LvNode}))\to \Conid{LvNodeState}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{makeNState}\;(\Varid{i},(\Varid{name},\Varid{node}))\mathrel{=}{}\<[39]%
+\>[39]{}\Conid{LvNodeState}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[39]{}\hsindent{3}{}\<[42]%
+\>[42]{}\Varid{nsInputs}{}\<[52]%
+\>[52]{}\mathrel{=}\Varid{emptyInputs}\mathbin{\$}\Varid{nrInputs}\;\Varid{i}\;\Varid{node},{}\<[E]%
+\\
+\>[39]{}\hsindent{3}{}\<[42]%
+\>[42]{}\Varid{nsCont}{}\<[52]%
+\>[52]{}\mathrel{=}\Conid{Nothing}{}\<[E]%
+\\
+\>[39]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nrInputs}\mathbin{::}\Conid{Int}\to \Conid{LvNode}\to \Conid{Int}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nrInputs}\;\Varid{i}\;(\Conid{LvFunction}\;\anonymous ){}\<[41]%
+\>[41]{}\mathrel{=}\Varid{nrConnectedInputs}\;\Varid{i}\;\Varid{vi}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nrInputs}\;\anonymous \;(\Conid{LvConstant}\;\anonymous ){}\<[41]%
+\>[41]{}\mathrel{=}\mathrm{0}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nrInputs}\;\anonymous \;(\Conid{LvStructure}\;\anonymous \;\Varid{subvi}){}\<[41]%
+\>[41]{}\mathrel{=}\Varid{length}\mathbin{\$}\Varid{vCtrls}\;\Varid{subvi}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nrInputs}\;\anonymous \;(\Conid{LvCase}\;\Varid{subvis}){}\<[41]%
+\>[41]{}\mathrel{=}\Varid{length}\mathbin{\$}\Varid{vCtrls}\;(\Varid{head}\;\Varid{subvis}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nrInputs}\;\anonymous \;(\Conid{LvFeedbackNode}\;\anonymous ){}\<[41]%
+\>[41]{}\mathrel{=}\mathrm{1}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{makeCtrlVal}\mathbin{::}\Conid{LvControl}\to \Conid{LvValue}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{makeCtrlVal}\;(\Conid{LvControl}\;{}\<[33]%
+\>[33]{}\Varid{v}){}\<[37]%
+\>[37]{}\mathrel{=}\Varid{v}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{makeCtrlVal}\;(\Conid{LvSRControl}\;{}\<[33]%
+\>[33]{}\Varid{v}){}\<[37]%
+\>[37]{}\mathrel{=}\Varid{v}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{makeCtrlVal}\;\anonymous {}\<[37]%
+\>[37]{}\mathrel{=}\Conid{LvI32}\;\mathrm{0}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{makeIndicVal}\mathbin{::}\Conid{LvIndicator}\to \Conid{LvValue}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{makeIndicVal}\;(\Conid{LvIndicator}\;\Varid{v}){}\<[53]%
+\>[53]{}\mathrel{=}\Varid{v}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{makeIndicVal}\;(\Conid{LvTunIndicator}\;\Conid{LvAutoIndexing}){}\<[53]%
+\>[53]{}\mathrel{=}\Conid{LvArr}\;[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{makeIndicVal}\;\anonymous {}\<[53]%
+\>[53]{}\mathrel{=}\Conid{LvI32}\;\mathrm{0}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{mapIdx}\mathbin{::}((\Conid{Int},\Varid{a})\to \Varid{b})\to [\mskip1.5mu \Varid{a}\mskip1.5mu]\to [\mskip1.5mu \Varid{b}\mskip1.5mu]{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{mapIdx}\;\Varid{fn}\;\Varid{l}\mathrel{=}\Varid{zipWith}\;(\Varid{curry}\;\Varid{fn})\;(\Varid{indices}\;\Varid{l})\;\Varid{l}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{emptyInputs}\mathbin{::}\Conid{Int}\to \Conid{Seq}\;(\Conid{Maybe}\;\Conid{LvValue}){}\<[E]%
+\\
+\>[B]{}\Varid{emptyInputs}\;\Varid{n}\mathrel{=}\Varid{fromList}\;(\Varid{replicate}\;\Varid{n}\;\Conid{Nothing}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The initial schedule is defined as follows. All controls, constants and
+feedback nodes are queued. Then, all function and structure nodes which do not
+depend on other inputs are queued as well. Here, we make a simplification and
+assume that VIs do not have any functions with mandatory inputs missing. This
+could be verified in a type-checking step prior to execution.
+
+Note also that the code below implies the initial schedule follows the order
+of nodes given in the description of the \ensuremath{\Conid{LvVI}} record, leading to a
+deterministic execution of our intpreter. LabVIEW does not specify a
+particular order.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{37}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{51}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{initialSchedule}\mathbin{::}\Conid{LvVI}\to [\mskip1.5mu \llparenthesis \cdot , \cdot \rrparenthesis \mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{initialSchedule}\;\Varid{vi}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{map}\;\llparenthesis \Conid{LvC}, \cdot \rrparenthesis \;(\Varid{indices}\mathbin{\$}\Varid{vCtrls}\;\Varid{vi}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\plus \Varid{map}\;\llparenthesis \Conid{LvN}, \cdot \rrparenthesis \;(\Varid{filter}\;{}\<[37]%
+\>[37]{}(\lambda \Varid{i}\to \Varid{isBootNode}\;\Varid{i}\;(\Varid{vNodes}\;\Varid{vi}\mathbin{!!}\Varid{i}))\;(\Varid{indices}\mathbin{\$}\Varid{vNodes}\;\Varid{vi})){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{isBootNode}\;\anonymous \;(\anonymous ,\Conid{LvConstant}\;\anonymous )\mathrel{=}\Conid{True}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{isBootNode}\;\anonymous \;(\anonymous ,\Conid{LvFeedbackNode}\;\anonymous )\mathrel{=}\Conid{True}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{isBootNode}\;\Varid{i}\;(\anonymous ,\Conid{LvFunction}\;\anonymous ){}\<[51]%
+\>[51]{}\mid \Varid{nrConnectedInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{isBootNode}\;\Varid{i}\;(\anonymous ,\Conid{LvStructure}\;\Conid{LvWhile}\;\anonymous ){}\<[51]%
+\>[51]{}\mid \Varid{nrConnectedInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{isBootNode}\;\Varid{i}\;(\anonymous ,\Conid{LvStructure}\;\Conid{LvSubVI}\;\anonymous ){}\<[51]%
+\>[51]{}\mid \Varid{nrConnectedInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{isBootNode}\;\Varid{i}\;(\anonymous ,\Conid{LvStructure}\;\Conid{LvSequence}\;\anonymous ){}\<[51]%
+\>[51]{}\mid \Varid{nrConnectedInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{isBootNode}\;\anonymous \;\anonymous \mathrel{=}\Conid{False}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+A node can only be fired when all its connected inputs have incoming data. We
+specifically check for connected inputs because some LabVIEW nodes have
+optional inputs. We assume here for simplicity that the type-checking step
+prior to execution verified that the correct set of mandatory inputs has been
+connected. Here, we derive the number of connections of a node from the list
+of wires.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{nrConnectedInputs}\mathbin{::}\Conid{Int}\to \Conid{LvVI}\to \Conid{Int}{}\<[E]%
+\\
+\>[B]{}\Varid{nrConnectedInputs}\;\Varid{idx}\;\Varid{vi}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathrm{1}\mathbin{+}\Varid{foldl'}\;\Varid{maxInput}\;(\mathbin{-}\mathrm{1})\;(\Varid{vWires}\;\Varid{vi}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{maxInput}\mathbin{::}\Conid{Int}\to \Conid{LvWire}\to \Conid{Int}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{maxInput}\;\Varid{mx}\;(\Conid{LvWire}\;\anonymous \;\llparenthesis \Conid{LvN}, \Varid{i}, \Varid{n}\rrparenthesis )\mid \Varid{i}\equiv \Varid{idx}\mathrel{=}\Varid{max}\;\Varid{mx}\;\Varid{n}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{maxInput}\;\Varid{mx}\;\anonymous \mathrel{=}\Varid{mx}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Event processing}
+\label{run}
+
+The main operation of the interpreter consists of taking one entry off the
+scheduler queue, incrementing the timestamp, and triggering the event corresponding
+to that entry. Every time we produce a new state, we increment the timestamp.
+The timestamp, therefore, is not a count of the number of evaluation steps, but
+is a simulation of a system clock, to be used by timer operations.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{5}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{run}\mathbin{::}\hyperlink{LvState}{LvState}\to \Conid{LvVI}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{run}\;\Varid{s}\;\Varid{vi}{}\<[E]%
+\\
+\>[B]{}\mid \Varid{null}\;(\Varid{sSched}\;\Varid{s})\mathrel{=}\Varid{s}{}\<[E]%
+\\
+\>[B]{}\mid \Varid{otherwise}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{5}{}\<[5]%
+\>[5]{}\mathbf{case}\;\Varid{sSched}\;\Varid{s}\;\mathbf{of}{}\<[E]%
+\\
+\>[B]{}\hsindent{5}{}\<[5]%
+\>[5]{}(\Varid{q}\mathbin{:}\Varid{qs})\to {}\<[16]%
+\>[16]{}\mathbf{let}\;{}\<[21]%
+\>[21]{}s_{0}\mathrel{=}\Varid{s}\;\{\mskip1.5mu \Varid{sTs}\mathrel{=}(\Varid{sTs}\;\Varid{s})\mathbin{+}\mathrm{1},\Varid{sSched}\mathrel{=}\Varid{qs}\mskip1.5mu\}{}\<[E]%
+\\
+\>[16]{}\mathbf{in}\;{}\<[21]%
+\>[21]{}\Varid{runEvent}\;\Varid{q}\;s_{0}\;\Varid{vi}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+An event in the queue indicates the graph element to be executed next.
+Function \ensuremath{\Varid{runEvent}} takes a \ensuremath{\llparenthesis \cdot , \cdot \rrparenthesis } that identifies the element, a state
+and a VI, and produces a new state, with the results of triggering that
+element:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runEvent}\mathbin{::}\llparenthesis \cdot , \cdot \rrparenthesis \to \hyperlink{LvState}{LvState}\to \Conid{LvVI}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+When triggering a control, its effect is to fire its value through its sole output port.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runEvent}\;\llparenthesis \Conid{LvC}, \Varid{idx}\rrparenthesis \;s_{0}\;\Varid{vi}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{fire}\;\Varid{vi}\;\Varid{cv}\;\llparenthesis \Conid{LvC}, \Varid{idx}, \mathrm{0}\rrparenthesis \;s_{0}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{cv}\mathrel{=}\Varid{index}\;(\Varid{sCtrlVals}\;s_{0})\;\Varid{idx}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+When triggering a node for execution, the event may be triggering either an
+initial execution from data fired through its input ports, or a continuation
+of a previous execution that has not finished running. In the former case, the
+interpreter fetches the data from the node's input ports and clears it from
+the node state, ensuring incoming values are consumed only once. In the latter
+case, the inputs come from the data previously stored in the continuation
+object and the node state is kept as is. Once the inputs and state are
+determined, \ensuremath{\Varid{runEvent}} calls \ensuremath{\Varid{runNode}}, which produces a new state and may
+produce data to be fired through the node's output ports.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{23}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{25}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{44}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runEvent}\;\llparenthesis \Conid{LvN}, \Varid{idx}\rrparenthesis \;s_{0}\;\Varid{vi}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{foldl'}\;(\lambda \Varid{s}\;(\Varid{p},\Varid{v})\to \Varid{fire}\;\Varid{vi}\;\Varid{v}\;\llparenthesis \Conid{LvN}, \Varid{idx}, \Varid{p}\rrparenthesis \;\Varid{s})\;s_{2}\;\Varid{pvs}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns}\mathrel{=}\Varid{index}\;(\Varid{sNStates}\;s_{0})\;\Varid{idx}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(s_{1},\Varid{inputs})\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;\Varid{nsCont}\;\Varid{ns}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{Nothing}{}\<[19]%
+\>[19]{}\to \Varid{startNode}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{Just}\;\Varid{k}{}\<[19]%
+\>[19]{}\to \Varid{continueNode}\;\Varid{k}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(s_{2},\Varid{pvs})\mathrel{=}\Varid{runNode}\;(\Varid{snd}\mathbin{\$}\Varid{vNodes}\;\Varid{vi}\mathbin{!!}\Varid{idx})\;s_{1}\;\Varid{inputs}\;\Varid{idx}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{startNode}\mathrel{=}(s_{1},\Varid{inputs}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}s_{1}{}\<[25]%
+\>[25]{}\mathrel{=}\Varid{updateNode}\;\Varid{idx}\;s_{0}\;\Varid{clearState}\;[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{inputs}{}\<[25]%
+\>[25]{}\mathrel{=}\Varid{toList}\;(\Varid{nsInputs}\;\Varid{ns}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{clearState}{}\<[25]%
+\>[25]{}\mathrel{=}\Varid{ns}\;\{\mskip1.5mu \Varid{nsInputs}\mathrel{=}\Varid{clear}\mskip1.5mu\}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{clear}{}\<[25]%
+\>[25]{}\mathrel{=}\Varid{emptyInputs}\;(\Varid{\Conid{Seq}.length}\;(\Varid{nsInputs}\;\Varid{ns})){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{continueNode}\;\Varid{k}\mathrel{=}(s_{1},\Varid{inputs}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}s_{1}{}\<[21]%
+\>[21]{}\mathrel{=}s_{0}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{inputs}{}\<[21]%
+\>[21]{}\mathrel{=}\mathbf{case}\;\Varid{k}\;\mathbf{of}{}\<[E]%
+\\
+\>[21]{}\hsindent{2}{}\<[23]%
+\>[23]{}\Conid{LvKFunction}\;\anonymous \;\Varid{kargs}{}\<[44]%
+\>[44]{}\to \Varid{map}\;\Conid{Just}\;\Varid{kargs}{}\<[E]%
+\\
+\>[21]{}\hsindent{2}{}\<[23]%
+\>[23]{}\Conid{LvKState}\;\anonymous {}\<[44]%
+\>[44]{}\to \bot {}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+When updating the internal state of a node, we use the auxiliary function
+\ensuremath{\Varid{updateNode}}, which increments the timestamp, optionally appends events to the
+scheduler queue, and replaces the node state for the node at the given index.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{updateNode}\mathbin{::}\Conid{Int}\to \hyperlink{LvState}{LvState}\to \Conid{LvNodeState}\to [\mskip1.5mu \llparenthesis \cdot , \cdot \rrparenthesis \mskip1.5mu]\to \hyperlink{LvState}{LvState}{}\<[E]%
+\\
+\>[B]{}\Varid{updateNode}\;\Varid{idx}\;\Varid{s}\;\Varid{ns}\;\Varid{sched}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{s}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sTs}{}\<[17]%
+\>[17]{}\mathrel{=}\Varid{sTs}\;\Varid{s}\mathbin{+}\mathrm{1},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sSched}{}\<[17]%
+\>[17]{}\mathrel{=}\Varid{sSched}\;\Varid{s}\plus \Varid{sched},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sNStates}{}\<[17]%
+\>[17]{}\mathrel{=}\Varid{update}\;\Varid{idx}\;\Varid{ns}\;(\Varid{sNStates}\;\Varid{s}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mskip1.5mu\}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Firing data to objects}
+\label{firing}
+
+As shown in the previous section, when objects are triggered for execution, they may produce new values
+which are fired through their output ports. The function \ensuremath{\Varid{fire}} iterates through the adjacency list of
+wires, identifying all outward connections of an object and propagating the value to their destination
+nodes.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{fire}\mathbin{::}\Conid{LvVI}\to \Conid{LvValue}\to \llparenthesis \cdot , \cdot , \cdot \rrparenthesis \to \hyperlink{LvState}{LvState}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\\
+\>[B]{}\Varid{fire}\;\Varid{vi}\;\Varid{value}\;\Varid{addr}\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{foldl'}\;\Varid{checkWire}\;\Varid{s}\;(\Varid{vWires}\;\Varid{vi}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{checkWire}\;\Varid{s}\;(\Conid{LvWire}\;\Varid{src}\;\Varid{dst})\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{if}\;\Varid{addr}\equiv \Varid{src}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{then}\;\Varid{propagate}\;\Varid{value}\;\Varid{vi}\;\Varid{dst}\;\Varid{s}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{else}\;\Varid{s}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+When a value is propagated to an indicator, its value is stored in the
+state, with the appropriate handling for different kinds of tunnel
+indicators.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{23}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{41}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{45}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{propagate}\mathbin{::}\Conid{LvValue}\to \Conid{LvVI}\to \llparenthesis \cdot , \cdot , \cdot \rrparenthesis \to \hyperlink{LvState}{LvState}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\\
+\>[B]{}\Varid{propagate}\;\Varid{value}\;\Varid{vi}\;\llparenthesis \Conid{LvI}, \Varid{dnode}, \anonymous \rrparenthesis \;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\anonymous ,\Varid{indicator}){}\<[23]%
+\>[23]{}\mathrel{=}\Varid{vIndics}\;\Varid{vi}\mathbin{!!}\Varid{dnode}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{newValue}{}\<[23]%
+\>[23]{}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;\Varid{indicator}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{LvIndicator}\;\anonymous {}\<[41]%
+\>[41]{}\to \Varid{value}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{LvSRIndicator}\;\anonymous {}\<[41]%
+\>[41]{}\to \Varid{value}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{LvTunIndicator}\;\Conid{LvLastValue}{}\<[41]%
+\>[41]{}\to \Varid{value}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{LvTunIndicator}\;\Conid{LvAutoIndexing}{}\<[41]%
+\>[41]{}\to {}\<[45]%
+\>[45]{}\mathbf{let}\;\Varid{arr}\mathrel{=}\Varid{index}\;(\Varid{sIndicVals}\;\Varid{s})\;\Varid{dnode}{}\<[E]%
+\\
+\>[45]{}\mathbf{in}\;\Varid{insertIntoArray}\;\Varid{arr}\;\Varid{value}\;[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{s}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{sTs}{}\<[22]%
+\>[22]{}\mathrel{=}\Varid{sTs}\;\Varid{s}\mathbin{+}\mathrm{1},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{sIndicVals}{}\<[22]%
+\>[22]{}\mathrel{=}\Varid{update}\;\Varid{dnode}\;\Varid{newValue}\;(\Varid{sIndicVals}\;\Varid{s}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mskip1.5mu\}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+When a value is propagated to a node, the interpreter stores the value in the
+\ensuremath{\Varid{nsInputs}} sequence of the node state. Then, it needs to decide whether the
+node needs to be scheduled for execution.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{propagate}\;\Varid{value}\;\Varid{vi}\;\llparenthesis \Conid{LvN}, \Varid{dnode}, \Varid{dport}\rrparenthesis \;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{s}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sTs}{}\<[17]%
+\>[17]{}\mathrel{=}\Varid{sTs}\;\Varid{s}\mathbin{+}\mathrm{1},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sSched}{}\<[17]%
+\>[17]{}\mathrel{=}\Varid{sched'},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sNStates}{}\<[17]%
+\>[17]{}\mathrel{=}\Varid{nss'}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nss}{}\<[16]%
+\>[16]{}\mathrel{=}\Varid{sNStates}\;\Varid{s}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns}{}\<[16]%
+\>[16]{}\mathrel{=}\Varid{index}\;\Varid{nss}\;\Varid{dnode}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{inputs'}{}\<[16]%
+\>[16]{}\mathrel{=}\Varid{update}\;\Varid{dport}\;(\Conid{Just}\;\Varid{value})\;(\Varid{nsInputs}\;\Varid{ns}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nss'}{}\<[16]%
+\>[16]{}\mathrel{=}\Varid{update}\;\Varid{dnode}\;(\Varid{ns}\;\{\mskip1.5mu \Varid{nsInputs}\mathrel{=}\Varid{inputs'}\mskip1.5mu\})\;\Varid{nss}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sched'}{}\<[16]%
+\>[16]{}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{let}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{sched}{}\<[20]%
+\>[20]{}\mathrel{=}\Varid{sSched}\;\Varid{s}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{entry}{}\<[20]%
+\>[20]{}\mathrel{=}\llparenthesis \Conid{LvN}, \Varid{dnode}\rrparenthesis {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{in}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mathbf{if}\;\Varid{shouldSchedule}\;(\Varid{snd}\mathbin{\$}\Varid{vNodes}\;\Varid{vi}\mathbin{!!}\Varid{dnode})\;\Varid{inputs'}\mathrel{\wedge}\Varid{entry}\notin \Varid{sched}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mathbf{then}\;\Varid{sched}\plus [\mskip1.5mu \Varid{entry}\mskip1.5mu]{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mathbf{else}\;\Varid{sched}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+To determine if a node needs to be scheduled, the interpreter checks if all
+its required inputs contain values. For function nodes, this means that
+all mandatory arguments must have incoming values. For structures, it means
+that all tunnels going into the structure must have values available for
+consumption.
+
+This interpreter implements a single node accepting optional inputs,
+\text{\tt InsertIntoArray} (Section~\ref{arrayfns}); for all other nodes, all
+inputs are mandatary.
+
+Feedback nodes are never triggered by another node: when they receive
+a value through its input port, this value remains stored for the next
+single-shot execution of the whole graph. Constants do not have input ports,
+so they cannot receive values.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{25}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{41}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{shouldSchedule}\mathbin{::}\Conid{LvNode}\to \Conid{Seq}\;(\Conid{Maybe}\;\Conid{LvValue})\to \Conid{Bool}{}\<[E]%
+\\
+\>[B]{}\Varid{shouldSchedule}\;\Varid{node}\;\Varid{inputs}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{case}\;\Varid{node}\;\mathbf{of}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{LvFunction}\;\Varid{name}{}\<[25]%
+\>[25]{}\to \Varid{shouldScheduleNode}\;\Varid{name}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{LvStructure}\;\anonymous \;\Varid{vi}{}\<[25]%
+\>[25]{}\to \Varid{shouldScheduleSubVI}\;\Varid{vi}\;\Varid{inputs}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{LvCase}\;\Varid{vis}{}\<[25]%
+\>[25]{}\to \Varid{shouldScheduleSubVI}\;(\Varid{head}\;\Varid{vis})\;\Varid{inputs}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{LvFeedbackNode}\;\anonymous {}\<[25]%
+\>[25]{}\to \Conid{False}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{LvConstant}\;\anonymous {}\<[25]%
+\>[25]{}\to \bot {}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{shouldScheduleNode}\;\Varid{name}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{isNothing}\mathbin{\$}\Varid{elemIndexL}\;\Conid{Nothing}\;\Varid{mandatoryInputs}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{mandatoryInputs}\mathrel{=}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mathbf{case}\;\Varid{nrMandatoryInputs}\;\Varid{name}\;\mathbf{of}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\Conid{Nothing}{}\<[25]%
+\>[25]{}\to \Varid{inputs}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\Conid{Just}\;\Varid{n}{}\<[25]%
+\>[25]{}\to \Varid{\Conid{Seq}.take}\;\Varid{n}\;\Varid{inputs}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{shouldScheduleSubVI}\mathbin{::}\Conid{LvVI}\to \Conid{Seq}\;(\Conid{Maybe}\;\Conid{LvValue})\to \Conid{Bool}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{shouldScheduleSubVI}\;\Varid{vi}\;\Varid{inputs}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{isNothing}\mathbin{\$}\Varid{find}\;\Varid{unfilledTunnel}\;(\Varid{indices}\mathbin{\$}\Varid{vCtrls}\;\Varid{vi}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mathbf{where}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\Varid{unfilledTunnel}\;\Varid{cidx}\mathrel{=}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}\mathbf{case}\;\Varid{vCtrls}\;\Varid{vi}\mathbin{!!}\Varid{cidx}\;\mathbf{of}{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}(\anonymous ,\Conid{LvTunControl}){}\<[41]%
+\>[41]{}\to \Varid{isNothing}\;(\Varid{index}\;\Varid{inputs}\;\Varid{cidx}){}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\anonymous {}\<[41]%
+\>[41]{}\to \Conid{False}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{nrMandatoryInputs}\mathbin{::}\Conid{String}\to \Conid{Maybe}\;\Conid{Int}{}\<[E]%
+\\
+\>[B]{}\Varid{nrMandatoryInputs}\;\text{\tt \char34 InsertIntoArray\char34}\mathrel{=}\Conid{Just}\;\mathrm{2}{}\<[E]%
+\\
+\>[B]{}\Varid{nrMandatoryInputs}\;\anonymous \mathrel{=}\Conid{Nothing}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{indices}\mathbin{::}[\mskip1.5mu \Varid{a}\mskip1.5mu]\to [\mskip1.5mu \Conid{Int}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{indices}\;\Varid{l}\mathrel{=}[\mskip1.5mu \mathrm{0}\mathinner{\ldotp\ldotp}(\Varid{length}\;\Varid{l}\mathbin{-}\mathrm{1})\mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Nodes and structures}
+
+The function \ensuremath{\Varid{runNode}} takes care of implementing the general logic for each
+kind of node. For functions, it handles the management of continuations; for
+structures, it triggers their subgraphs according to each structure's rules
+of iteration and conditions of termination.
+
+The function \ensuremath{\Varid{runNode}} takes a node, an input state, a list of input values,
+the integer index that identifies the node in the VI, and produces a 
+new state and a list of index-value pairs, listing values to be sent through
+output ports.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runNode}\mathbin{::}{}\<[13]%
+\>[13]{}\Conid{LvNode}\to \hyperlink{LvState}{LvState}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to \Conid{Int}{}\<[E]%
+\\
+\>[13]{}\to (\hyperlink{LvState}{LvState},[\mskip1.5mu (\Conid{Int},\Conid{LvValue})\mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Constant nodes}
+
+When executed, a constant node simply sends out its value through its
+single output port.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runNode}\;(\Conid{LvConstant}\;\Varid{value})\;s_{1}\;\anonymous \;\anonymous \mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(s_{1},[\mskip1.5mu (\mathrm{0},\Varid{value})\mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Feedback nodes}
+
+A feedback node behaves like a constant node: it sends out the value it stores
+through its output port. In spite of having an input port, a feedback node is
+only triggered at the beginning of the execution of the graph, as determined
+by the initial state (Section~\ref{initialstate}) and firing rules
+(Section~\ref{firing}).
+
+In our model, an \ensuremath{\Conid{LvFeedbackNode}} always takes an initialization value. In the
+LabVIEW UI, this value can be left out, in which case a default value for the
+appropriate data type, such as zero or an empty string, is implied.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runNode}\;(\Conid{LvFeedbackNode}\;\Varid{initVal})\;s_{1}\;\Varid{inputs}\;\anonymous \mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(s_{1},[\mskip1.5mu (\mathrm{0},\Varid{fromMaybe}\;\Varid{initVal}\;(\Varid{head}\;\Varid{inputs}))\mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Function nodes}
+\label{functionnodes}
+
+When running a function node, the interpreter first checks if it has an
+existing continuation pending for the node. If there is one, it resumes the
+continuation, applying the function stored in the continuation object \ensuremath{\Varid{k}}.
+Otherwise, it triggers the function (identified by its name) using
+\ensuremath{\Varid{applyFunction}}.
+
+The function may return either a \ensuremath{\Conid{LvReturn}} value, which contains the list of
+result values be propagated through its output ports, or a \ensuremath{\Conid{LvContinue}} value,
+which contains the next continuation \ensuremath{\Varid{k'}} to be executed. When a continuation
+is returned, the node itself (identified by its address \ensuremath{\Varid{idx}}) is also
+scheduled back in the queue, and no values are produced to be sent to the
+node's output ports.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{33}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{41}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{51}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runNode}\;(\Conid{LvFunction}\;\Varid{name})\;s_{1}\;\Varid{inputs}\;\Varid{idx}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nss}{}\<[16]%
+\>[16]{}\mathrel{=}\Varid{sNStates}\;s_{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns}{}\<[16]%
+\>[16]{}\mathrel{=}\Varid{index}\;\Varid{nss}\;\Varid{idx}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{world}\;\Varid{s}{}\<[16]%
+\>[16]{}\mathrel{=}\Conid{LvWorld}\;\{\mskip1.5mu \Varid{wTs}\mathrel{=}\Varid{sTs}\;\Varid{s},\Varid{wPrng}\mathrel{=}\Varid{sPrng}\;\Varid{s}\mskip1.5mu\}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ret}{}\<[16]%
+\>[16]{}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;\Varid{nsCont}\;\Varid{ns}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{Nothing}{}\<[19]%
+\>[19]{}\to \Varid{applyFunction}\;\Varid{name}\;(\Varid{world}\;s_{1})\;\Varid{inputs}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{Just}\;\Varid{k}{}\<[19]%
+\>[19]{}\to \Varid{kFn}\;\Varid{k}\;{}\<[41]%
+\>[41]{}(\Varid{world}\;s_{1})\;(\Varid{catMaybes}\;\Varid{inputs}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{w},\Varid{mk},\Varid{q},\Varid{pvs})\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;\Varid{ret}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\Varid{w},\Conid{LvReturn}\;\Varid{outVals}){}\<[33]%
+\>[33]{}\to (\Varid{w},\Conid{Nothing},{}\<[51]%
+\>[51]{}[\mskip1.5mu \mskip1.5mu],\Varid{zip}\;(\Varid{indices}\;\Varid{outVals})\;\Varid{outVals}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\Varid{w},\Conid{LvContinue}\;\Varid{k'}){}\<[33]%
+\>[33]{}\to (\Varid{w},\Conid{Just}\;\Varid{k'},{}\<[51]%
+\>[51]{}[\mskip1.5mu \llparenthesis \Conid{LvN}, \Varid{idx}\rrparenthesis \mskip1.5mu],[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{updateWorld}\;\Varid{w}\;\Varid{s}\mathrel{=}\Varid{s}\;\{\mskip1.5mu \Varid{sPrng}\mathrel{=}\Varid{wPrng}\;\Varid{w}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{updateWorld}\;\Varid{w}\mathbin{\$}\Varid{updateNode}\;\Varid{idx}\;s_{1}\;\Varid{ns}\;\{\mskip1.5mu \Varid{nsCont}\mathrel{=}\Varid{mk}\mskip1.5mu\}\;\Varid{q},\Varid{pvs}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+
+\subsubsection{Control structures}
+
+The interpreter supports five kinds of control structures: for-loop,
+while-loop, sequence, case and sub-VI. They are all implemented similarly, by
+running a subgraph (itself represented as an instance of \ensuremath{\Conid{LvVI}}, like the main
+graph), and storing a state object for this subgraph as a continuation object
+of the node state for the enclosing graph (represented as \ensuremath{\hyperlink{LvState}{LvState}}, like the
+main state). Running this subgraph may take several evaluation steps, so the
+enclosing graph will continuously queue it for execution until it decides it
+should finish running. Each time the scheduler of the enclosing graph triggers
+the structure node, it will run the subgraph consuming one event of the
+internal state's own scheduler queue. This will, in effect, produce a
+round-robin of all structures that may be running concurrently.
+
+This common behavior is implemented in the \ensuremath{\Varid{runStructure}} function that
+will be presented below. The implementations of \ensuremath{\Varid{runNode}} for all
+structures use \ensuremath{\Varid{runStructure}}, differing by the way they control
+triggering and termination of subgraphs.
+
+% TODO for when no N is set and an array is given as input tunnel
+% TODO check what happens when both are given
+
+The for-loop provides \ensuremath{\Varid{runStructure}} with a termination function \ensuremath{\Varid{shouldStop}}
+which determines if the loop should stop comparing the value of the counter
+control (at index 0) with the limit control (at index 1). Also, it uses the
+helper function \ensuremath{\Varid{initCounter}} to force the initial value of control 0 when the
+structure is triggered for the first time (that is, when it is not resuming a
+continuation).
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{32}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runNode}\;(\Conid{LvStructure}\;\Conid{LvFor}\;\Varid{subvi})\;s_{1}\;\Varid{inputs}\;\Varid{idx}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{runStructure}\;\Varid{subvi}\;\Varid{shouldStop}\;s_{1}\;\Varid{idx}\;(\Varid{initCounter}\;s_{1}\;\Varid{idx}\;\Varid{inputs}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{shouldStop}\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\Varid{i}\mathbin{+}\mathrm{1}\geq \Varid{n}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{LvI32}\;\Varid{i}{}\<[22]%
+\>[22]{}\mathrel{=}\Varid{index}\;(\Varid{sCtrlVals}\;\Varid{s})\;\mathrm{0}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{LvI32}\;\Varid{n}{}\<[22]%
+\>[22]{}\mathrel{=}\Varid{coerceToInt}\mathbin{\$}\Varid{index}\;(\Varid{sCtrlVals}\;\Varid{s})\;\mathrm{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerceToInt}\;\Varid{v}\mathord{@}(\Conid{LvI32}\;\anonymous ){}\<[32]%
+\>[32]{}\mathrel{=}\Varid{v}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerceToInt}\;(\Conid{LvDBL}\;\Varid{d}){}\<[32]%
+\>[32]{}\mathrel{=}\Conid{LvI32}\;(\Varid{floor}\;\Varid{d}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The while-loop structure in LabVIEW always provides an iteration counter,
+implemented in the interpreter as a counter control at index 0. As in the
+for-loop, it is initialized using the helper function \ensuremath{\Varid{initCounter}}. The
+termination function for the while-loop checks for the boolean value at the
+indicator at index 0.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runNode}\;(\Conid{LvStructure}\;\Conid{LvWhile}\;\Varid{subvi})\;s_{1}\;\Varid{inputs}\;\Varid{idx}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{runStructure}\;\Varid{subvi}\;\Varid{shouldStop}\;s_{1}\;\Varid{idx}\;(\Varid{initCounter}\;s_{1}\;\Varid{idx}\;\Varid{inputs}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{shouldStop}\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\neg \;\Varid{test}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{LvBool}\;\Varid{test}\mathrel{=}\Varid{index}\;(\Varid{sIndicVals}\;\Varid{s})\;\mathrm{0}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+% TODO move this explanation to the main text
+% TODO add figure
+Sequence nodes in LabVIEW are a way to enforce order of execution irrespective
+of data dependencies. In the LabVIEW UI, sequences are presented as a series
+of frames presented like a film-strip. In our interpreter, we implement each
+frame of the film-strip as a separate \ensuremath{\Conid{LvStructure}} object containing a
+boolean control at input port 0 and a boolean indicator at output port 0.
+Frames of a sequence are connected through a wire connecting the frame's
+indicator 0 to the next frame's control 0. This way, we force a
+data dependency between frames, and the implementation of \ensuremath{\Varid{runNode}} for
+sequences pushes a boolean value to output port 0 to trigger the execution of
+the next frame in the sequence. This connection is explicit in our model,
+but it could be easily hidden in the application's UI.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runNode}\;(\Conid{LvStructure}\;\Conid{LvSequence}\;\Varid{subvi})\;s_{1}\;\Varid{inputs}\;\Varid{idx}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(s_{2},\Varid{pvs}){}\<[18]%
+\>[18]{}\mathrel{=}\Varid{runStructure}\;\Varid{subvi}\;(\Varid{const}\;\Conid{True})\;s_{1}\;\Varid{idx}\;\Varid{inputs}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}ns_{2}{}\<[18]%
+\>[18]{}\mathrel{=}\Varid{index}\;(\Varid{sNStates}\;s_{2})\;\Varid{idx}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nextq}{}\<[22]%
+\>[22]{}\mathrel{=}[\mskip1.5mu (\mathrm{0},\Conid{LvBool}\;\Conid{True})\mid \Varid{isNothing}\;(\Varid{nsCont}\;ns_{2})\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(s_{2},\Varid{pvs}\plus \Varid{nextq}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Case structures are different from the other ones because they contain
+a list of subgraphs. All subgraphs representing cases are assumed to
+have the same set of controls and indicators, and they all have a
+numeric control at index 0 which determines which case is active.
+LabVIEW denotes cases using enumeration types, but in the interpreter
+we simply use an integer.
+
+When a case node is triggered, \ensuremath{\Varid{runNode}} needs to choose which VI to use with
+\ensuremath{\Varid{runStructure}}. In its first execution, it reads from the input data sent to
+control 0; in subsequent executions, when those inputs are no longer
+available, it reads directly from the control value, which is stored in the
+node state. Note that since case VIs have the same set of controls and
+indicators, they are structurally equivalent, and the initialization routine
+in Section~\ref{initialstate} simply uses the first case when constructing the
+initial empty state.
+
+A case subgraph does not iterate: it may take several schedule events to run
+through a full single-shot execution, but once the subgraph scheduler queue is
+empty, it should not run again. For this reason, the termination function is
+simply \ensuremath{\Varid{const}\;\Conid{True}}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{25}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{26}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{46}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runNode}\;(\Conid{LvCase}\;\Varid{subvis})\;s_{1}\;\Varid{inputs}\;\Varid{idx}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}ns_{1}\mathrel{=}\Varid{index}\;(\Varid{sNStates}\;s_{1})\;\Varid{idx}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{n}\mathrel{=}\mathbf{case}\;\Varid{nsCont}\;ns_{1}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{7}{}\<[14]%
+\>[14]{}\Conid{Nothing}\to {}\<[26]%
+\>[26]{}\mathbf{case}\;\Varid{inputs}\;\mathbf{of}{}\<[E]%
+\\
+\>[26]{}\Conid{Just}\;(\Conid{LvI32}\;\Varid{i})\mathbin{:}\anonymous {}\<[46]%
+\>[46]{}\to \Varid{i}{}\<[E]%
+\\
+\>[26]{}\anonymous {}\<[46]%
+\>[46]{}\to \mathrm{0}{}\<[E]%
+\\
+\>[7]{}\hsindent{7}{}\<[14]%
+\>[14]{}\Conid{Just}\;\anonymous \to {}\<[26]%
+\>[26]{}(\lambda (\Conid{LvI32}\;\Varid{i})\to \Varid{i})\mathbin{\$}{}\<[E]%
+\\
+\>[26]{}\Varid{fromMaybe}\;(\Varid{error}\;\text{\tt \char34 no~input~0\char34})\mathbin{\$}\Varid{index}\;(\Varid{nsInputs}\;ns_{1})\;\mathrm{0}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(s_{2},\Varid{pvs})\mathrel{=}\Varid{runStructure}\;(\Varid{subvis}\mathbin{!!}\Varid{n})\;(\Varid{const}\;\Conid{True})\;s_{1}\;\Varid{idx}\;\Varid{inputs}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}s_{3}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;\Varid{nsCont}\;ns_{1}\;\mathbf{of}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{Nothing}\to {}\<[25]%
+\>[25]{}\mathbf{let}{}\<[E]%
+\\
+\>[25]{}\hsindent{3}{}\<[28]%
+\>[28]{}ns_{2}\mathrel{=}\Varid{index}\;(\Varid{sNStates}\;s_{2})\;\Varid{idx}{}\<[E]%
+\\
+\>[25]{}\hsindent{3}{}\<[28]%
+\>[28]{}\Varid{inputs}\mathrel{=}\Varid{update}\;\mathrm{0}\;(\Conid{Just}\;(\Conid{LvI32}\;\Varid{n}))\;(\Varid{nsInputs}\;ns_{2}){}\<[E]%
+\\
+\>[25]{}\hsindent{3}{}\<[28]%
+\>[28]{}ns_{3}\mathrel{=}ns_{2}\;\{\mskip1.5mu \Varid{nsInputs}\mathrel{=}\Varid{inputs}\mskip1.5mu\}{}\<[E]%
+\\
+\>[25]{}\mathbf{in}{}\<[E]%
+\\
+\>[25]{}\hsindent{3}{}\<[28]%
+\>[28]{}\Varid{updateNode}\;\Varid{idx}\;s_{2}\;ns_{3}\;[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{Just}\;\anonymous \to {}\<[25]%
+\>[25]{}s_{2}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(s_{3},\Varid{pvs}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Finally, a sub-VI structure has a simple implementation, where we launch the
+subgraph with \ensuremath{\Varid{runStructure}}, directing it to run once and performing no
+additional operations to its state.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runNode}\;(\Conid{LvStructure}\;\Conid{LvSubVI}\;\Varid{subvi})\;s_{1}\;\Varid{inputs}\;\Varid{idx}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{runStructure}\;\Varid{subvi}\;(\Varid{const}\;\Conid{True})\;s_{1}\;\Varid{idx}\;\Varid{inputs}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The core to the execution of all structure nodes is the \ensuremath{\Varid{runStructure}}
+function, which we present here. This function takes as arguments
+the subgraph to execute, the termination function to apply, the
+enclosing graph's state, and the index of the structure in the enclosing
+VI; it returns a pair with the new state and a list of port-value
+pairs to fire through output ports. 
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runStructure}\mathbin{::}{}\<[18]%
+\>[18]{}\Conid{LvVI}{}\<[E]%
+\\
+\>[18]{}\to (\hyperlink{LvState}{LvState}\to \Conid{Bool}){}\<[E]%
+\\
+\>[18]{}\to \hyperlink{LvState}{LvState}\to \Conid{Int}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]{}\<[E]%
+\\
+\>[18]{}\to (\hyperlink{LvState}{LvState},[\mskip1.5mu (\Conid{Int},\Conid{LvValue})\mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Its execution works as follows. First, it determines \ensuremath{sk_{1}}, which is the
+state to use when running the subgraph. If there is no continuation, a new
+state is constructed using \ensuremath{\Varid{initialState}} (Section~\ref{initialstate}), with
+the input values received as arguments entered as values for the structure's
+controls. If there is a continuation, it means it is resuming execution of an
+existing state, so it reuses the state stored in the \ensuremath{\Conid{LvKState}} object,
+merely updating its timestamp.
+
+Then, it calls the main function \ensuremath{\Varid{run}} (Section~\ref{run}) on the subgraph
+\ensuremath{\Varid{subvi}} and state \ensuremath{sk_{1}}. This produces a new state, \ensuremath{sk_{2} }. If the
+scheduler queue in this state is not empty, this means that the single-shot
+execution of the graph did not finish. In this case, the interpreter stores
+this new state in a continuation object \ensuremath{\Varid{nextk}} and enqueues the structure
+in the main state so it runs again.
+
+If the scheduler queue is empty, \ensuremath{\Varid{runStructure}} runs the termination check
+\ensuremath{\Varid{shouldStop}} to determine if it should schedule a new iteration of the
+subgraph. If a new iteration is required, a new state is produced with
+\ensuremath{\Varid{nextStep}}, which increments the iterator and processes shift registers.
+
+At last, if the execution does not produce a continuation, this means the
+structure terminated its single-shot execution: the values of the indicators
+are sent out to the structure's output ports.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{12}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{30}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{37}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{37E}{@{}l@{}}%
+\column{40}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runStructure}\;\Varid{subvi}\;\Varid{shouldStop}\;s_{1}\;\Varid{idx}\;\Varid{inputs}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nss}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{sNStates}\;s_{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ns}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{index}\;\Varid{nss}\;\Varid{idx}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ts'}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{sTs}\;s_{1}\mathbin{+}\mathrm{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{prng}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{sPrng}\;s_{1}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}sk_{1}{}\<[12]%
+\>[12]{}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;\Varid{nsCont}\;\Varid{ns}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{Nothing}{}\<[30]%
+\>[30]{}\to \Varid{setCtrlVals}\;\Varid{inputs}\;(\Varid{initialState}\;\Varid{ts'}\;\Varid{prng}\;\Varid{subvi}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{Just}\;(\Conid{LvKState}\;\Varid{st}){}\<[30]%
+\>[30]{}\to \Varid{st}\;\{\mskip1.5mu \Varid{sTs}\mathrel{=}\Varid{ts'}\mskip1.5mu\}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{setCtrlVals}\;\Varid{inputs}\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{s}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{sTs}{}\<[24]%
+\>[24]{}\mathrel{=}\Varid{sTs}\;\Varid{s}\mathbin{+}\mathrm{1},{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{sCtrlVals}{}\<[24]%
+\>[24]{}\mathrel{=}\Varid{fromList}\;(\Varid{zipWith}\;\Varid{fromMaybe}\;(\Varid{toList}\mathbin{\$}\Varid{sCtrlVals}\;\Varid{s})\;\Varid{inputs}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mskip1.5mu\}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}sk_{2} {}\<[12]%
+\>[12]{}\mathrel{=}\Varid{run}\;sk_{1}\;\Varid{subvi}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nextk}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid \neg \;(\Varid{null}\;(\Varid{sSched}\;sk_{2} )){}\<[37]%
+\>[37]{}\mathrel{=}{}\<[37E]%
+\>[40]{}\Conid{Just}\;(\Conid{LvKState}\;sk_{2} ){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid \Varid{shouldStop}\;sk_{2} {}\<[37]%
+\>[37]{}\mathrel{=}{}\<[37E]%
+\>[40]{}\Conid{Nothing}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid \Varid{otherwise}{}\<[37]%
+\>[37]{}\mathrel{=}{}\<[37E]%
+\>[40]{}\mathbf{let}\;\Conid{LvI32}\;\Varid{i}\mathrel{=}\Varid{index}\;(\Varid{sCtrlVals}\;sk_{2} )\;\mathrm{0}{}\<[E]%
+\\
+\>[40]{}\mathbf{in}\;\Conid{Just}\;(\Conid{LvKState}\;(\Varid{nextStep}\;\Varid{subvi}\;sk_{2} \;(\Varid{i}\mathbin{+}\mathrm{1}))){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{qMyself}\mathrel{=}[\mskip1.5mu \llparenthesis \Conid{LvN}, \Varid{idx}\rrparenthesis \mid \Varid{isJust}\;\Varid{nextk}\mskip1.5mu]{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}s_{2}\mathrel{=}s_{1}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{sTs}{}\<[20]%
+\>[20]{}\mathrel{=}\Varid{sTs}\;sk_{2} \mathbin{+}\mathrm{1},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{sPrng}{}\<[20]%
+\>[20]{}\mathrel{=}\Varid{sPrng}\;sk_{2} ,{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{sSched}{}\<[20]%
+\>[20]{}\mathrel{=}\Varid{sSched}\;s_{1}\plus \Varid{qMyself},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{sNStates}{}\<[20]%
+\>[20]{}\mathrel{=}\Varid{update}\;\Varid{idx}\;(\Varid{ns}\;\{\mskip1.5mu \Varid{nsCont}\mathrel{=}\Varid{nextk}\mskip1.5mu\})\;\Varid{nss}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mskip1.5mu\}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{pvs}\mathrel{=}\Varid{zip}\;(\Varid{indices}\mathbin{\$}\Varid{vIndics}\;\Varid{subvi})\;(\Varid{toList}\mathbin{\$}\Varid{sIndicVals}\;sk_{2} ){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(s_{2},\mathbf{if}\;\Varid{isJust}\;\Varid{nextk}\;\mathbf{then}\;[\mskip1.5mu \mskip1.5mu]\;\mathbf{else}\;\Varid{pvs}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Structure nodes use the following auxiliary functions, already mentioned
+above. Function \ensuremath{\Varid{initCounter}} checks whether the node state has a
+continuation, and initializes the iteration counter if it doesn't. Function
+\ensuremath{\Varid{nextStep}} resets the scheduler for the state of the subgraph, and implements
+the shift register logic, copying values from indicators marked as
+\ensuremath{\Conid{LvSRIndicator}} to their corresponding controls in the new state.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{25}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{initCounter}\mathbin{::}\hyperlink{LvState}{LvState}\to \Conid{Int}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{initCounter}\;\Varid{s}\;\Varid{idx}\;\Varid{inputs}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{case}\;\Varid{nsCont}\;(\Varid{index}\;(\Varid{sNStates}\;\Varid{s})\;\Varid{idx})\;\mathbf{of}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Conid{Nothing}{}\<[13]%
+\>[13]{}\to \Conid{Just}\;(\Conid{LvI32}\;\mathrm{0})\mathbin{:}\Varid{tail}\;\Varid{inputs}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\anonymous {}\<[13]%
+\>[13]{}\to \Varid{inputs}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{nextStep}\mathbin{::}\Conid{LvVI}\to \hyperlink{LvState}{LvState}\to \Conid{Int}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\\
+\>[B]{}\Varid{nextStep}\;\Varid{vi}\;\Varid{s}\;\Varid{i'}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{s}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sTs}{}\<[18]%
+\>[18]{}\mathrel{=}\Varid{sTs}\;\Varid{s}\mathbin{+}\mathrm{1},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sSched}{}\<[18]%
+\>[18]{}\mathrel{=}\Varid{initialSchedule}\;\Varid{vi},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{sCtrlVals}{}\<[18]%
+\>[18]{}\mathrel{=}\Varid{cvs''}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{cvs'}{}\<[14]%
+\>[14]{}\mathrel{=}\Varid{update}\;\mathrm{0}\;(\Conid{LvI32}\;\Varid{i'})\;(\Varid{sCtrlVals}\;\Varid{s}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{cvs''}{}\<[14]%
+\>[14]{}\mathrel{=}{}\<[17]%
+\>[17]{}\Varid{foldl'}\;\Varid{shiftRegister}\;\Varid{cvs'}\mathbin{\$}\Varid{zip}\;(\Varid{vIndics}\;\Varid{vi})\;(\Varid{toList}\;(\Varid{sIndicVals}\;\Varid{s})){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{shiftRegister}\mathbin{::}{}\<[25]%
+\>[25]{}\Conid{Seq}\;\Conid{LvValue}\to ((\Conid{String},\Conid{LvIndicator}),\Conid{LvValue})\to \Conid{Seq}\;\Conid{LvValue}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{shiftRegister}\;\Varid{cvs}\;((\anonymous ,\Conid{LvSRIndicator}\;\Varid{cidx}),\Varid{ival})\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{update}\;\Varid{cidx}\;\Varid{ival}\;\Varid{cvs}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{shiftRegister}\;\Varid{cvs}\;\anonymous \mathrel{=}\Varid{cvs}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Operations}
+
+The final section of the interpreter is the implementation of the various
+operations available in the language as function nodes. These operations
+are implemented as cases for function \ensuremath{\Varid{applyFunction}}, which takes a
+string with the name of the function, an instance of the outside world,
+the list of input values, and produces a return, which may be a list of
+results or a continuation, along with the updated state of the world.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{applyFunction}\mathbin{::}\Conid{String}\to \Conid{LvWorld}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to (\Conid{LvWorld},\Conid{LvReturn}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+However, in the spirit of dataflow, most function nodes implement pure
+functions (that is, they do not read or affect the outside world). We
+represent them as such, removing the occurrences of \ensuremath{\Conid{LvWorld}} from the
+signature:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{applyPureFunction}\mathbin{::}\Conid{String}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to \Conid{LvReturn}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+To fit the interpreter's execution model, these pure functions can then be
+converted to match the expected signature using the following combinator,
+which is able to convert the signature of \ensuremath{\Varid{applyPureFunction}} into that of
+\ensuremath{\Varid{applyFunction}}, by simply forwarding the \ensuremath{\Conid{LvWorld}} object unchanged:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{withWorld}\mathbin{::}(\Varid{a}\to \Varid{r})\to (\Varid{w}\to \Varid{a}\to (\Varid{w},\Varid{r})){}\<[E]%
+\\
+\>[B]{}\Varid{withWorld}\;\Varid{f}\mathrel{=}\lambda \Varid{w}\;\Varid{args}\to (\Varid{w},\Varid{f}\;\Varid{args}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Our goal in this interpreter is not to reproduce the functionality of LabVIEW
+with respect to its domain in engineering, but to describe in detail the
+semantics of the dataflow language at its core. For this reason, we include
+below only a small selection of functions, which should be enough to
+illustrate the behavior of the interpreter through examples.
+
+The following pure functions are implemented: arithmetic and relational
+operators (Section~\ref{binop}), array functions \text{\tt Array~Max~\char38{}~Min} and
+\text{\tt Insert~Into~Array} (Section~\ref{arrayfns}), and \text{\tt Bundle} (a simple function
+which packs values into a cluster).
+
+To demonstrate impure functions, the interpreter includes the timer
+function \text{\tt Wait~Until~Next~Ms} (Section~\ref{waituntilnextms}) and the
+PRNG function \text{\tt Random~Number} (Section~\ref{randomnumber}).
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{23}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{30}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{34}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{39}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{applyPureFunction}\;\Varid{name}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{case}\;\Varid{name}\;\mathbf{of}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\text{\tt \char34 +\char34}{}\<[23]%
+\>[23]{}\to \Varid{numOp}\;{}\<[34]%
+\>[34]{}(\mathbin{+})\;{}\<[39]%
+\>[39]{}(\mathbin{+}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\text{\tt \char34 -\char34}{}\<[23]%
+\>[23]{}\to \Varid{numOp}\;{}\<[34]%
+\>[34]{}(\mathbin{-})\;{}\<[39]%
+\>[39]{}(\mathbin{-}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\text{\tt \char34 *\char34}{}\<[23]%
+\>[23]{}\to \Varid{numOp}\;{}\<[34]%
+\>[34]{}(\mathbin{*})\;{}\<[39]%
+\>[39]{}(\mathbin{*}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\text{\tt \char34 /\char34}{}\<[23]%
+\>[23]{}\to \Varid{numOp}\;{}\<[34]%
+\>[34]{}(\mathbin{/})\;{}\<[39]%
+\>[39]{}\Varid{div}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\text{\tt \char34 <\char34}{}\<[23]%
+\>[23]{}\to \Varid{boolOp}\;{}\<[34]%
+\>[34]{}(\mathbin{<})\;{}\<[39]%
+\>[39]{}(\mathbin{<}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\text{\tt \char34 >\char34}{}\<[23]%
+\>[23]{}\to \Varid{boolOp}\;{}\<[34]%
+\>[34]{}(\mathbin{>})\;{}\<[39]%
+\>[39]{}(\mathbin{>}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\text{\tt \char34 ArrayMax\&Min\char34}{}\<[23]%
+\>[23]{}\to \Varid{returnArrayMaxMin}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\text{\tt \char34 InsertIntoArray\char34}{}\<[23]%
+\>[23]{}\to \Varid{returnInsertIntoArray}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\text{\tt \char34 Bundle\char34}{}\<[23]%
+\>[23]{}\to \Varid{returnBundle}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{otherwise}{}\<[23]%
+\>[23]{}\to \Varid{error}\;(\text{\tt \char34 No~rule~to~apply~\char34}\plus \Varid{name}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{returnArrayMaxMin}\;[\mskip1.5mu \Conid{Just}\;(\Conid{LvArr}\;\Varid{a})\mskip1.5mu]\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{LvReturn}\;(\Varid{arrayMaxMin}\;\Varid{a}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{returnInsertIntoArray}\;(\Conid{Just}\;\Varid{arr}\mathbin{:}\Conid{Just}\;\Varid{vs}\mathbin{:}\Varid{idxs})\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{LvReturn}\;[\mskip1.5mu \Varid{insertIntoArray}\;\Varid{arr}\;\Varid{vs}\;(\Varid{map}\;\Varid{toNumber}\;\Varid{idxs})\mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}\;\Varid{toNumber}\;\Varid{i}\mathrel{=}{}\<[30]%
+\>[30]{}\mathbf{if}\;\Varid{isNothing}\;\Varid{i}{}\<[E]%
+\\
+\>[30]{}\mathbf{then}\;(\mathbin{-}\mathrm{1}){}\<[E]%
+\\
+\>[30]{}\mathbf{else}\;(\lambda (\Conid{Just}\;(\Conid{LvI32}\;\Varid{n}))\to \Varid{n})\;\Varid{i}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{returnBundle}\;\Varid{args}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{LvReturn}\;[\mskip1.5mu \Conid{LvCluster}\;(\Varid{catMaybes}\;\Varid{args})\mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Numeric and relational operators}
+\label{binop}
+
+LobVIEW nodes automatically perform coercions between integers and doubles.
+Since ports in our implementation do not carry type information (it assumes
+the input VI has been type-checked prior to execution), we pragmatically
+include the coercion logic directly in the implementation for numeric and
+relational operator nodes, codified in the \ensuremath{\Varid{binOp}} function, to which the
+\ensuremath{\Varid{numOp}} and \ensuremath{\Varid{boolOp}} functions below delegate.
+
+It is worth noting that the LabVIEW UI gives visual feedback when a coercion
+takes place, by adding a small circle attached to the input port. This could
+be considered an automatically inserted coercion node, not unlike the automatic
+insertion of feedback nodes. However, since these are not separate nodes in
+LabVIEW (for instance, they cannot be probed as separate objects by the
+LabVIEW debugging facilities, unlike feedback nodes), we chose to not implement
+them as separate nodes, so keep node structure in input programs for this
+interpreter more alike to that of actual LabVIEW programs.
+
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{11}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{15}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{37}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{54}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{56}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{numOp}\mathbin{::}(\Conid{Double}\to \Conid{Double}\to \Conid{Double}){}\<[E]%
+\\
+\>[B]{}\hsindent{10}{}\<[10]%
+\>[10]{}\to (\Conid{Int}\to \Conid{Int}\to \Conid{Int})\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to \Conid{LvReturn}{}\<[E]%
+\\
+\>[B]{}\Varid{numOp}\;op_{d}\;op_{i}\mathrel{=}\Conid{LvReturn}\mathbin{\circ}\Varid{return}\mathbin{\circ}\Varid{binOp}\;op_{d}\;\Conid{LvDBL}\;op_{i}\;\Conid{LvI32}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{boolOp}\mathbin{::}(\Conid{Double}\to \Conid{Double}\to \Conid{Bool}){}\<[E]%
+\\
+\>[B]{}\hsindent{11}{}\<[11]%
+\>[11]{}\to (\Conid{Int}\to \Conid{Int}\to \Conid{Bool})\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to \Conid{LvReturn}{}\<[E]%
+\\
+\>[B]{}\Varid{boolOp}\;op_{d}\;op_{i}\mathrel{=}\Conid{LvReturn}\mathbin{\circ}\Varid{return}\mathbin{\circ}\Varid{binOp}\;op_{d}\;\Conid{LvBool}\;op_{i}\;\Conid{LvBool}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{binOp}\mathbin{::}(\Conid{Double}\to \Conid{Double}\to \Varid{t})\to (\Varid{t}\to \Conid{LvValue}){}\<[E]%
+\\
+\>[B]{}\hsindent{10}{}\<[10]%
+\>[10]{}\to (\Conid{Int}\to \Conid{Int}\to \Varid{t1})\to (\Varid{t1}\to \Conid{LvValue}){}\<[E]%
+\\
+\>[B]{}\hsindent{10}{}\<[10]%
+\>[10]{}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to \Conid{LvValue}{}\<[E]%
+\\
+\>[B]{}\Varid{binOp}\;op_{d}\;t_{d}\;\anonymous \;\anonymous \;{}\<[19]%
+\>[19]{}[\mskip1.5mu \Conid{Just}\;(\Conid{LvDBL}\;\Varid{a}),{}\<[37]%
+\>[37]{}\Conid{Just}\;(\Conid{LvDBL}\;\Varid{b})\mskip1.5mu]{}\<[54]%
+\>[54]{}\mathrel{=}t_{d}\;(op_{d}\;\Varid{a}\;\Varid{b}){}\<[E]%
+\\
+\>[B]{}\Varid{binOp}\;op_{d}\;t_{d}\;\anonymous \;\anonymous \;{}\<[19]%
+\>[19]{}[\mskip1.5mu \Conid{Just}\;(\Conid{LvI32}\;\Varid{a}),{}\<[37]%
+\>[37]{}\Conid{Just}\;(\Conid{LvDBL}\;\Varid{b})\mskip1.5mu]{}\<[54]%
+\>[54]{}\mathrel{=}t_{d}\;(op_{d}\;(\Varid{fromIntegral}\;\Varid{a})\;\Varid{b}){}\<[E]%
+\\
+\>[B]{}\Varid{binOp}\;op_{d}\;t_{d}\;\anonymous \;\anonymous \;{}\<[19]%
+\>[19]{}[\mskip1.5mu \Conid{Just}\;(\Conid{LvDBL}\;\Varid{a}),{}\<[37]%
+\>[37]{}\Conid{Just}\;(\Conid{LvI32}\;\Varid{b})\mskip1.5mu]{}\<[54]%
+\>[54]{}\mathrel{=}t_{d}\;(op_{d}\;\Varid{a}\;(\Varid{fromIntegral}\;\Varid{b})){}\<[E]%
+\\
+\>[B]{}\Varid{binOp}\;\anonymous \;\anonymous \;op_{i}\;t_{i}\;{}\<[19]%
+\>[19]{}[\mskip1.5mu \Conid{Just}\;(\Conid{LvI32}\;\Varid{a}),{}\<[37]%
+\>[37]{}\Conid{Just}\;(\Conid{LvI32}\;\Varid{b})\mskip1.5mu]{}\<[54]%
+\>[54]{}\mathrel{=}t_{i}\;(op_{i}\;\Varid{a}\;\Varid{b}){}\<[E]%
+\\
+\>[B]{}\Varid{binOp}\;\anonymous \;\anonymous \;\anonymous \;{}\<[15]%
+\>[15]{}\anonymous \;{}\<[21]%
+\>[21]{}\anonymous {}\<[56]%
+\>[56]{}\mathrel{=}\bot {}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Array functions}
+\label{arrayfns}
+
+Representing aggregate data structures and processing them efficiently is a
+recognized issue in dataflow
+languages~\cite{Johnston:2004:ADP:1013208.1013209}. LabVIEW includes support
+for arrays and clusters, and provides a large library of functions to support
+these data types. We illustrate two such functions in the interpreter. 
+
+\text{\tt Array~Max~\char38{}~Min} is a function that takes an array and produces four output
+values: the maximum value of the array, the index of this maximum value, the
+minimum value of the array, and the index of this minimum value. The design of
+this node reflects one concern which appears often in the LabVIEW
+documentation and among their users: avoiding excessive array copying. While
+languages providing similar functionality typically provide separate functions
+for \text{\tt min} and \text{\tt max}, here the language provides all four values at once, to
+dissuade the user from processing the array multiple times in case more than
+one value is needed. LabVIEW also provides a control structure called \text{\tt In~Place~Element~Structure}, not implemented in this interpreter, where an array
+and one or more indices are entered as inputs, producing input and output
+tunnels for each index, so that values can be replaced in an aggregate data
+structure without producing copies. More recent versions of LabVIEW avoid
+array copying through optimization, reducing the usefulness of this control
+structure.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{9}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{12}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{35}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{45}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{52}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{arrayMaxMin}\;\Varid{a}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{if}\;\Varid{null}\;\Varid{a}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{then}\;[\mskip1.5mu \Conid{LvDBL}\;\mathrm{0},{}\<[20]%
+\>[20]{}\Conid{LvI32}\;\mathrm{0},{}\<[35]%
+\>[35]{}\Conid{LvDBL}\;\mathrm{0},{}\<[45]%
+\>[45]{}\Conid{LvI32}\;\mathrm{0}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{else}\;[\mskip1.5mu \Varid{maxVal},{}\<[20]%
+\>[20]{}\Conid{LvI32}\;\Varid{maxIdx},{}\<[35]%
+\>[35]{}\Varid{minVal},{}\<[45]%
+\>[45]{}\Conid{LvI32}\;\Varid{minIdx}\mskip1.5mu]{}\<[E]%
+\\
+\>[4]{}\hsindent{5}{}\<[9]%
+\>[9]{}\mathbf{where}{}\<[E]%
+\\
+\>[9]{}\hsindent{3}{}\<[12]%
+\>[12]{}(\Varid{maxVal},\Varid{maxIdx})\mathrel{=}\Varid{foldPair}\;(\mathbin{>})\;\Varid{a}{}\<[E]%
+\\
+\>[9]{}\hsindent{3}{}\<[12]%
+\>[12]{}(\Varid{minVal},\Varid{minIdx})\mathrel{=}\Varid{foldPair}\;(\mathbin{<})\;\Varid{a}{}\<[E]%
+\\
+\>[9]{}\hsindent{3}{}\<[12]%
+\>[12]{}\Varid{foldPair}\;\Varid{op}\;\Varid{l}\mathrel{=}\Varid{foldl1}\;(\lambda (\Varid{x},\Varid{i})\;(\Varid{y},\Varid{j})\to \mathbf{if}\;\Varid{op}\;\Varid{x}\;\Varid{y}{}\<[E]%
+\\
+\>[12]{}\hsindent{40}{}\<[52]%
+\>[52]{}\mathbf{then}\;(\Varid{x},\Varid{i}){}\<[E]%
+\\
+\>[12]{}\hsindent{40}{}\<[52]%
+\>[52]{}\mathbf{else}\;(\Varid{y},\Varid{j}))\;{}\<[E]%
+\\
+\>[12]{}\hsindent{23}{}\<[35]%
+\>[35]{}(\Varid{zip}\;\Varid{l}\;(\Varid{indices}\;\Varid{l})){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+An example of a surprisingly large amount of functionality condensed into one
+function node is LabVIEW's \text{\tt Insert~Into~Array} operation. To insert into an
+array \ensuremath{\Varid{x}} a value \ensuremath{\Varid{y}}, this nodes features as input ports the target array
+(\ensuremath{\Varid{x}}), the data to be inserted (\ensuremath{\Varid{y}}, which may also be an array) and one
+indexing input port for each dimension of \ensuremath{\Varid{x}}. However, only one indexing port
+can be connected; the other ones must remain disconnected, and this indicates
+on which dimension the insertion should take place.
+
+The behavior of the function changes depending on which of the inputs are
+connected and what are the number of dimensions of array \ensuremath{\Varid{x}} and data \ensuremath{\Varid{y}}.
+
+Given a $n$-dimensional array \ensuremath{\Varid{x}}, value \ensuremath{\Varid{y}} must be either an $n$ or
+$(n-1)$-dimensional array (or in the case of inserting into a 1-D array, it
+must be either a 1-D array or an element of the array's base type).
+
+For example, if \ensuremath{\Varid{x}} is a 2D array $p \times q$ and \ensuremath{\Varid{y}} is a 1D array of size
+$n$, if the first indexing input is connected, it inserts a new row into the
+matrix, producing an array $p+1 \times q$; if the second index is connected,
+it inserts a new column, and the resulting array size is $p \times q+1$. This
+also works in higher dimensions: for example, one can insert a 2D matrix into
+a 3D array along one of its three axes.
+
+When the dimensions are the same, the results are different: inserting an
+array of size $m \times n$ into an array of size $p \times q$ may produce an
+array of size $p+m \times q$ or $p \times q+n$. For all operations, the
+dimensions of \ensuremath{\Varid{y}} are cropped or expanded with null values (such as zero or
+the empty string) to match the dimensions of \ensuremath{\Varid{x}}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{31}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{35}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{39}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{42}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{49}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{63}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{67}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{insertIntoArray}\mathbin{::}\Conid{LvValue}\to \Conid{LvValue}\to [\mskip1.5mu \Conid{Int}\mskip1.5mu]\to \Conid{LvValue}{}\<[E]%
+\\
+\>[B]{}\Varid{insertIntoArray}\;\Varid{vx}\;\Varid{vy}\;\Varid{idxs}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{case}\;(\Varid{vx},\Varid{vy},\Varid{idxs})\;\mathbf{of}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Conid{LvArr}\;\Varid{lx},\anonymous ,[\mskip1.5mu \mskip1.5mu])\to \Varid{insertIntoArray}\;\Varid{vx}\;\Varid{vy}\;[\mskip1.5mu \Varid{length}\;\Varid{lx}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Conid{LvArr}\;\Varid{lx}\mathord{@}(\Conid{LvArr}\;\Varid{x}\mathbin{:\char95 }),{}\<[28]%
+\>[28]{}\Conid{LvArr}\;\Varid{ly},{}\<[39]%
+\>[39]{}\mathbin{-}\mathrm{1}\mathbin{:}\Varid{is}){}\<[49]%
+\>[49]{}\to \Varid{recurseTo}\;{}\<[63]%
+\>[63]{}\Varid{is}\;{}\<[67]%
+\>[67]{}\Varid{lx}\;(\Varid{next}\;\Varid{x}\;\Varid{lx}\;\Varid{ly}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Conid{LvArr}\;\Varid{lx}\mathord{@}(\Conid{LvArr}\;\Varid{x}\mathbin{:\char95 }),{}\<[28]%
+\>[28]{}\Conid{LvArr}\;\Varid{ly},{}\<[39]%
+\>[39]{}\Varid{i}{}\<[42]%
+\>[42]{}\mathbin{:}\anonymous ){}\<[49]%
+\>[49]{}\to \Varid{insertAt}\;{}\<[63]%
+\>[63]{}\Varid{i}\;{}\<[67]%
+\>[67]{}\Varid{lx}\;(\Varid{curr}\;\Varid{x}\;\Varid{lx}\;\Varid{ly}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Conid{LvArr}\;\Varid{lx},{}\<[28]%
+\>[28]{}\anonymous ,{}\<[39]%
+\>[39]{}\Varid{i}{}\<[42]%
+\>[42]{}\mathbin{:}\anonymous ){}\<[49]%
+\>[49]{}\to \Varid{insertAt}\;{}\<[63]%
+\>[63]{}\Varid{i}\;{}\<[67]%
+\>[67]{}\Varid{lx}\;(\Varid{base}\;\Varid{vy}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{next},\Varid{curr},\Varid{base})\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{if}\;\Varid{ndims}\;\Varid{vx}\equiv \Varid{ndims}\;\Varid{vy}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{then}\;({}\<[18]%
+\>[18]{}\mathbin{\char92 \char95 }\Varid{lx}\;\Varid{ly}{}\<[31]%
+\>[31]{}\to \Varid{resizeCurr}\;\Varid{id}\;\Varid{lx}\;\Varid{ly},{}\<[E]%
+\\
+\>[18]{}\mathbin{\char92 \char95 }\Varid{lx}\;\Varid{ly}{}\<[31]%
+\>[31]{}\to \Varid{resizeLower}\;\Varid{lx}\;\Varid{ly},{}\<[E]%
+\\
+\>[18]{}\lambda (\Conid{LvArr}\;\Varid{ly}){}\<[31]%
+\>[31]{}\to \Varid{ly}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{else}\;({}\<[18]%
+\>[18]{}\lambda \Varid{x}\;\anonymous \;{}\<[24]%
+\>[24]{}\Varid{ly}{}\<[31]%
+\>[31]{}\to \Varid{resizeCurr}\;\Varid{id}\;\Varid{x}\;\Varid{ly},{}\<[E]%
+\\
+\>[18]{}\lambda \Varid{x}\;\anonymous \;{}\<[24]%
+\>[24]{}\Varid{ly}{}\<[31]%
+\>[31]{}\to [\mskip1.5mu \Conid{LvArr}\;(\Varid{resizeAll}\;\Varid{x}\;\Varid{ly})\mskip1.5mu],{}\<[E]%
+\\
+\>[18]{}\mathbin{\char92 \char95 }{}\<[31]%
+\>[31]{}\to [\mskip1.5mu \Varid{vy}\mskip1.5mu]){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{insertAt}\;\Varid{i}\;\Varid{lx}\;\Varid{ly}\mathrel{=}\Conid{LvArr}\mathbin{\$}\Varid{take}\;\Varid{i}\;\Varid{lx}\plus \Varid{ly}\plus \Varid{drop}\;\Varid{i}\;\Varid{lx}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{recurseTo}\;\Varid{is}\;\Varid{lx}\;\Varid{ly}\mathrel{=}\Conid{LvArr}\mathbin{\$}\Varid{zipWith}\;(\lambda \Varid{a}\;\Varid{b}\to \Varid{insertIntoArray}\;\Varid{a}\;\Varid{b}\;\Varid{is})\;\Varid{lx}\;\Varid{ly}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{resizeCurr}\;\Varid{childOp}\;\Varid{xs}\mathord{@}(\Varid{x}\mathbin{:\char95 })\;\Varid{ys}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{map}\;\Varid{childOp}\mathbin{\$}\Varid{take}\;(\Varid{length}\;\Varid{xs})\mathbin{\$}\Varid{ys}\plus (\Varid{repeat}\mathbin{\circ}\Varid{zero})\;\Varid{x}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{zero}\;(\Conid{LvArr}\;\Varid{l}\mathord{@}(\Varid{x}\mathbin{:\char95 })){}\<[35]%
+\>[35]{}\mathrel{=}\Conid{LvArr}\;(\Varid{replicate}\;(\Varid{length}\;\Varid{l})\;(\Varid{zero}\;\Varid{x})){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{zero}\;(\Conid{LvDBL}\;\anonymous ){}\<[35]%
+\>[35]{}\mathrel{=}\Conid{LvDBL}\;\mathrm{0.0}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{zero}\;(\Conid{LvI32}\;\anonymous ){}\<[35]%
+\>[35]{}\mathrel{=}\Conid{LvI32}\;\mathrm{0}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{zero}\;(\Conid{LvSTR}\;\anonymous ){}\<[35]%
+\>[35]{}\mathrel{=}\Conid{LvSTR}\;\text{\tt \char34 \char34}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{zero}\;(\Conid{LvBool}\;\anonymous ){}\<[35]%
+\>[35]{}\mathrel{=}\Conid{LvBool}\;\Conid{False}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{zero}\;(\Conid{LvCluster}\;\Varid{c}){}\<[35]%
+\>[35]{}\mathrel{=}\Conid{LvCluster}\;(\Varid{map}\;\Varid{zero}\;\Varid{c}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{zero}\;(\Conid{LvArr}\;[\mskip1.5mu \mskip1.5mu]){}\<[35]%
+\>[35]{}\mathrel{=}\Conid{LvArr}\;[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{resizeLower}\;(\Varid{x}\mathbin{:\char95 })\;\Varid{ys}\mathrel{=}\Varid{map}\;(\Varid{childResizer}\;\Varid{x})\;\Varid{ys}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{resizeAll}\;\Varid{xs}\mathord{@}(\Varid{x}\mathbin{:\char95 })\;\Varid{ys}\mathrel{=}\Varid{resizeCurr}\;(\Varid{childResizer}\;\Varid{x})\;\Varid{xs}\;\Varid{ys}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{childResizer}\;(\Conid{LvArr}\;\Varid{x})\mathrel{=}\lambda (\Conid{LvArr}\;\Varid{a})\to \Conid{LvArr}\;(\Varid{resizeAll}\;\Varid{x}\;\Varid{a}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{childResizer}\;\anonymous \mathrel{=}\Varid{id}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ndims}\;(\Conid{LvArr}\;(\Varid{v}\mathbin{:\char95 })){}\<[28]%
+\>[28]{}\mathrel{=}\mathrm{1}\mathbin{+}\Varid{ndims}\;\Varid{v}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ndims}\;(\Conid{LvArr}\;[\mskip1.5mu \mskip1.5mu]){}\<[28]%
+\>[28]{}\mathrel{=}\mathrm{1}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ndims}\;\anonymous {}\<[28]%
+\>[28]{}\mathrel{=}\mathrm{0}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{\text{\tt Random~Number}}
+\label{randomnumber}
+
+\text{\tt Random~Number} is an example of an impure function which produces a
+side-effect beyond the value sent through its output port. In our definition
+of the ``outside world'', which is part of the ongoing state computed in
+our model, we have the state of the pseudo-random number generator, which
+needs to be updated each time this node produces a value.
+
+In this interpreter, we implement the PRNG using the 32-bit variant of the
+Xorshift algorithm~\cite{xorshift}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{applyFunction}\;\text{\tt \char34 RandomNumber\char34}\;\Varid{w}\;[\mskip1.5mu \mskip1.5mu]\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{mask}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{foldl1}\;(\lambda \Varid{v}\;\Varid{b}\to \Varid{v}\mathbin{.|.}\Varid{bit}\;\Varid{b})\;(\mathrm{0}\mathbin{:}[\mskip1.5mu \mathrm{0}\mathinner{\ldotp\ldotp}\mathrm{31}\mskip1.5mu]){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{n0}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{wPrng}\;\Varid{w}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{n1}{}\<[13]%
+\>[13]{}\mathrel{=}(\Varid{n0}\mathbin{`\Varid{xor}`}(\Varid{n0}\mathbin{`\Varid{shiftL}`}\mathrm{13}))\mathbin{.\&.}\Varid{mask}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{n2}{}\<[13]%
+\>[13]{}\mathrel{=}(\Varid{n1}\mathbin{`\Varid{xor}`}(\Varid{n1}\mathbin{`\Varid{shiftR}`}\mathrm{17}))\mathbin{.\&.}\Varid{mask}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{n3}{}\<[13]%
+\>[13]{}\mathrel{=}(\Varid{n2}\mathbin{`\Varid{xor}`}(\Varid{n2}\mathbin{`\Varid{shiftL}`}\mathrm{25}))\mathbin{.\&.}\Varid{mask}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{f}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{abs}\mathbin{\$}(\Varid{fromIntegral}\;\Varid{n3})\mathbin{/}\mathrm{2}\mathbin{\uparrow}\mathrm{32}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}\;(\Varid{w}\;\{\mskip1.5mu \Varid{wPrng}\mathrel{=}\Varid{n3}\mskip1.5mu\},\Conid{LvReturn}\;[\mskip1.5mu \Conid{LvDBL}\;\Varid{f}\mskip1.5mu]){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{\text{\tt Wait~Until~Next~Ms}}
+\label{waituntilnextms}
+
+Node \text{\tt Wait~Until~Next~Ms} demonstrates both the use a value coming
+from the outside world (the timestamp) and the use of a continuation.
+Its goal is to wait until the timestamp matches or exceeds the next
+multiple of the given argument. Using this object in loop structures
+that are running concurrently causes them to iterate in lockstep,
+if the inserted delay is long enough. This is a simple way to produce
+an acceptable level of synchronization for the typical domain of
+instrument data acquisition which LabVIEW specializes on.
+
+When the function is applied, it immediately returns a continuation,
+containing the function \ensuremath{\Varid{waitUntil}} and the target timestamp \ensuremath{\Varid{nextMs}} as its
+argument. As we saw in Section~\ref{functionnodes}, this will cause the
+function to be rescheduled. The implementation of \ensuremath{\Varid{waitUntil}} checks
+the current time received in the \ensuremath{\Conid{LvWorld}} argument: if it has
+not reached the target time, the function returns another continuation
+rescheduling itself; otherwise, it returns producing no value, since
+the function node for this operation has no output ports. This node
+relies on the fact that a (sub)graph as a whole keeps running as long
+as some node is scheduled.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{25}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{applyFunction}\;\text{\tt \char34 WaitUntilNextMs\char34}\;\Varid{w}\;[\mskip1.5mu \Conid{Just}\;(\Conid{LvI32}\;\Varid{ms})\mskip1.5mu]\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}(\Varid{w},\Conid{LvContinue}\mathbin{\$}\Conid{LvKFunction}\;\Varid{waitUntil}\;[\mskip1.5mu \Conid{LvI32}\;\Varid{nextMs}\mskip1.5mu]){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ts}\mathrel{=}\Varid{wTs}\;\Varid{w}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nextMs}\mathrel{=}\Varid{ts}\mathbin{-}(\Varid{ts}\mathbin{\Varid{`mod`}}\Varid{ms})\mathbin{+}\Varid{ms}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{waitUntil}\;\Varid{w}\mathord{@}(\Conid{LvWorld}\;\Varid{now}\;\anonymous )\;\Varid{arg}\mathord{@}[\mskip1.5mu \Conid{LvI32}\;\Varid{stop}\mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid \Varid{now}\geq \Varid{stop}{}\<[25]%
+\>[25]{}\mathrel{=}(\Varid{w},\Conid{LvReturn}\;[\mskip1.5mu \mskip1.5mu]){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid \Varid{otherwise}{}\<[25]%
+\>[25]{}\mathrel{=}(\Varid{w},\Conid{LvContinue}\mathbin{\$}\Conid{LvKFunction}\;\Varid{waitUntil}\;\Varid{arg}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{applyFunction}\;\text{\tt \char34 WaitUntilNextMs\char34}\;\Varid{vst}\;[\mskip1.5mu \Conid{Just}\;(\Conid{LvDBL}\;\Varid{msd})\mskip1.5mu]\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{applyFunction}\;\text{\tt \char34 WaitUntilNextMs\char34}\;\Varid{vst}\;[\mskip1.5mu \Conid{Just}\;(\Conid{LvI32}\;(\Varid{floor}\;\Varid{msd}))\mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Finally, we finish the definition of \ensuremath{\Varid{applyFunction}} by delegating
+the remaining functions to \ensuremath{\Varid{applyPureFunction}}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{applyFunction}\;\Varid{n}\;\Varid{w}\;\Varid{a}\mathrel{=}(\Varid{withWorld}\mathbin{\circ}\Varid{applyPureFunction})\;\Varid{n}\;\Varid{w}\;\Varid{a}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+%END LYX TEXT

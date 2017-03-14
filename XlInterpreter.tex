@@ -1,0 +1,2550 @@
+%% ODER: format ==         = "\mathrel{==}"
+%% ODER: format /=         = "\neq "
+%
+%
+\makeatletter
+\@ifundefined{lhs2tex.lhs2tex.sty.read}%
+  {\@namedef{lhs2tex.lhs2tex.sty.read}{}%
+   \newcommand\SkipToFmtEnd{}%
+   \newcommand\EndFmtInput{}%
+   \long\def\SkipToFmtEnd#1\EndFmtInput{}%
+  }\SkipToFmtEnd
+
+\newcommand\ReadOnlyOnce[1]{\@ifundefined{#1}{\@namedef{#1}{}}\SkipToFmtEnd}
+\usepackage{amstext}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\DeclareFontFamily{OT1}{cmtex}{}
+\DeclareFontShape{OT1}{cmtex}{m}{n}
+  {<5><6><7><8>cmtex8
+   <9>cmtex9
+   <10><10.95><12><14.4><17.28><20.74><24.88>cmtex10}{}
+\DeclareFontShape{OT1}{cmtex}{m}{it}
+  {<-> ssub * cmtt/m/it}{}
+\newcommand{\texfamily}{\fontfamily{cmtex}\selectfont}
+\DeclareFontShape{OT1}{cmtt}{bx}{n}
+  {<5><6><7><8>cmtt8
+   <9>cmbtt9
+   <10><10.95><12><14.4><17.28><20.74><24.88>cmbtt10}{}
+\DeclareFontShape{OT1}{cmtex}{bx}{n}
+  {<-> ssub * cmtt/bx/n}{}
+\newcommand{\tex}[1]{\text{\texfamily#1}}	% NEU
+
+\newcommand{\Sp}{\hskip.33334em\relax}
+
+
+\newcommand{\Conid}[1]{\mathit{#1}}
+\newcommand{\Varid}[1]{\mathit{#1}}
+\newcommand{\anonymous}{\kern0.06em \vbox{\hrule\@width.5em}}
+\newcommand{\plus}{\mathbin{+\!\!\!+}}
+\newcommand{\bind}{\mathbin{>\!\!\!>\mkern-6.7mu=}}
+\newcommand{\rbind}{\mathbin{=\mkern-6.7mu<\!\!\!<}}% suggested by Neil Mitchell
+\newcommand{\sequ}{\mathbin{>\!\!\!>}}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\usepackage{polytable}
+
+%mathindent has to be defined
+\@ifundefined{mathindent}%
+  {\newdimen\mathindent\mathindent\leftmargini}%
+  {}%
+
+\def\resethooks{%
+  \global\let\SaveRestoreHook\empty
+  \global\let\ColumnHook\empty}
+\newcommand*{\savecolumns}[1][default]%
+  {\g@addto@macro\SaveRestoreHook{\savecolumns[#1]}}
+\newcommand*{\restorecolumns}[1][default]%
+  {\g@addto@macro\SaveRestoreHook{\restorecolumns[#1]}}
+\newcommand*{\aligncolumn}[2]%
+  {\g@addto@macro\ColumnHook{\column{#1}{#2}}}
+
+\resethooks
+
+\newcommand{\onelinecommentchars}{\quad-{}- }
+\newcommand{\commentbeginchars}{\enskip\{-}
+\newcommand{\commentendchars}{-\}\enskip}
+
+\newcommand{\visiblecomments}{%
+  \let\onelinecomment=\onelinecommentchars
+  \let\commentbegin=\commentbeginchars
+  \let\commentend=\commentendchars}
+
+\newcommand{\invisiblecomments}{%
+  \let\onelinecomment=\empty
+  \let\commentbegin=\empty
+  \let\commentend=\empty}
+
+\visiblecomments
+
+\newlength{\blanklineskip}
+\setlength{\blanklineskip}{0.66084ex}
+
+\newcommand{\hsindent}[1]{\quad}% default is fixed indentation
+\let\hspre\empty
+\let\hspost\empty
+\newcommand{\NB}{\textbf{NB}}
+\newcommand{\Todo}[1]{$\langle$\textbf{To do:}~#1$\rangle$}
+
+\EndFmtInput
+\makeatother
+%
+%
+%
+%
+%
+%
+% This package provides two environments suitable to take the place
+% of hscode, called "plainhscode" and "arrayhscode". 
+%
+% The plain environment surrounds each code block by vertical space,
+% and it uses \abovedisplayskip and \belowdisplayskip to get spacing
+% similar to formulas. Note that if these dimensions are changed,
+% the spacing around displayed math formulas changes as well.
+% All code is indented using \leftskip.
+%
+% Changed 19.08.2004 to reflect changes in colorcode. Should work with
+% CodeGroup.sty.
+%
+\ReadOnlyOnce{polycode.fmt}%
+\makeatletter
+
+\newcommand{\hsnewpar}[1]%
+  {{\parskip=0pt\parindent=0pt\par\vskip #1\noindent}}
+
+% can be used, for instance, to redefine the code size, by setting the
+% command to \small or something alike
+\newcommand{\hscodestyle}{}
+
+% The command \sethscode can be used to switch the code formatting
+% behaviour by mapping the hscode environment in the subst directive
+% to a new LaTeX environment.
+
+\newcommand{\sethscode}[1]%
+  {\expandafter\let\expandafter\hscode\csname #1\endcsname
+   \expandafter\let\expandafter\endhscode\csname end#1\endcsname}
+
+% "compatibility" mode restores the non-polycode.fmt layout.
+
+\newenvironment{compathscode}%
+  {\par\noindent
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \let\hspre\(\let\hspost\)%
+   \pboxed}%
+  {\endpboxed\)%
+   \par\noindent
+   \ignorespacesafterend}
+
+\newcommand{\compaths}{\sethscode{compathscode}}
+
+% "plain" mode is the proposed default.
+% It should now work with \centering.
+% This required some changes. The old version
+% is still available for reference as oldplainhscode.
+
+\newenvironment{plainhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\hspre\(\let\hspost\)%
+   \pboxed}%
+  {\endpboxed%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+\newenvironment{oldplainhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \(\pboxed}%
+  {\endpboxed\)%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+% Here, we make plainhscode the default environment.
+
+\newcommand{\plainhs}{\sethscode{plainhscode}}
+\newcommand{\oldplainhs}{\sethscode{oldplainhscode}}
+\plainhs
+
+% The arrayhscode is like plain, but makes use of polytable's
+% parray environment which disallows page breaks in code blocks.
+
+\newenvironment{arrayhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \(\parray}%
+  {\endparray\)%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+\newcommand{\arrayhs}{\sethscode{arrayhscode}}
+
+% The mathhscode environment also makes use of polytable's parray 
+% environment. It is supposed to be used only inside math mode 
+% (I used it to typeset the type rules in my thesis).
+
+\newenvironment{mathhscode}%
+  {\parray}{\endparray}
+
+\newcommand{\mathhs}{\sethscode{mathhscode}}
+
+% texths is similar to mathhs, but works in text mode.
+
+\newenvironment{texthscode}%
+  {\(\parray}{\endparray\)}
+
+\newcommand{\texths}{\sethscode{texthscode}}
+
+% The framed environment places code in a framed box.
+
+\def\codeframewidth{\arrayrulewidth}
+\RequirePackage{calc}
+
+\newenvironment{framedhscode}%
+  {\parskip=\abovedisplayskip\par\noindent
+   \hscodestyle
+   \arrayrulewidth=\codeframewidth
+   \tabular{@{}|p{\linewidth-2\arraycolsep-2\arrayrulewidth-2pt}|@{}}%
+   \hline\framedhslinecorrect\\{-1.5ex}%
+   \let\endoflinesave=\\
+   \let\\=\@normalcr
+   \(\pboxed}%
+  {\endpboxed\)%
+   \framedhslinecorrect\endoflinesave{.5ex}\hline
+   \endtabular
+   \parskip=\belowdisplayskip\par\noindent
+   \ignorespacesafterend}
+
+\newcommand{\framedhslinecorrect}[2]%
+  {#1[#2]}
+
+\newcommand{\framedhs}{\sethscode{framedhscode}}
+
+% The inlinehscode environment is an experimental environment
+% that can be used to typeset displayed code inline.
+
+\newenvironment{inlinehscode}%
+  {\(\def\column##1##2{}%
+   \let\>\undefined\let\<\undefined\let\\\undefined
+   \newcommand\>[1][]{}\newcommand\<[1][]{}\newcommand\\[1][]{}%
+   \def\fromto##1##2##3{##3}%
+   \def\nextline{}}{\) }%
+
+\newcommand{\inlinehs}{\sethscode{inlinehscode}}
+
+% The joincode environment is a separate environment that
+% can be used to surround and thereby connect multiple code
+% blocks.
+
+\newenvironment{joincode}%
+  {\let\orighscode=\hscode
+   \let\origendhscode=\endhscode
+   \def\endhscode{\def\hscode{\endgroup\def\@currenvir{hscode}\\}\begingroup}
+   %\let\SaveRestoreHook=\empty
+   %\let\ColumnHook=\empty
+   %\let\resethooks=\empty
+   \orighscode\def\hscode{\endgroup\def\@currenvir{hscode}}}%
+  {\origendhscode
+   \global\let\hscode=\orighscode
+   \global\let\endhscode=\origendhscode}%
+
+\makeatother
+\EndFmtInput
+%
+
+
+
+
+
+%%% BEGIN TEXT %%%
+
+This is an interpreter designed to model the core semantics of spreadsheets,
+with a focus on the dataflow language at its core. Our intention here is to
+illustrate the various design decisions that go into specifying precise
+semantics for a spreadsheet containing a realistic set of features, showcasing
+how complexity arises from what is usually seen as a conceptually simple
+language. We believe that this helps to explain the number of
+incompatibilities between different implementations that we found and
+described in our work.
+
+We chose to model most closely the semantics of LibreOffice, which is the
+spreadsheet for which the most detailed specification documents are available.
+
+The remainder of this chapter\footnote{[*** N.E. This text was written with
+the intention of embedding into the ``Case study: spreadsheets'' chapter of the
+thesis -- placeholders for fragments that will need to be changed upon merge
+are marked the same way as this footnote. ***]} was written in Literate
+Haskell, and is a description of the entire interpreter, including its
+complete listings. The text was written so that it should be understandable
+without a detailed reading of the source code, but the sources are
+nevertheless included for completeness and as supporting material for the
+interested reader. The source code in \text{\tt \char46{}lhs} format (\LaTeX~with embedded
+Haskell) is also available at [***URL***].
+
+
+This implementation uses only standard modules included in the Haskell Platform:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{module}\;\Conid{XlInterpreter}\;\mathbf{where}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Char}\;(\Varid{ord},\Varid{chr},\Varid{toUpper}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Fixed}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.List}\;(\Varid{foldl'}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.\Conid{Map}.Strict}\;\Varid{as}\;\Conid{Map}\;(\Conid{Map},\Varid{foldlWithKey},\Varid{member},\Varid{insert},\Varid{empty},\Varid{lookup}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Set}\;\Varid{as}\;\Conid{Set}\;(\Conid{Set},\Varid{insert},\Varid{member},\Varid{singleton}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Debug}.Trace}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Representation of programs}
+
+A spreadsheet program (called a ``worksheet'') is represented with the
+\ensuremath{\Conid{XlWorksheet}} data type in our model, which contains a map from row-column
+coordinates to cells.
+
+In modern spreadsheet applications, a complete document is a set of worksheets
+(called a workbook). For simplicity, we did not implement support for multiple
+worksheets since this does not affect evaluation significantly.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{XlWorksheet}\mathrel{=}\Conid{XlWorksheet}\;\Conid{XlCells}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{type}\;\Conid{XlCells}\mathrel{=}\Conid{\Conid{Map}.Map}\;\llparenthesis \cdot , \cdot \rrparenthesis \;\Conid{XlCell}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+We represent row-column pairs with the notation \ensuremath{\llparenthesis \cdot , \cdot \rrparenthesis }. It contains a pair
+of addresses, representing row and column, and each of which may be absolute
+(represented as \ensuremath{\langle \Varid{n}\rangle }) or relative (represented as \ensuremath{\langle \Varid{n}\rangle_{R}}).
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{14E}{@{}l@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{29}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\llparenthesis \cdot , \cdot \rrparenthesis \mathrel{=}\llparenthesis \Conid{XlAddr}, \Conid{XlAddr}\rrparenthesis {}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;(\Conid{Eq},\Conid{Ord}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{data}\;\Conid{XlAddr}{}\<[14]%
+\>[14]{}\mathrel{=}{}\<[14E]%
+\>[17]{}\langle {}\<[24]%
+\>[24]{}\Conid{Int}\rangle {}\<[29]%
+\>[29]{}\mbox{\onelinecomment  (absolute address)}{}\<[E]%
+\\
+\>[14]{}\mid {}\<[14E]%
+\>[17]{}\langle {}\<[24]%
+\>[24]{}\Conid{Int}\rangle_{R}{}\<[29]%
+\>[29]{}\mbox{\onelinecomment  (relative address)}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;(\Conid{Eq},\Conid{Ord}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Cells contain formulas. As explained in Section [*** ``Array formulas'', earlier
+in the chapter***], formulas can be evaluated in a special mode called ``array
+formula''.\footnote{[*** To add earlier in the chapter: In spite of this name,
+the indication if the formula will be evaluated as an array formula is a
+property of the cell, not the formula. [*** Note that Google Sheets breaks
+compatibility and does this differently. ***] ***]} In this interpreter, this
+is indicated by constructing a cell as a \ensuremath{\Conid{XlCell}} or \ensuremath{\Conid{XlAFCell}}.
+
+In the spreadsheet interface, a single array formula is presented as covering
+a range of cells. In our interpreter, we replicate the formula in each cell of
+the range, and annotate it with an $(x, y)$ coordinate indicating which
+element of the range matrix they represent, with the top-left cell being entry
+$(0, 0)$. We will call this pair the offset of a cell in an array formula.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{14E}{@{}l@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{XlCell}{}\<[14]%
+\>[14]{}\mathrel{=}{}\<[14E]%
+\>[17]{}\Conid{XlCell}\;{}\<[27]%
+\>[27]{}\Conid{XlFormula}{}\<[E]%
+\\
+\>[14]{}\mid {}\<[14E]%
+\>[17]{}\Conid{XlAFCell}\;{}\<[27]%
+\>[27]{}\Conid{XlFormula}\;(\Conid{Int},\Conid{Int}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+A formula, on its turn, may be a literal value, a reference to another cell, a
+reference to a range of cells, or a function, which has a name and a list of
+arguments. Our interpreter, thus, manipulates expressions as trees of \ensuremath{\Conid{XlFun}}
+nodes, assuming that the textual formula language has already been parsed into
+this format.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{17E}{@{}l@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{XlFormula}{}\<[17]%
+\>[17]{}\mathrel{=}{}\<[17E]%
+\>[20]{}\Conid{XlLit}\;{}\<[27]%
+\>[27]{}\Conid{XlValue}{}\<[E]%
+\\
+\>[17]{}\mid {}\<[17E]%
+\>[20]{}\Conid{XlRef}\;{}\<[27]%
+\>[27]{}\llparenthesis \cdot , \cdot \rrparenthesis {}\<[E]%
+\\
+\>[17]{}\mid {}\<[17E]%
+\>[20]{}\Conid{XlRng}\;{}\<[27]%
+\>[27]{}\llparenthesis \cdot , \cdot \rrparenthesis \;\llparenthesis \cdot , \cdot \rrparenthesis {}\<[E]%
+\\
+\>[17]{}\mid {}\<[17E]%
+\>[20]{}\Conid{XlFun}\;{}\<[27]%
+\>[27]{}\Conid{String}\;[\mskip1.5mu \Conid{XlFormula}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Finally, values are numbers, strings, booleans, errors and matrices of
+literals. We represent all matrices as 2-dimensional, stored as a list of
+lists, which each inner list representing a row (a unidimensional array is a
+2-dimensional matrix with a single row). We also have a special value
+for an empty cell, due to its special coercion rules (implemented in
+Section~\ref{typeconv}).
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{15}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{15E}{@{}l@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{29}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{XlValue}{}\<[15]%
+\>[15]{}\mathrel{=}{}\<[15E]%
+\>[18]{}\Conid{XlNumber}\;{}\<[29]%
+\>[29]{}\Conid{Double}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{XlString}\;{}\<[29]%
+\>[29]{}\Conid{String}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{XlBool}\;{}\<[29]%
+\>[29]{}\Conid{Bool}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{XlError}\;{}\<[29]%
+\>[29]{}\Conid{String}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{XlMatrix}\;{}\<[29]%
+\>[29]{}[\mskip1.5mu [\mskip1.5mu \Conid{XlValue}\mskip1.5mu]\mskip1.5mu]{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{XlEmpty}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Eq}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+For convenience we define a few instances of the \ensuremath{\Conid{Show}} type class that will
+prove useful later when running the interpreter. In particular, for display
+purposes we convert absolute row-column coordinates to the familiar ``A1''
+notation.\footnote{We made a simplification here by presenting absolute
+coordinates using strings such as \text{\tt B5}. In spreadsheets, such an identifier
+actually represents a relative coordinate, with \text{\tt \char36{}B\char36{}5} being the absolute
+equivalent. The \text{\tt A1} notation hides the fact that coordinates in spreadsheets
+are relative by default (which explains their behavior when copying and
+pasting cells).}
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{23}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{instance}\;\Conid{Show}\;\llparenthesis \cdot , \cdot \rrparenthesis \;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\llparenthesis \Varid{r}, \cdot \rrparenthesis \mathord{@}\langle \Varid{rn}\rangle \;\Varid{c}\mathord{@}\langle \Varid{cn}\rangle )\mathrel{=}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\text{\tt \char34 <\char34}\plus [\mskip1.5mu \Varid{chr}\;(\Varid{cn}\mathbin{+}\mathrm{65})\mskip1.5mu]\plus (\Varid{show}\;(\Varid{rn}\mathbin{+}\mathrm{1}))\plus \text{\tt \char34 >\char34}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;\llparenthesis \Varid{r}, \Varid{c}\rrparenthesis \mathrel{=}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\text{\tt \char34 R\char34}\plus \Varid{show}\;\Varid{r}\plus \text{\tt \char34 C\char34}\plus \Varid{show}\;\Varid{c}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{instance}\;\Conid{Show}\;\Conid{XlValue}\;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\Conid{XlNumber}\;\Varid{d}){}\<[23]%
+\>[23]{}\mathrel{=}\Varid{num2str}\;\Varid{d}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\Conid{XlString}\;\Varid{s}){}\<[23]%
+\>[23]{}\mathrel{=}\Varid{show}\;\Varid{s}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\Conid{XlBool}\;\Varid{b}){}\<[23]%
+\>[23]{}\mathrel{=}\Varid{show}\;\Varid{b}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\Conid{XlError}\;\Varid{e}){}\<[23]%
+\>[23]{}\mathrel{=}\Varid{show}\;\Varid{e}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\Conid{XlMatrix}\;\Varid{m}){}\<[23]%
+\>[23]{}\mathrel{=}\Varid{show}\;\Varid{m}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;\Conid{XlEmpty}{}\<[23]%
+\>[23]{}\mathrel{=}\text{\tt \char34 \char34}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{instance}\;\Conid{Show}\;\Conid{XlAddr}\;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;\langle \Varid{n}\rangle \mathrel{=}\Varid{show}\;\Varid{n}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;\langle \Varid{n}\rangle_{R}\mathrel{=}\text{\tt \char34 [\char34}\plus \Varid{show}\;\Varid{n}\plus \text{\tt \char34 ]\char34}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Representation of states}
+
+The state of a spreadsheet consists of the map of cells, which stores the cells
+and their contents (that is, the formulas), and the map of values, which
+stores the computed value for each cell. Both are indexed by row-column coordinates.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{XlState}\mathrel{=}\Conid{XlState}\;\Conid{XlCells}\;\Conid{XlValues}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mathbf{type}\;\Conid{XlValues}\mathrel{=}\Conid{\Conid{Map}.Map}\;\llparenthesis \cdot , \cdot \rrparenthesis \;\Conid{XlValue}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+From a programming language perspective, interaction with a spreadsheet
+consists exclusively of replacing formulas in cells. We represent these as
+events that contain the absolute coordinates and the formula to be entered to
+a cell. In the case of array formulas, a rectangular range (denoted by the
+top-left and bottom-right cells) covering one or more cells must be given. A
+single formula will then apply to that range as a group.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{15}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{15E}{@{}l@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{37}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{XlEvent}{}\<[15]%
+\>[15]{}\mathrel{=}{}\<[15E]%
+\>[18]{}\Conid{XlSetFormula}\;{}\<[37]%
+\>[37]{}\llparenthesis \cdot , \cdot \rrparenthesis \;\Conid{XlFormula}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[18]{}\Conid{XlSetArrayFormula}\;{}\<[37]%
+\>[37]{}\llparenthesis \cdot , \cdot \rrparenthesis \;\llparenthesis \cdot , \cdot \rrparenthesis \;\Conid{XlFormula}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Execution}
+
+The execution of a spreadsheet is demand-driven. The user triggers the
+evaluation by editing a cell, which causes its value to be recomputed. When
+computing the value of a cell, other cells may be referenced, so they are
+computed as well, and the process continues recursively. Conversely,
+other cells may reference the newly-edited cell, so their values need
+to be recomputed as well.
+
+\subsubsection{Main loop}
+
+Since we are interested in the dynamic semantics (that is, what happens with
+the program state over time as it runs), we model our interpreter as a loop of
+evaluation steps. The function \ensuremath{\Varid{runEvents}} implements this loop, taking as
+inputs a worksheet (a spreadsheet document containing the initial contents of
+cell formulas) and a list of events. For each event, it calls the main
+evaluation function, \ensuremath{\Varid{runEvent}}, until it produces the final state, containing
+the resulting cells and their values.
+
+Unlike the interpreter modelling Pure Data in Chapter [*** Pure Data ***], we
+return only the final state, since inspecting the final result of the
+spreadsheet is usually sufficient for understanding its behavior. Tracing the
+intermediate results is an easy modification if desired.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runEvents}\mathbin{::}\Conid{XlWorksheet}\to [\mskip1.5mu \Conid{XlEvent}\mskip1.5mu]\to \Conid{XlState}{}\<[E]%
+\\
+\>[B]{}\Varid{runEvents}\;\Varid{sheet}\mathord{@}(\Conid{XlWorksheet}\;\Varid{cells})\;\Varid{events}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{foldl'}\;\Varid{runEvent}\;(\Conid{XlState}\;\Varid{cells}\;\Varid{\Conid{Map}.empty})\;\Varid{events}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+When we process an event in \ensuremath{\Varid{runEvent}}, we need to update the cells that were
+entered and then perform the necessary recalculations. Since we are not
+concerned with performance and formulas are in principle purely functional
+(which is not true in real-world spreadsheets due to functions such as \text{\tt TODAY}
+which reads the system clock, but is true in our interpreter), we simply
+discard the previous map of values and recompute all cells in the worksheet.
+One way to avoid this computational expense would be to maintain data
+structures that keep track of reverse dependencies for each cell, but we avoid
+this optimization here for simplicity. Real-world spreadsheets further
+restrict the recalculation by limiting it to cells which are currently visible
+in their user interface.\footnote{We were able to empirically verify this when
+we produced a spreadsheet with a formula that crashed LibreOffice. The
+application only crashed when the offending cell was scrolled into view.}
+
+Our interpreter does avoid recalculating a cell if it was already calculated
+in the current pass as a dependency of a previous cell. Also, it keeps track
+of which cells are currently being visited, for detecting circular references.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runEvent}\mathbin{::}\Conid{XlState}\to \Conid{XlEvent}\to \Conid{XlState}{}\<[E]%
+\\
+\>[B]{}\Varid{runEvent}\;\Varid{env}\mathord{@}(\Conid{XlState}\;\Varid{cells}\;\anonymous )\;\Varid{event}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{cells'}\mathrel{=}\Varid{updateCells}\;\Varid{cells}\;\Varid{event}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{acc}\mathbin{::}\Conid{XlValues}\to \llparenthesis \cdot , \cdot \rrparenthesis \to \Conid{XlCell}\to \Conid{XlValues}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{acc}\;\Varid{vs}\;\Varid{rc}\;\Varid{cell}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{if}\;\Varid{\Conid{Map}.member}\;\Varid{rc}\;\Varid{vs}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{then}\;\Varid{vs}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{else}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mathbf{let}\;(\Varid{v'},\Varid{vs'})\mathrel{=}\Varid{calcCell}\;(\Varid{\Conid{Set}.singleton}\;\Varid{rc})\;\Varid{cells'}\;\Varid{vs}\;\Varid{rc}\;\Varid{cell}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mathbf{in}\;\Varid{\Conid{Map}.insert}\;\Varid{rc}\;\Varid{v'}\;\Varid{vs'}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{XlState}\;\Varid{cells'}\;(\Varid{\Conid{Map}.foldlWithKey}\;\Varid{acc}\;\Varid{\Conid{Map}.empty}\;\Varid{cells'}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+An event may update a single cell in case of a regular formula, or many cells
+at a time in case of an array formula applied over a range. Function
+\ensuremath{\Varid{updateCells}} covers both cases:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{37}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{updateCells}\;\Varid{cells}\;\Varid{event}\mathord{@}(\Conid{XlSetFormula}\;\Varid{rc}\;\Varid{formula})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{\Conid{Map}.insert}\;\Varid{rc}\;(\Conid{XlCell}\;\Varid{formula})\;\Varid{cells}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{updateCells}\;\Varid{cells}\;\Varid{event}\mathord{@}(\Conid{XlSetArrayFormula}\;rc_{from}\;rc_{to}\;\Varid{formula})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{fst}\mathbin{\$}\Varid{foldRange}\;rc_{from}\;rc_{from}\;rc_{to}\;(\Varid{cells},(\mathrm{0},\mathrm{0}))\;\Varid{id}\;op_{cell}\;op_{row}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{where}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}op_{cell}\;(\Varid{cells},(\Varid{x},\Varid{y}))\;\Varid{rc}{}\<[37]%
+\>[37]{}\mathrel{=}(\Varid{\Conid{Map}.insert}\;\Varid{rc}\;(\Conid{XlAFCell}\;\Varid{formula}\;(\Varid{x},\Varid{y}))\;\Varid{cells},(\Varid{x}\mathbin{+}\mathrm{1},\Varid{y})){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}op_{row}\;\anonymous \;\Varid{r}\;(\Varid{cells},(\Varid{x},\Varid{y})){}\<[37]%
+\>[37]{}\mathrel{=}(\Varid{cells},(\mathrm{0},\Varid{y}\mathbin{+}\mathrm{1})){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+To iterate over ranges, we define a folding function \ensuremath{\Varid{foldRange}}, which
+loops over the 2-dimensional range applying two accumulator functions: one
+which runs on each cell, and one that runs as each row is completed.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{15}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{40}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{foldRange}\mathbin{::}{}\<[15]%
+\>[15]{}\llparenthesis \cdot , \cdot \rrparenthesis \to \llparenthesis \cdot , \cdot \rrparenthesis \to \llparenthesis \cdot , \cdot \rrparenthesis {}\<[40]%
+\>[40]{}\mbox{\onelinecomment  cell position and addresses for the range}{}\<[E]%
+\\
+\>[15]{}\to \Varid{r}{}\<[40]%
+\>[40]{}\mbox{\onelinecomment  a zero-value for the fold as a whole}{}\<[E]%
+\\
+\>[15]{}\to (\Varid{r}\to \Varid{c}){}\<[40]%
+\>[40]{}\mbox{\onelinecomment  an initializer function for each row}{}\<[E]%
+\\
+\>[15]{}\to (\Varid{c}\to \llparenthesis \cdot , \cdot \rrparenthesis \to \Varid{c}){}\<[40]%
+\>[40]{}\mbox{\onelinecomment  accumulator function to run on each cell}{}\<[E]%
+\\
+\>[15]{}\to (\Varid{r}\to \Conid{Int}\to \Varid{c}\to \Varid{r}){}\<[40]%
+\>[40]{}\mbox{\onelinecomment  accumulator function to run on each complete row}{}\<[E]%
+\\
+\>[15]{}\to \Varid{r}{}\<[E]%
+\\
+\>[B]{}\Varid{foldRange}\;\Varid{pos}\;rc_{from}\;rc_{to}\;\Varid{zero}\;zero_{row}\;op_{cell}\;op_{row}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(r_{min},c_{min},r_{max},c_{max})\mathrel{=}\Varid{toAbsRange}\;\Varid{pos}\;rc_{from}\;rc_{to}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{handleRow}\;acc_{row}\;\Varid{r}\mathrel{=}op_{row}\;acc_{row}\;\Varid{r}\;v_{row}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{handleCell}\;acc_{cell}\;\Varid{c}\mathrel{=}op_{cell}\;acc_{cell}\;\llparenthesis \langle \Varid{r}\rangle , \langle \Varid{c}\rangle \rrparenthesis {}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}v_{row}\mathrel{=}\Varid{foldl'}\;\Varid{handleCell}\;(zero_{row}\;acc_{row})\;[\mskip1.5mu c_{min}\mathinner{\ldotp\ldotp}c_{max}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{foldl'}\;\Varid{handleRow}\;\Varid{zero}\;[\mskip1.5mu r_{min}\mathinner{\ldotp\ldotp}r_{max}\mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+It is important to note that, when handling array formulas, \ensuremath{\Varid{updateCells}}
+expands a single array formula spanning a range of cells into a number of
+individual \ensuremath{\Conid{XlAFCell}} entries in the \ensuremath{\Varid{cells}} map, each of them containing the
+$(x, y)$ offset to indicate their relative position in the rectangular
+range to which the array formula was applied. 
+
+This makes two important assumptions. First, that it is possible to compute
+each position of an array formula individually. This assumption is not
+critical. At worst, it would wasteful in cases such as matrix multiplication,
+where each cell would cause the whole matrix to be calculated and then
+converted down to the scalar corresponding to the cell's position.
+
+The second assumption is that the computation of a given cell from an array
+formula's range is independent of the total size of the range as specified by
+the user when the array formula was created. In general, this assumption holds
+in spreadsheet applications, but we were able to identify corner cases in
+Excel where an array formula returns different results when entered in a
+single cell versus being entered in a range. For example, assuming \text{\tt A1}
+contains the string \text{\tt C1}, \text{\tt B1} contains the string \text{\tt D1}, \text{\tt C1} contains \text{\tt 9} and
+\text{\tt D1} contains \text{\tt 16}, entering \text{\tt \char61{}SQRT\char40{}INDIRECT\char40{}A1\char58{}B1\char41{}\char41{}} in cell \text{\tt E2} results in
+the value \text{\tt 3}; but entering the same formula with the range \text{\tt E2\char58{}F2} selected
+causes the value of both cells to be \text{\tt \char35{}VALUE\char33{}}. In LibreOffice (and in our
+interpreter), they evaluate to \text{\tt 3} and \text{\tt 4}. By behaving differently according
+to the range size selected during initial entry, Excel adds a dependency to
+the calculation of cells that is invisible in its UI. This interpreter avoids
+this problem by using calculation strategies similar to those in LibreOffice
+and Google Sheets.
+
+\subsubsection{Resolving addresses}
+
+Relative coordinates are used extensively in spreadsheets, but whenever they
+are used they need to be resolved into absolute addresses. Also, whenever the
+interpreter uses ranges, it needs to ensure that they are normalized as
+absolute coordinates with the top-left cell first and the bottom-right cell
+second. 
+
+When relative addresses are given, they are resolved relative to the
+coordinate of the cell being evaluated, which we will refer throughout as the
+cell's position.
+
+Functions \ensuremath{\Varid{toAbs}} and \ensuremath{\Varid{toAbsRange}} normalize coordinates and ranges, respectively:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{26}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{32}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{41}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{45}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{toAbs}\mathbin{::}\llparenthesis \cdot , \cdot \rrparenthesis \to \llparenthesis \cdot , \cdot \rrparenthesis \to \llparenthesis \cdot , \cdot \rrparenthesis {}\<[E]%
+\\
+\>[B]{}\Varid{toAbs}\;\Varid{pos}\mathord{@}\llparenthesis r_p, c_p\rrparenthesis \;\Varid{cell}\mathord{@}\llparenthesis \Varid{r}, \Varid{c}\rrparenthesis \mathrel{=}\llparenthesis (\Varid{absAddr}\;r_p\;\Varid{r}), (\Varid{absAddr}\;c_p\;\Varid{c})\rrparenthesis {}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{absAddr}\mathbin{::}\Conid{XlAddr}\to \Conid{XlAddr}\to \Conid{XlAddr}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{absAddr}\;{}\<[16]%
+\>[16]{}\anonymous \;{}\<[32]%
+\>[32]{}\Varid{c}\mathord{@}\langle \anonymous \rangle {}\<[45]%
+\>[45]{}\mathrel{=}\Varid{c}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{absAddr}\;{}\<[16]%
+\>[16]{}\langle \Varid{b}\rangle \;{}\<[32]%
+\>[32]{}\langle \Varid{c}\rangle_{R}{}\<[45]%
+\>[45]{}\mathrel{=}\langle (\Varid{b}\mathbin{+}\Varid{c})\rangle {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{absAddr}\;{}\<[16]%
+\>[16]{}\Varid{b}\mathord{@}\langle \anonymous \rangle_{R}\;{}\<[32]%
+\>[32]{}\anonymous {}\<[45]%
+\>[45]{}\mathrel{=}\bot {}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{toAbsRange}\mathbin{::}\llparenthesis \cdot , \cdot \rrparenthesis \to \llparenthesis \cdot , \cdot \rrparenthesis \to \llparenthesis \cdot , \cdot \rrparenthesis \to (\Conid{Int},\Conid{Int},\Conid{Int},\Conid{Int}){}\<[E]%
+\\
+\>[B]{}\Varid{toAbsRange}\;\Varid{pos}\;rc_{from}\;rc_{to}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\llparenthesis \langle r_{min}\rangle , \langle c_{min}\rangle \rrparenthesis {}\<[41]%
+\>[41]{}\mathrel{=}\Varid{toAbs}\;\Varid{pos}\;rc_{from}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\llparenthesis \langle r_{max}\rangle , {}\<[26]%
+\>[26]{}\langle c_{max}\rangle \rrparenthesis {}\<[41]%
+\>[41]{}\mathrel{=}\Varid{toAbs}\;\Varid{pos}\;rc_{to}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}r_{min}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{min}\;{}\<[20]%
+\>[20]{}r_{min}\;{}\<[27]%
+\>[27]{}r_{max}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}r_{max}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{max}\;{}\<[20]%
+\>[20]{}r_{min}\;{}\<[27]%
+\>[27]{}r_{max}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}c_{min}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{min}\;{}\<[20]%
+\>[20]{}c_{min}\;{}\<[27]%
+\>[27]{}c_{max}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}c_{max}{}\<[13]%
+\>[13]{}\mathrel{=}\Varid{max}\;{}\<[20]%
+\>[20]{}c_{min}\;{}\<[27]%
+\>[27]{}c_{max}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(r_{min},c_{min},r_{max},c_{max}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Calculating cells}
+\label{calccell}
+
+To determine the value of a cell, the interpreter evaluates the cell's
+formula, potentially recursing to evaluate other cells referenced by that
+formula. The \ensuremath{\Varid{calcCell}} function takes as arguments a set of cell addresses
+currently being recursively visited (to detect cycles), the table of cell
+formulas, the current table of values, the cell position and the actual cell
+to compute. The function produces the calculated value of the cell along with
+the map of all values, since other calls may have been computed along the
+way. 
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{calcCell}\mathbin{::}\Conid{Set}\;\llparenthesis \cdot , \cdot \rrparenthesis \to \Conid{XlCells}\to \Conid{XlValues}\to \llparenthesis \cdot , \cdot \rrparenthesis \to \Conid{XlCell}\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+A major complication in the semantics of a spreadsheet application is the
+fact that there are two distinct modes of evaluation: one for regular formulas,
+and one for array formulas. Further, different kinds of functions in formulas
+evaluate their arguments in different ways: borrowing from the terminology
+of the language Perl, some functions evaluate their arguments in a scalar
+context (that is, they expect their arguments to produce a scalar value),
+and some evaluate arguments in an array context. This gives us four evaluation
+rules in total.
+
+This is the core of the incompatibility between spreadsheet formula languages.
+As our examples [***earlier in the thesis***] demonstrate, each application uses
+a different set of rules as to when to switch to array evaluation, and to what
+to do in each evaluation mode.
+
+Note that the presence of different evaluation rules affects not only array
+formulas. As illustrated in [***Figure***], Excel performs array-style
+evaluation in sub-formulas for certain functions even when not in array
+formula mode.
+
+In our implementation, we modularized these decisions into a number of
+functions implementing different ways of evaluating a formula, in array and
+scalar contexts.
+
+Then, to represent an evaluation mode, the interpreter features a data type
+\ensuremath{\Conid{XlEvaluator}} which, besides carrying a few context values for convenience,
+includes a coercion function \ensuremath{\Varid{eToScalar}} to obtain a scalar function according
+to the context of a cell (as we will see in more detail below), and two
+evaluation functions, one for each of the possible evaluation contexts:
+\ensuremath{\Varid{eArray}} and \ensuremath{\Varid{eScalar}}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{15}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{XlEvaluator}\mathrel{=}\Conid{XlEvaluator}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{ePos}{}\<[15]%
+\>[15]{}\mathbin{::}\llparenthesis \cdot , \cdot \rrparenthesis ,{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{eOffset}{}\<[15]%
+\>[15]{}\mathbin{::}(\Conid{Int},\Conid{Int}),{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{eVisiting}{}\<[15]%
+\>[15]{}\mathbin{::}\Conid{Set}\;\llparenthesis \cdot , \cdot \rrparenthesis ,{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{eCells}{}\<[15]%
+\>[15]{}\mathbin{::}\Conid{XlCells},{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{eToScalar}{}\<[15]%
+\>[15]{}\mathbin{::}\llparenthesis \cdot , \cdot \rrparenthesis \to (\Conid{Int},\Conid{Int})\to \Conid{XlFormula}\to \Conid{XlFormula},{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{eArray}{}\<[15]%
+\>[15]{}\mathbin{::}\Conid{XlEvaluator}\to \Conid{XlValues}\to \Conid{XlFormula}\to (\Conid{XlValue},\Conid{XlValues}),{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{eScalar}{}\<[15]%
+\>[15]{}\mathbin{::}\Conid{XlEvaluator}\to \Conid{XlValues}\to \Conid{XlFormula}\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\\
+\>[B]{}\mskip1.5mu\}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+We opted to implement evaluation functions that follow the OpenDocument
+specification. With this, we achieved a good (but deliberately not full)
+degree of compatibility with LibreOffice in the subset of spreadsheet features
+implemented in this interpreter.
+
+For calculating the value of a regular cell, the interpreter employs an evaluator
+that uses functions \ensuremath{\Varid{intersectScalar}} to convert non-scalar to scalars,
+\ensuremath{\Varid{evalScalarFormula}} for evaluating scalar arguments, and \ensuremath{\Varid{evalFormula}} for
+evaluating non-scalar arguments. We will see the definition of these functions
+in Section~\ref{regularcells}. Once the evaluator is defined, \ensuremath{\Varid{calcCell}}
+triggers the scalar evaluation function on the formula.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{calcCell}\;\Varid{visiting}\;\Varid{cells}\;\Varid{vs}\;\Varid{pos}\mathord{@}\llparenthesis \langle \Varid{r}\rangle , \langle \Varid{c}\rangle \rrparenthesis \;(\Conid{XlCell}\;\Varid{formula})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{evalScalarFormula}\;\Varid{ev}\;\Varid{vs}\;\Varid{formula}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ev}\mathrel{=}\Conid{XlEvaluator}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{ePos}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{pos},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eOffset}{}\<[21]%
+\>[21]{}\mathrel{=}(\mathrm{0},\mathrm{0}),{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eCells}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{cells},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eVisiting}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{visiting},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eToScalar}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{intersectScalar},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eScalar}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{evalScalarFormula},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eArray}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{evalFormula}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mskip1.5mu\}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+For calculating cells marked as array formulas, the interpreter uses a
+different evaluator. For coercing non-scalars into scalars, it uses a
+different function, \ensuremath{\Varid{matrixToScalar}}. For scalar evaluation of arguments, it
+uses the same function \ensuremath{\Varid{evalScalarFunction}} as above, but for non-scalar
+evaluation, it uses \ensuremath{\Varid{iterateFormula}}. Both \ensuremath{\Varid{matrixToScalar}} and
+\ensuremath{\Varid{iterateFormula}} will be defined in Section~\ref{arrayformulas}.
+
+The implementation of \ensuremath{\Varid{calcCell}} for array formulas also triggers the
+calculation by applying this mode's scalar evaluator, but here the result
+value is further filtered through a coercion function (\ensuremath{\Varid{scalarize}}), to ensure
+that a scalar value is ultimately displayed in the cell.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{calcCell}\;\Varid{visiting}\;\Varid{cells}\;\Varid{vs}\;\Varid{pos}\;(\Conid{XlAFCell}\;\Varid{formula}\;(\Varid{x},\Varid{y}))\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{scalarize}\;\Varid{ev}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;\Varid{formula}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ev}\mathrel{=}\Conid{XlEvaluator}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{ePos}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{pos},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eOffset}{}\<[21]%
+\>[21]{}\mathrel{=}(\Varid{x},\Varid{y}),{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eCells}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{cells},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eVisiting}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{visiting},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eToScalar}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{matrixToScalar},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eScalar}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{evalScalarFormula},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{eArray}{}\<[21]%
+\>[21]{}\mathrel{=}\Varid{iterateFormula}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mskip1.5mu\}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{scalarize}\mathbin{::}\Conid{XlEvaluator}\to (\Conid{XlValue},\Conid{XlValues})\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\\
+\>[B]{}\Varid{scalarize}\;\Varid{ev}\;(\Varid{v},\Varid{vs})\mathrel{=}(\Varid{v'},\Varid{vs}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{XlLit}\;\Varid{v'})\mathrel{=}\Varid{matrixToScalar}\;(\Varid{ePos}\;\Varid{ev})\;(\Varid{eOffset}\;\Varid{ev})\;(\Conid{XlLit}\;\Varid{v}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Regular cell evaluation}
+\label{regularcells}
+
+When the interpreter evaluates a formula in a scalar context, it runs the
+evaluator's scalar conversion function on the formula prior to evaluating it
+proper. If the formula is an array or a range, it will be converted to a
+scalar. If it is a scalar or a function, it will be evaluated as-is.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalScalarFormula}\;\Varid{ev}\;\Varid{vs}\;\Varid{formula}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;\Varid{formula'}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{formula'}\mathrel{=}(\Varid{eToScalar}\;\Varid{ev})\;(\Varid{ePos}\;\Varid{ev})\;(\Varid{eOffset}\;\Varid{ev})\;\Varid{formula}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The conversion function for regular cells, \ensuremath{\Varid{intersectScalar}}, is defined as
+follows.
+
+For array literals, element $(0, 0)$ is returned. Empty arrays have
+inconsistent behavior across spreadsheets. When given an empty array, Excel
+rejects the formula, pops a message box alerting the user and does not accept
+the entry. Excel Online does not display a message, but marks the cell with a
+red dashed border. LibreOffice exhibits a very inconsistent behavior: \text{\tt \char61{}\char123{}\char125{}}
+displays as an empty cell; \text{\tt \char61{}10\char47{}\char123{}\char125{}} evaluates to \text{\tt \char35{}VALUE\char33{}} but both \text{\tt \char61{}ABS\char40{}\char123{}\char125{}\char41{}}
+and \text{\tt \char61{}ABS\char40{}10\char47{}\char123{}\char125{}\char41{}} evaluate to \text{\tt 0}; however, \text{\tt \char61{}ABS\char40{}A1\char41{}} where \text{\tt A1} is \text{\tt \char123{}\char125{}}
+evaluates to \text{\tt \char35{}VALUE\char33{}}. In our interpreter, we simply return the \text{\tt \char35{}REF\char33{}}
+error for all uses of \text{\tt \char123{}\char125{}}, replicating the behavior of Google Sheets. 
+
+For ranges, the resulting value depends on the shape of the range and the
+position in the spreadsheet grid where the formula was entered. If the range
+is a vertical ($n \times 1$) or horizontal ($1 \times n$) array, the
+evaluation follows an ``intersection'' rule: the value returned is that of the
+element of the range that is perpendicularly aligned with the position of the
+formula. For example, for a formula in cell \text{\tt G5} that references \text{\tt A1} in a
+scalar context, the value in \text{\tt A5} will be returned. Likewise, if that same
+cell \text{\tt G5} references \text{\tt E1\char58{}K1}, the value obtained will be that in cell \text{\tt G1}. If
+there is no intersection or if the range has any other shape, \text{\tt \char35{}VALUE\char33{}} is
+returned.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{58}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{intersectScalar}\mathbin{::}\llparenthesis \cdot , \cdot \rrparenthesis \to (\Conid{Int},\Conid{Int})\to \Conid{XlFormula}\to \Conid{XlFormula}{}\<[E]%
+\\
+\>[B]{}\Varid{intersectScalar}\;\Varid{pos}\mathord{@}\llparenthesis \langle \Varid{r}\rangle , \langle \Varid{c}\rangle \rrparenthesis \;\anonymous \;\Varid{formula}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{case}\;\Varid{formula}\;\mathbf{of}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Conid{XlLit}\;(\Conid{XlMatrix}\;[\mskip1.5mu \mskip1.5mu]){}\<[27]%
+\>[27]{}\to \Conid{XlLit}\;(\Conid{XlError}\;\text{\tt \char34 \#REF!\char34}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Conid{XlLit}\;(\Conid{XlMatrix}\;[\mskip1.5mu [\mskip1.5mu \mskip1.5mu]\mskip1.5mu]){}\<[27]%
+\>[27]{}\to \Conid{XlLit}\;(\Conid{XlError}\;\text{\tt \char34 \#REF!\char34}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Conid{XlLit}\;(\Conid{XlMatrix}\;\Varid{m}){}\<[27]%
+\>[27]{}\to \Conid{XlLit}\;(\Varid{head}\;(\Varid{head}\;\Varid{m})){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Conid{XlRng}\;rc_{from}\;rc_{to}{}\<[27]%
+\>[27]{}\to {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{case}\;\Varid{toAbsRange}\;\Varid{pos}\;rc_{from}\;rc_{to}\;\mathbf{of}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(r_{min},c_{min},r_{max},c_{max}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid (c_{min}\equiv c_{max})\mathrel{\wedge}(\Varid{r}\geq r_{min})\mathrel{\wedge}(\Varid{r}\leq r_{max}){}\<[58]%
+\>[58]{}\to \Conid{XlRef}\;\llparenthesis \langle \Varid{r}\rangle , \langle c_{min}\rangle \rrparenthesis {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid (r_{min}\equiv r_{max})\mathrel{\wedge}(\Varid{c}\geq c_{min})\mathrel{\wedge}(\Varid{c}\leq c_{max}){}\<[58]%
+\>[58]{}\to \Conid{XlRef}\;\llparenthesis \langle r_{min}\rangle , \langle \Varid{c}\rangle \rrparenthesis {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\anonymous \to \Conid{XlLit}\;(\Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{f}\to \Varid{f}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Cell evaluation for array formulas}
+\label{arrayformulas}
+
+When a cell is marked as an array formula, it follows a different evaluation
+process. As we saw in the definition of the array formula evaluator in
+function \ensuremath{\Varid{calcCell}} (Section~\ref{calccell}), for scalar contexts we use
+the same evaluation function as in regular cells, \ensuremath{\Varid{evalScalarFormula}}.
+However, in array formulas this function uses a different conversion function:
+\ensuremath{\Varid{eToScalar}} is defined as \ensuremath{\Varid{matrixToScalar}}.
+
+Function \ensuremath{\Varid{matrixToScalar}} extracts a scalar value from a non-scalar based on
+the offset $(x, y)$ relative to the range for which the array formula was
+defined. This way, as \ensuremath{\Varid{runEvent}} calculates cell values for each position of
+an array formula, the evaluation of each cell will extract a different value
+from non-scalars produced during the calculation of the formula. For example,
+if we enter \text{\tt \char61{}A1\char58{}B2} as an array formula in range \text{\tt D10\char58{}E11}, cell \text{\tt D11} has
+offset $(1, 0)$ and will obtain the value of cell \text{\tt B1}.
+
+The area designated by the user for an array formula does not necessarily have
+the same dimensions as the non-scalar being displayed in it. The OpenDocument
+specification lists a series of rules for filling the exceeding cells, which
+the \ensuremath{\Varid{displayRule}} function below implements. Excel and LibreOffice implement
+these rules; Google Sheets does not.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{24E}{@{}l@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{40}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{matrixToScalar}\mathbin{::}\llparenthesis \cdot , \cdot \rrparenthesis \to (\Conid{Int},\Conid{Int})\to \Conid{XlFormula}\to \Conid{XlFormula}{}\<[E]%
+\\
+\>[B]{}\Varid{matrixToScalar}\;\Varid{pos}\;(\Varid{x},\Varid{y})\;\Varid{f}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{case}\;\Varid{f}\;\mathbf{of}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{XlLit}\;(\Conid{XlMatrix}\;\Varid{m})\to {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{displayRule}\;\Varid{x}\;\Varid{y}\;(\Varid{foldl'}\;\Varid{max}\;\mathrm{0}\;(\Varid{map}\;\Varid{length}\;\Varid{m}))\;(\Varid{length}\;\Varid{m})\;{}\<[E]%
+\\
+\>[10]{}\hsindent{12}{}\<[22]%
+\>[22]{}(\lambda \Varid{x}\;\Varid{y}\to \Conid{XlLit}\mathbin{\$}\Varid{m}\mathbin{!!}\Varid{y}\mathbin{!!}\Varid{x}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Conid{XlRng}\;rc_{from}\;rc_{to}\to {}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{displayRule}\;\Varid{x}\;\Varid{y}\;(\mathrm{1}\mathbin{+}c_{max}\mathbin{-}c_{min})\;(\mathrm{1}\mathbin{+}r_{max}\mathbin{-}r_{min})\;{}\<[E]%
+\\
+\>[10]{}\hsindent{12}{}\<[22]%
+\>[22]{}(\lambda \Varid{x}\;\Varid{y}\to \Conid{XlRef}\;\llparenthesis \langle (r_{min}\mathbin{+}\Varid{y})\rangle , \langle (c_{min}\mathbin{+}\Varid{x})\rangle \rrparenthesis ){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mathbf{where}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}(r_{min},c_{min},r_{max},c_{max})\mathrel{=}\Varid{toAbsRange}\;\Varid{pos}\;rc_{from}\;rc_{to}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{f}\to \Varid{f}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{displayRule}\mathbin{::}\Conid{Int}\to \Conid{Int}\to \Conid{Int}\to \Conid{Int}\to (\Conid{Int}\to \Conid{Int}\to \Conid{XlFormula})\to \Conid{XlFormula}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{displayRule}\;\Varid{x}\;\Varid{y}\;x_{size}\;y_{size}\;\Varid{getXY}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid x_{size}\mathbin{>}\Varid{x}{}\<[24]%
+\>[24]{}\mathrel{\wedge}{}\<[24E]%
+\>[28]{}y_{size}\mathbin{>}\Varid{y}{}\<[40]%
+\>[40]{}\mathrel{=}\Varid{getXY}\;\Varid{x}\;\Varid{y}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid x_{size}\equiv \mathrm{1}{}\<[24]%
+\>[24]{}\mathrel{\wedge}{}\<[24E]%
+\>[28]{}y_{size}\equiv \mathrm{1}{}\<[40]%
+\>[40]{}\mathrel{=}\Varid{getXY}\;\mathrm{0}\;\mathrm{0}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid x_{size}\equiv \mathrm{1}{}\<[24]%
+\>[24]{}\mathrel{\wedge}{}\<[24E]%
+\>[28]{}\Varid{x}\mathbin{>}\mathrm{0}{}\<[40]%
+\>[40]{}\mathrel{=}\Varid{getXY}\;\mathrm{0}\;\Varid{y}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid y_{size}\equiv \mathrm{1}{}\<[24]%
+\>[24]{}\mathrel{\wedge}{}\<[24E]%
+\>[28]{}\Varid{y}\mathbin{>}\mathrm{0}{}\<[40]%
+\>[40]{}\mathrel{=}\Varid{getXY}\;\Varid{x}\;\mathrm{0}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mid \Varid{otherwise}{}\<[40]%
+\>[40]{}\mathrel{=}\Conid{XlLit}\mathbin{\$}\Conid{XlError}\;\text{\tt \char34 \#N/A\char34}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Function \ensuremath{\Varid{iterateFormula}} implements the special evaluation mode for array
+formulas. When given a function where any argument is a range or a matrix, it
+produces a matrix with results. It does this by first checking each argument
+and determining the maximum dimensions used by an argument (\ensuremath{x_{max}} and
+\ensuremath{y_{max}}). Then, it iterates from $(0, 0)$ to (\ensuremath{x_{max}}, \ensuremath{y_{max}}), evaluating the
+function in scalar context once for each entry. In each evaluation, it uses a
+modified version of the list of arguments, in which each non-scalar argument
+is converted to a scalar based on the current $(x, y)$ offset.
+
+If the given function has no non-scalar arguments, it is evaluated normally by
+\ensuremath{\Varid{evalFormula}}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{42}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{iterateFormula}\mathbin{::}\Conid{XlEvaluator}\to \Conid{XlValues}\to \Conid{XlFormula}\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\\
+\>[B]{}\Varid{iterateFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\Varid{name}\;\Varid{args})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{if}\;x_{max}\mathbin{>}\mathrm{1}\mathrel{\vee}y_{max}\mathbin{>}\mathrm{1}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{then}\;(\lambda (\Varid{m},\Varid{vs'})\to (\Conid{XlMatrix}\;\Varid{m},\Varid{vs'}))\mathbin{\$}\Varid{foldl'}\;\Varid{doRow}\;([\mskip1.5mu \mskip1.5mu],\Varid{vs})\;[\mskip1.5mu \mathrm{0}\mathinner{\ldotp\ldotp}y_{max}\mathbin{-}\mathrm{1}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{else}\;\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\Varid{name}\;\Varid{args}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}y_{max}\mathrel{=}\Varid{foldl'}\;\Varid{getY}\;\mathrm{1}\;\Varid{args}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{getY}\;\Varid{a}\;(\Conid{XlLit}\;(\Conid{XlMatrix}\;\Varid{m})){}\<[42]%
+\>[42]{}\mathrel{=}\Varid{max}\;\Varid{a}\;(\Varid{length}\;\Varid{m}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{getY}\;\Varid{a}\;(\Conid{XlRng}\;rc_{from}\;rc_{to}){}\<[42]%
+\>[42]{}\mathrel{=}\Varid{max}\;\Varid{a}\;(\mathrm{1}\mathbin{+}r_{max}\mathbin{-}r_{min}){}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mathbf{where}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}(r_{min},\anonymous ,r_{max},\anonymous )\mathrel{=}\Varid{toAbsRange}\;(\Varid{ePos}\;\Varid{ev})\;rc_{from}\;rc_{to}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{getY}\;\Varid{a}\;\anonymous \mathrel{=}\Varid{a}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}x_{max}\mathrel{=}\Varid{foldl'}\;\Varid{getX}\;\mathrm{1}\;\Varid{args}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{getX}\;\Varid{a}\;(\Conid{XlLit}\;(\Conid{XlMatrix}\;\Varid{m}))\mathrel{=}\Varid{max}\;\Varid{a}\;(\Varid{maxRowLength}\;\Varid{m}){}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mathbf{where}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}\Varid{maxRowLength}\mathbin{::}[\mskip1.5mu [\mskip1.5mu \Conid{XlValue}\mskip1.5mu]\mskip1.5mu]\to \Conid{Int}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}\Varid{maxRowLength}\;\Varid{m}\mathrel{=}\Varid{foldl'}\;(\lambda \Varid{a'}\;\Varid{row}\to \Varid{max}\;\Varid{a'}\;(\Varid{length}\;\Varid{row}))\;\mathrm{1}\;\Varid{m}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{getX}\;\Varid{a}\;(\Conid{XlRng}\;rc_{from}\;rc_{to})\mathrel{=}\Varid{max}\;\Varid{a}\;(\mathrm{1}\mathbin{+}c_{max}\mathbin{-}c_{min}){}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mathbf{where}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}(\anonymous ,c_{min},\anonymous ,c_{max})\mathrel{=}\Varid{toAbsRange}\;(\Varid{ePos}\;\Varid{ev})\;rc_{from}\;rc_{to}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{getX}\;\Varid{a}\;\anonymous \mathrel{=}\Varid{a}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doRow}\mathbin{::}([\mskip1.5mu [\mskip1.5mu \Conid{XlValue}\mskip1.5mu]\mskip1.5mu],\Conid{XlValues})\to \Conid{Int}\to ([\mskip1.5mu [\mskip1.5mu \Conid{XlValue}\mskip1.5mu]\mskip1.5mu],\Conid{XlValues}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doRow}\;(\Varid{m},\Varid{vs})\;\Varid{y}\mathrel{=}\Varid{appendTo}\;\Varid{m}\mathbin{\$}\Varid{foldl'}\;\Varid{doCell}\;([\mskip1.5mu \mskip1.5mu],\Varid{vs})\;[\mskip1.5mu \mathrm{0}\mathinner{\ldotp\ldotp}x_{max}\mathbin{-}\mathrm{1}\mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{doCell}\mathbin{::}([\mskip1.5mu \Conid{XlValue}\mskip1.5mu],\Conid{XlValues})\to \Conid{Int}\to ([\mskip1.5mu \Conid{XlValue}\mskip1.5mu],\Conid{XlValues}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{doCell}\;(\Varid{row},\Varid{vs})\;\Varid{x}\mathrel{=}\Varid{appendTo}\;\Varid{row}\mathbin{\$}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;\Varid{f'}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mathbf{where}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}\Varid{f'}\mathrel{=}\Conid{XlFun}\;\Varid{name}\;(\Varid{map}\;((\Varid{eToScalar}\;\Varid{ev})\;(\Varid{ePos}\;\Varid{ev})\;(\Varid{x},\Varid{y}))\;\Varid{args}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{appendTo}\;\Varid{xs}\;(\Varid{v},\Varid{vs})\mathrel{=}(\Varid{xs}\plus [\mskip1.5mu \Varid{v}\mskip1.5mu],\Varid{vs}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{iterateFormula}\;\Varid{ev}\;\Varid{vs}\;\Varid{f}\mathrel{=}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;\Varid{f}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Operations}
+
+The last part of the interpreter is function \ensuremath{\Varid{evalFormula}}, which implements
+the evaluation of the various operations available in the textual formula
+language. Given an evaluator, the current map of values, and a formula, it
+produces the calculated value of the formula and a new map of values (since
+other cells may be calculated as part of the evaluation of this formula).
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\mathbin{::}\Conid{XlEvaluator}\to \Conid{XlValues}\to \Conid{XlFormula}\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The function \ensuremath{\Varid{evalFormula}} implements the various language constructs as
+follows.
+
+\subsubsection{Literals, references and ranges}
+
+When a formula is just a literal, its value is returned and the
+map of cell values remains unchanged.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlLit}\;\Varid{v})\mathrel{=}(\Varid{v},\Varid{vs}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+When a formula is a reference to another cell, \ensuremath{\Varid{evalFormula}} first converts
+the reference address to its absolute value relative to the cell's position.
+Then, it detects circular references by checking the \ensuremath{\Varid{eVisiting}} set of the
+evaluator. If the reference is valid, it checks in the map of values if the
+value was already calculated. If the cell is unset, we return the special
+value \ensuremath{\Conid{XlEmpty}}. Finally, if the cell contains a formula which needs to be
+calculated, we calculate it with \ensuremath{\Varid{calcCell}} and store the resulting value in
+an updated map of values.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlRef}\;\Varid{ref'})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{ref}\mathrel{=}\Varid{toAbs}\;(\Varid{ePos}\;\Varid{ev})\;\Varid{ref'}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{if}\;\Varid{ref}\in(\Varid{eVisiting}\;\Varid{ev}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{then}\;(\Conid{XlError}\;\text{\tt \char34 \#LOOP!\char34},\Varid{vs}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{else}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;\Varid{\Conid{Map}.lookup}\;\Varid{ref}\;\Varid{vs}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{Just}\;\Varid{v}{}\<[19]%
+\>[19]{}\to (\Varid{v},\Varid{vs}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{Nothing}{}\<[19]%
+\>[19]{}\to {}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mathbf{case}\;\Varid{\Conid{Map}.lookup}\;\Varid{ref}\;(\Varid{eCells}\;\Varid{ev})\;\mathbf{of}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{Nothing}{}\<[24]%
+\>[24]{}\to (\Conid{XlEmpty},\Varid{vs}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{Just}\;\Varid{cell}{}\<[24]%
+\>[24]{}\to {}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mathbf{let}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}(\Varid{v'},\Varid{vs'})\mathrel{=}\Varid{calcCell}\;(\Varid{\Conid{Set}.insert}\;\Varid{ref}\;(\Varid{eVisiting}\;\Varid{ev}))\;(\Varid{eCells}\;\Varid{ev})\;\Varid{vs}\;\Varid{ref}\;\Varid{cell}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}\Varid{vs''}\mathrel{=}\Varid{\Conid{Map}.insert}\;\Varid{ref}\;\Varid{v'}\;\Varid{vs'}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mathbf{in}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}(\Varid{v'},\Varid{vs''}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+For evaluating ranges, \ensuremath{\Varid{evalFormula}} uses \ensuremath{\Varid{foldRange}} to iterate over the
+range, invoking the scalar evaluation function (\ensuremath{\Varid{eScalar}}) for each element,
+producing a matrix of values.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlRng}\;\Varid{from}\;\Varid{to})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{m},\Varid{vs'})\mathrel{=}\Varid{foldRange}\;(\Varid{ePos}\;\Varid{ev})\;\Varid{from}\;\Varid{to}\;([\mskip1.5mu \mskip1.5mu],\Varid{vs})\;zero_{row}\;op_{cell}\;op_{row}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}zero_{row}\mathbin{::}([\mskip1.5mu [\mskip1.5mu \Conid{XlValue}\mskip1.5mu]\mskip1.5mu],\Conid{XlValues})\to ([\mskip1.5mu \Conid{XlValue}\mskip1.5mu],\Conid{XlValues}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}zero_{row}\;(\anonymous ,\Varid{vs})\mathrel{=}([\mskip1.5mu \mskip1.5mu],\Varid{vs}){}\<[E]%
+\\[\blanklineskip]%
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}op_{cell}\mathbin{::}([\mskip1.5mu \Conid{XlValue}\mskip1.5mu],\Conid{XlValues})\to \llparenthesis \cdot , \cdot \rrparenthesis \to ([\mskip1.5mu \Conid{XlValue}\mskip1.5mu],\Conid{XlValues}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}op_{cell}\;(\Varid{row},\Varid{vs})\;\Varid{rc}\mathrel{=}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\Varid{addToRow}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlRef}\;\Varid{rc}){}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}\mathbf{where}\;\Varid{addToRow}\;(\Varid{v},\Varid{vs'})\mathrel{=}(\Varid{row}\plus [\mskip1.5mu \Varid{v}\mskip1.5mu],\Varid{vs'}){}\<[E]%
+\\[\blanklineskip]%
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}op_{row}\mathbin{::}([\mskip1.5mu [\mskip1.5mu \Conid{XlValue}\mskip1.5mu]\mskip1.5mu],\Conid{XlValues})\to \Conid{Int}\to ([\mskip1.5mu \Conid{XlValue}\mskip1.5mu],\Conid{XlValues})\to ([\mskip1.5mu [\mskip1.5mu \Conid{XlValue}\mskip1.5mu]\mskip1.5mu],\Conid{XlValues}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}op_{row}\;(\Varid{m},\anonymous )\;\Varid{r}\;(\Varid{row},\Varid{vs})\mathrel{=}(\Varid{m}\plus [\mskip1.5mu \Varid{row}\mskip1.5mu],\Varid{vs}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Conid{XlMatrix}\;\Varid{m},\Varid{vs'}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{\texttt{IF}, \texttt{AND}, and \texttt{OR}}
+
+The \text{\tt IF} function takes three arguments. It tests the first argument, and if evaluates
+to \ensuremath{\Conid{XlBool}\;\Conid{True}} it evaluates the second argument and returns it; otherwise, it
+evaluates and returns the third argument. Note that arguments are evaluated lazily,
+as is typical in constructs of this type in programming languages.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{26}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 IF\char34}\;[\mskip1.5mu \Varid{i},\Varid{t},\Varid{e}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_i,vs_{i})\mathrel{=}\Varid{toBool}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;\Varid{i}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_r,vs_r)\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;v_i\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\Conid{XlError}\;\anonymous ){}\<[26]%
+\>[26]{}\to (v_i,vs_{i}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\Conid{XlBool}\;\Conid{True}){}\<[26]%
+\>[26]{}\to (\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;vs_{i}\;\Varid{e}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\Conid{XlBool}\;\Conid{False}){}\<[26]%
+\>[26]{}\to (\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;vs_{i}\;\Varid{t}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\anonymous {}\<[26]%
+\>[26]{}\to ((\Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}),vs_{i}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_r,vs_r){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The \text{\tt AND} and \text{\tt OR} functions in spreadsheets, however, are evaluated strictly,
+not performing the usual short-circuit expected of them in programming
+languages. They always evaluate both arguments, and return and error if either
+argument fails.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{12}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{30}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{40}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 AND\char34}\;[\mskip1.5mu \Varid{a},\Varid{b}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_a,\Varid{vs'}){}\<[18]%
+\>[18]{}\mathrel{=}\Varid{toBool}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;\Varid{a}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_b,\Varid{vs''})\mathrel{=}\Varid{toBool}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs'}\;\Varid{b}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}v_r\mathrel{=}\mathbf{case}\;(v_a,v_b)\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{5}{}\<[12]%
+\>[12]{}(\Conid{XlError}\;\anonymous ,\anonymous ){}\<[40]%
+\>[40]{}\to v_a{}\<[E]%
+\\
+\>[7]{}\hsindent{5}{}\<[12]%
+\>[12]{}(\anonymous ,\Conid{XlError}\;\anonymous ){}\<[40]%
+\>[40]{}\to v_b{}\<[E]%
+\\
+\>[7]{}\hsindent{5}{}\<[12]%
+\>[12]{}(\Conid{XlBool}\;\Conid{True},\Conid{XlBool}\;\Conid{True}){}\<[40]%
+\>[40]{}\to v_a{}\<[E]%
+\\
+\>[7]{}\hsindent{5}{}\<[12]%
+\>[12]{}\anonymous {}\<[40]%
+\>[40]{}\to \Conid{XlBool}\;\Conid{False}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_r,\Varid{vs''}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 OR\char34}\;[\mskip1.5mu \Varid{a},\Varid{b}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_a,\Varid{vs'}){}\<[18]%
+\>[18]{}\mathrel{=}\Varid{toBool}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;\Varid{a}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_b,\Varid{vs''})\mathrel{=}\Varid{toBool}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs'}\;\Varid{b}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}v_r\mathrel{=}\mathbf{case}\;(v_a,v_b)\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{5}{}\<[12]%
+\>[12]{}(\Conid{XlError}\;\anonymous ,\anonymous ){}\<[30]%
+\>[30]{}\to v_a{}\<[E]%
+\\
+\>[7]{}\hsindent{5}{}\<[12]%
+\>[12]{}(\anonymous ,\Conid{XlError}\;\anonymous ){}\<[30]%
+\>[30]{}\to v_b{}\<[E]%
+\\
+\>[7]{}\hsindent{5}{}\<[12]%
+\>[12]{}(\Conid{XlBool}\;\Conid{True},\anonymous ){}\<[30]%
+\>[30]{}\to v_a{}\<[E]%
+\\
+\>[7]{}\hsindent{5}{}\<[12]%
+\>[12]{}(\anonymous ,\Conid{XlBool}\;\Conid{True}){}\<[30]%
+\>[30]{}\to v_b{}\<[E]%
+\\
+\>[7]{}\hsindent{5}{}\<[12]%
+\>[12]{}\anonymous {}\<[30]%
+\>[30]{}\to \Conid{XlBool}\;\Conid{False}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_r,\Varid{vs''}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{\texttt{SUM}}
+
+The \text{\tt SUM} function illustrates the use of array evaluation. Each argument is
+evaluated using the \ensuremath{\Varid{eArray}} function of the evaluator \ensuremath{\Varid{ev}}, and their results
+are added producing the final result \ensuremath{v_r}. Thus, when used in an array
+formula, the evaluation of its arguments is done using \ensuremath{\Varid{iterateFormula}}
+(Section~\ref{arrayformulas}), producing a \ensuremath{\Conid{XlMatrix}} of results that is then
+iterated to perform the sum. This allows, for example, to use
+\text{\tt \char61{}SUM\char40{}SQRT\char40{}A1\char58{}A10\char41{}\char41{}} to obtain a sum of squares, even though function \text{\tt SQRT}
+is a scalar function that does not support ranges on its own.
+
+It is worth noting that the coercion rules used by \text{\tt SUM} are different from
+those used by \text{\tt \char43{}} (Section~\ref{numops}). While \text{\tt SUM} skips string values
+(which may appear, for example, as part of a range), the \text{\tt \char43{}} function attempts
+to coerce them into numbers.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{25}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{30}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{37}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{44}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 SUM\char34}\;\Varid{args})\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doSum}\;{}\<[14]%
+\>[14]{}\Varid{s}\mathord{@}(\Conid{XlString}\;\anonymous )\;{}\<[30]%
+\>[30]{}\Varid{v}{}\<[44]%
+\>[44]{}\mathrel{=}\Varid{v}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doSum}\;{}\<[14]%
+\>[14]{}\Varid{v}\;{}\<[28]%
+\>[28]{}\Varid{s}\mathord{@}(\Conid{XlString}\;\anonymous ){}\<[44]%
+\>[44]{}\mathrel{=}\Varid{v}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doSum}\;{}\<[14]%
+\>[14]{}(\Conid{XlBool}\;\Varid{b})\;{}\<[28]%
+\>[28]{}(\Conid{XlNumber}\;\Varid{n}){}\<[44]%
+\>[44]{}\mathrel{=}\Conid{XlNumber}\;(\Varid{bool2num}\;\Varid{b}\mathbin{+}\Varid{n}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doSum}\;{}\<[14]%
+\>[14]{}(\Conid{XlNumber}\;\Varid{n})\;{}\<[28]%
+\>[28]{}(\Conid{XlBool}\;\Varid{b}){}\<[44]%
+\>[44]{}\mathrel{=}\Conid{XlNumber}\;(\Varid{bool2num}\;\Varid{b}\mathbin{+}\Varid{n}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doSum}\;{}\<[14]%
+\>[14]{}(\Conid{XlNumber}\;\Varid{a})\;{}\<[28]%
+\>[28]{}(\Conid{XlNumber}\;\Varid{b}){}\<[44]%
+\>[44]{}\mathrel{=}\Conid{XlNumber}\;(\Varid{a}\mathbin{+}\Varid{b}){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_r,vs_r)\mathrel{=}\Varid{foldl'}\;\Varid{handle}\;(\Conid{XlNumber}\;\mathrm{0},\Varid{vs})\;\Varid{args}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{handle}\;(\Varid{acc},vs_{acc})\;\Varid{arg}\mathrel{=}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mathbf{let}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}(v_a,vs_b)\mathrel{=}(\Varid{eArray}\;\Varid{ev})\;\Varid{ev}\;vs_{acc}\;\Varid{arg}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}v_{sum}\mathrel{=}{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mathbf{case}\;v_a\;\mathbf{of}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Conid{XlError}\;\anonymous {}\<[37]%
+\>[37]{}\to v_a{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Conid{XlMatrix}\;\Varid{m}{}\<[37]%
+\>[37]{}\to \Varid{foldl'}\;(\Varid{foldl'}\;(\Varid{checkErr}\;\Varid{doSum}))\;\Varid{acc}\;\Varid{m}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Conid{XlBool}\;\Varid{b}{}\<[37]%
+\>[37]{}\to \Varid{checkErr}\;\Varid{doSum}\;\Varid{acc}\;v_a{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Conid{XlNumber}\;\Varid{n}{}\<[37]%
+\>[37]{}\to \Varid{checkErr}\;\Varid{doSum}\;\Varid{acc}\;v_a{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\anonymous {}\<[37]%
+\>[37]{}\to \Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mathbf{in}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}(v_{sum},vs_b){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_r,vs_r){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{\texttt{INDIRECT}}
+
+The \text{\tt INDIRECT} function converts a string describing a reference or range
+written in ``A1'' notation to the actual reference or range. This feature adds
+support for runtime-evaluated indirect connections to the dataflow graph of a
+spreadsheet. A cell can effectively act as a pointer to another cell.
+
+% Expand this issue in a discussion on liveness, later in the thesis.
+
+Different spreadsheets vary in their semantics when supporting non-scalar
+indirect references. Here, we opted for implementing it in a straightforward
+way: we evaluate the argument in a scalar context, coercing it to string, and
+then evaluate the indirect reference in a scalar context as well. When used in
+an array formula, \text{\tt INDIRECT} can handle non-scalar arguments due to the scalar
+conversion performed by \ensuremath{\Varid{matrixToScalar}} (Section~\ref{arrayformulas}).
+
+Auxiliary function \ensuremath{\Varid{toRC}} converts addresses in ``A1'' alphanumeric format to
+the internal row-column numeric format. For simplicity, this interpreter only
+support columns A to Z, and we assume the string is well-formed and do not
+perform error checking.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 INDIRECT\char34}\;[\mskip1.5mu \Varid{addr}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{toRC}\mathbin{::}\Conid{String}\to \llparenthesis \cdot , \cdot \rrparenthesis {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{toRC}\;(\Varid{l}\mathbin{:}\Varid{num})\mathrel{=}\llparenthesis \langle ((\Varid{read}\;\Varid{num})\mathbin{-}\mathrm{1})\rangle , \langle ((\Varid{ord}\;\Varid{l})\mathbin{-}\mathrm{65})\rangle \rrparenthesis {}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{convert}\;\Varid{s}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;\Varid{break}\;(\equiv \text{\tt ':'})\;\Varid{s}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\Varid{a1},\text{\tt ':'}\mathbin{:}\Varid{b2}){}\<[24]%
+\>[24]{}\to (\Conid{XlRng}\;(\Varid{toRC}\;\Varid{a1})\;(\Varid{toRC}\;\Varid{b2})){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\anonymous {}\<[24]%
+\>[24]{}\to (\Conid{XlRef}\;(\Varid{toRC}\;\Varid{s})){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_a,vs_b){}\<[18]%
+\>[18]{}\mathrel{=}\Varid{toString}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;\Varid{addr}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_r,vs_r){}\<[18]%
+\>[18]{}\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{case}\;v_a\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{XlError}\;\Varid{e}{}\<[22]%
+\>[22]{}\to (v_a,vs_b){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{XlString}\;\Varid{s}{}\<[22]%
+\>[22]{}\to (\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;vs_b\;(\Varid{convert}\;\Varid{s}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\anonymous {}\<[22]%
+\>[22]{}\to ((\Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}),vs_b){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_r,vs_r){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{String operations}
+
+For illustrative purposes, we define a function that operates on strings: the
+substring function \text{\tt MID}, and the concatenation operator \text{\tt \char38{}}. These are useful
+for demonstrating the coercion rules in examples. In particular, it is
+interesting to observe how the empty cell coerces to different values: with
+\text{\tt A1} being empty, \text{\tt \char61{}\char34{}Hello\char34{}\char38{}A1} results in \text{\tt \char34{}Hello\char34{}}, and \text{\tt \char61{}1\char47{}A1} results in
+\text{\tt \char35{}DIV\char47{}0\char33{}}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{26}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{38}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{62}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 MID\char34}\;[\mskip1.5mu v_{str},v_{sum},v_{len}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_{str}',{}\<[18]%
+\>[18]{}\Varid{vs'}){}\<[26]%
+\>[26]{}\mathrel{=}\Varid{toString}{}\<[38]%
+\>[38]{}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;{}\<[62]%
+\>[62]{}v_{str}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_{sum}',{}\<[18]%
+\>[18]{}\Varid{vs''}){}\<[26]%
+\>[26]{}\mathrel{=}\Varid{toNumber}{}\<[38]%
+\>[38]{}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs'}\;{}\<[62]%
+\>[62]{}v_{sum}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_{len}',{}\<[18]%
+\>[18]{}\Varid{vs'''}){}\<[26]%
+\>[26]{}\mathrel{=}\Varid{toNumber}{}\<[38]%
+\>[38]{}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs''}\;{}\<[62]%
+\>[62]{}v_{len}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doMid}\;(\Conid{XlString}\;\Varid{str})\;(\Conid{XlNumber}\;\Varid{start})\;(\Conid{XlNumber}\;\Varid{len})\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{XlString}\mathbin{\$}\Varid{take}\;(\Varid{floor}\;\Varid{len})\mathbin{\$}\Varid{drop}\;(\Varid{floor}\;\Varid{start}\mathbin{-}\mathrm{1})\;\Varid{str}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doMid}\;\anonymous \;\anonymous \;\anonymous \mathrel{=}\Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{v}\mathrel{=}\Varid{doMid}\;v_{str}'\;v_{sum}'\;v_{len}'{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{v},\Varid{vs'''}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{32}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{48}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{53}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 \&\char34}\;[\mskip1.5mu \Varid{a},\Varid{b}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_a,\Varid{vs'}){}\<[19]%
+\>[19]{}\mathrel{=}\Varid{toString}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;{}\<[53]%
+\>[53]{}\Varid{a}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_b,\Varid{vs''}){}\<[19]%
+\>[19]{}\mathrel{=}\Varid{toString}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs'}\;{}\<[53]%
+\>[53]{}\Varid{b}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doConcat}\;{}\<[17]%
+\>[17]{}(\Conid{XlString}\;\Varid{sa})\;{}\<[32]%
+\>[32]{}(\Conid{XlString}\;\Varid{sb}){}\<[48]%
+\>[48]{}\mathrel{=}\Conid{XlString}\;(\Varid{sa}\plus \Varid{sb}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doConcat}\;{}\<[17]%
+\>[17]{}\anonymous \;{}\<[32]%
+\>[32]{}\anonymous {}\<[48]%
+\>[48]{}\mathrel{=}\Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{v}\mathrel{=}\Varid{checkErr}\;\Varid{doConcat}\;v_a\;v_b{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{v},\Varid{vs''}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Mathematical operations and equality}
+\label{numops}
+
+A few unary and binary mathematical operations are defined here. They all
+follow the same pattern, encapsulated as functions \ensuremath{\Varid{unOp}} and \ensuremath{\Varid{binOp}} defined
+further below. The division operator additionally checks for division-by-zero,
+returning \text{\tt \char35{}DIV\char47{}0\char33{}}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{29}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{34}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{40}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{44}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{49}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{54}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{55}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 SQRT\char34}\;{}\<[34]%
+\>[34]{}[\mskip1.5mu \Varid{v}\mskip1.5mu]){}\<[40]%
+\>[40]{}\mathrel{=}\Varid{unOp}\;{}\<[49]%
+\>[49]{}\Varid{sqrt}\;{}\<[55]%
+\>[55]{}\Varid{ev}\;\Varid{vs}\;\Varid{v}{}\<[E]%
+\\
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 ABS\char34}\;{}\<[34]%
+\>[34]{}[\mskip1.5mu \Varid{v}\mskip1.5mu]){}\<[40]%
+\>[40]{}\mathrel{=}\Varid{unOp}\;{}\<[49]%
+\>[49]{}\Varid{abs}\;{}\<[55]%
+\>[55]{}\Varid{ev}\;\Varid{vs}\;\Varid{v}{}\<[E]%
+\\
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 +\char34}\;[\mskip1.5mu \Varid{a},\Varid{b}\mskip1.5mu]){}\<[40]%
+\>[40]{}\mathrel{=}\Varid{binOp}\;{}\<[49]%
+\>[49]{}(\mathbin{+})\;{}\<[55]%
+\>[55]{}\Varid{ev}\;\Varid{vs}\;\Varid{a}\;\Varid{b}{}\<[E]%
+\\
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 -\char34}\;[\mskip1.5mu \Varid{a},\Varid{b}\mskip1.5mu]){}\<[40]%
+\>[40]{}\mathrel{=}\Varid{binOp}\;{}\<[49]%
+\>[49]{}(\mathbin{-})\;{}\<[55]%
+\>[55]{}\Varid{ev}\;\Varid{vs}\;\Varid{a}\;\Varid{b}{}\<[E]%
+\\
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 *\char34}\;[\mskip1.5mu \Varid{a},\Varid{b}\mskip1.5mu]){}\<[40]%
+\>[40]{}\mathrel{=}\Varid{binOp}\;{}\<[49]%
+\>[49]{}(\mathbin{*})\;{}\<[55]%
+\>[55]{}\Varid{ev}\;\Varid{vs}\;\Varid{a}\;\Varid{b}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 /\char34}\;[\mskip1.5mu \Varid{a},\Varid{b}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_a,{}\<[13]%
+\>[13]{}\Varid{vs'}){}\<[20]%
+\>[20]{}\mathrel{=}\Varid{toNumber}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;{}\<[54]%
+\>[54]{}\Varid{a}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_b,{}\<[13]%
+\>[13]{}\Varid{vs''}){}\<[20]%
+\>[20]{}\mathrel{=}\Varid{toNumber}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs'}\;{}\<[54]%
+\>[54]{}\Varid{b}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doDiv}\;{}\<[14]%
+\>[14]{}(\Conid{XlNumber}\;n_a)\;{}\<[29]%
+\>[29]{}(\Conid{XlNumber}\;\mathrm{0}){}\<[44]%
+\>[44]{}\mathrel{=}\Conid{XlError}\;\text{\tt \char34 \#DIV/0!\char34}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doDiv}\;{}\<[14]%
+\>[14]{}(\Conid{XlNumber}\;n_a)\;{}\<[29]%
+\>[29]{}(\Conid{XlNumber}\;n_b){}\<[44]%
+\>[44]{}\mathrel{=}\Conid{XlNumber}\;(n_a\mathbin{/}n_b){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doDiv}\;{}\<[14]%
+\>[14]{}\anonymous \;{}\<[29]%
+\>[29]{}\anonymous {}\<[44]%
+\>[44]{}\mathrel{=}\Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{v}\mathrel{=}\Varid{checkErr}\;\Varid{doDiv}\;v_a\;v_b{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{v},\Varid{vs''}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The equality operator is notable in which is does not perform number and
+string coercions as the other functions (that is, \text{\tt \char61{}2\char61{}\char34{}2\char34{}} returns \text{\tt FALSE}).
+However, it does coerce booleans to numbers, probably as a compatibility
+leftover from when spreadsheets did not have a separate boolean type.
+The OpenDocument specification [***reference***] states that a conforming
+implementation may represent booleans as a subtype of numbers.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{41}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{43}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\text{\tt \char34 =\char34}\;[\mskip1.5mu \Varid{a},\Varid{b}\mskip1.5mu])\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_a,{}\<[13]%
+\>[13]{}\Varid{vs'}){}\<[19]%
+\>[19]{}\mathrel{=}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;{}\<[41]%
+\>[41]{}\Varid{a}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_b,{}\<[13]%
+\>[13]{}\Varid{vs''})\mathrel{=}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs'}\;\Varid{b}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doEq}\;{}\<[13]%
+\>[13]{}(\Conid{XlNumber}\;n_a)\;{}\<[28]%
+\>[28]{}(\Conid{XlNumber}\;n_b){}\<[43]%
+\>[43]{}\mathrel{=}\Conid{XlBool}\;(n_a\equiv n_b){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doEq}\;{}\<[13]%
+\>[13]{}(\Conid{XlString}\;\Varid{sa})\;{}\<[28]%
+\>[28]{}(\Conid{XlString}\;\Varid{sb}){}\<[43]%
+\>[43]{}\mathrel{=}\Conid{XlBool}\;(\Varid{sa}\equiv \Varid{sb}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doEq}\;{}\<[13]%
+\>[13]{}(\Conid{XlBool}\;\Varid{ba})\;{}\<[28]%
+\>[28]{}(\Conid{XlBool}\;\Varid{bb}){}\<[43]%
+\>[43]{}\mathrel{=}\Conid{XlBool}\;(\Varid{ba}\equiv \Varid{bb}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doEq}\;{}\<[13]%
+\>[13]{}(\Conid{XlNumber}\;n_a)\;{}\<[28]%
+\>[28]{}(\Conid{XlBool}\;\Varid{bb}){}\<[43]%
+\>[43]{}\mathrel{=}\Conid{XlBool}\;(n_a\equiv \Varid{bool2num}\;\Varid{bb}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doEq}\;{}\<[13]%
+\>[13]{}(\Conid{XlBool}\;\Varid{ba})\;{}\<[28]%
+\>[28]{}(\Conid{XlNumber}\;n_b){}\<[43]%
+\>[43]{}\mathrel{=}\Conid{XlBool}\;(\Varid{bool2num}\;\Varid{ba}\equiv n_b){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doEq}\;{}\<[13]%
+\>[13]{}\anonymous \;{}\<[28]%
+\>[28]{}\anonymous {}\<[43]%
+\>[43]{}\mathrel{=}\Conid{XlBool}\;\Conid{False}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{v}\mathrel{=}\Varid{checkErr}\;\Varid{doEq}\;v_a\;v_b{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{v},\Varid{vs''}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlFun}\;\anonymous \;\anonymous )\mathrel{=}(\Conid{XlError}\;\text{\tt \char34 \#NAME?\char34},\Varid{vs}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Functions \ensuremath{\Varid{unOp}} and \ensuremath{\Varid{binOp}} are convenience functions that encapsulate the
+pattern for common unary and binary numeric functions. They evaluate their
+arguments in a scalar context, check if any of the arguments evaluated to an
+error, and perform the operation \ensuremath{\Varid{op}}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{11}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{43}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{52}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{unOp}\mathbin{::}{}\<[10]%
+\>[10]{}(\Conid{Double}\to \Conid{Double}){}\<[E]%
+\\
+\>[10]{}\to \Conid{XlEvaluator}\to \Conid{XlValues}\to \Conid{XlFormula}\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\\
+\>[B]{}\Varid{unOp}\;\Varid{op}\;\Varid{ev}\;\Varid{vs}\;\Varid{v}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{v'},\Varid{vs'})\mathrel{=}\Varid{toNumber}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;\Varid{v}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{v''}\mathrel{=}\mathbf{case}\;\Varid{v'}\;\mathbf{of}{}\<[E]%
+\\
+\>[7]{}\hsindent{6}{}\<[13]%
+\>[13]{}\Varid{e}\mathord{@}(\Conid{XlError}\;\anonymous ){}\<[28]%
+\>[28]{}\to \Varid{e}{}\<[E]%
+\\
+\>[7]{}\hsindent{6}{}\<[13]%
+\>[13]{}(\Conid{XlNumber}\;\Varid{n}){}\<[28]%
+\>[28]{}\to \Conid{XlNumber}\mathbin{\$}\Varid{op}\;\Varid{n}{}\<[E]%
+\\
+\>[7]{}\hsindent{6}{}\<[13]%
+\>[13]{}\anonymous {}\<[28]%
+\>[28]{}\to \Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{v''},\Varid{vs'}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{binOp}\mathbin{::}{}\<[11]%
+\>[11]{}(\Conid{Double}\to \Conid{Double}\to \Conid{Double}){}\<[E]%
+\\
+\>[11]{}\to \Conid{XlEvaluator}\to \Conid{XlValues}\to \Conid{XlFormula}\to \Conid{XlFormula}\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\\
+\>[B]{}\Varid{binOp}\;\Varid{op}\;\Varid{ev}\;\Varid{vs}\;\Varid{a}\;\Varid{b}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_a,\Varid{vs'}){}\<[19]%
+\>[19]{}\mathrel{=}\Varid{toNumber}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs}\;{}\<[52]%
+\>[52]{}\Varid{a}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(v_b,\Varid{vs''}){}\<[19]%
+\>[19]{}\mathrel{=}\Varid{toNumber}\mathbin{\$}(\Varid{eScalar}\;\Varid{ev})\;\Varid{ev}\;\Varid{vs'}\;\Varid{b}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doOp}\;(\Conid{XlNumber}\;n_a)\;{}\<[27]%
+\>[27]{}(\Conid{XlNumber}\;n_b){}\<[43]%
+\>[43]{}\mathrel{=}\Conid{XlNumber}\;(\Varid{op}\;n_a\;n_b){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{doOp}\;\anonymous \;{}\<[27]%
+\>[27]{}\anonymous {}\<[43]%
+\>[43]{}\mathrel{=}\Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{v}\mathrel{=}\Varid{checkErr}\;\Varid{doOp}\;v_a\;v_b{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}(\Varid{v},\Varid{vs''}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsubsection{Type conversions}
+\label{typeconv}
+
+We conclude the presentation of the interpreter with the remaining
+utility functions that perform various type conversions and checks.
+
+Function \ensuremath{\Varid{num2str}} is a converter that presents rational and integer values
+in their preferred notation (that is, with and without a decimal point,
+respectively). Function \ensuremath{\Varid{bool2num}} converts booleans to 0 or 1.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{num2str}\mathbin{::}\Conid{Double}\to \Conid{String}{}\<[E]%
+\\
+\>[B]{}\Varid{num2str}\;\Varid{n}\mathrel{=}\mathbf{if}\;\Varid{fromIntegral}\;(\Varid{floor}\;\Varid{n})\not\equiv \Varid{n}\;\mathbf{then}\;\Varid{show}\;\Varid{n}\;\mathbf{else}\;\Varid{show}\;(\Varid{floor}\;\Varid{n}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{bool2num}\mathbin{::}\Conid{Bool}\to \Conid{Double}{}\<[E]%
+\\
+\>[B]{}\Varid{bool2num}\;\Varid{b}\mathrel{=}\mathbf{if}\;\Varid{b}\equiv \Conid{True}\;\mathbf{then}\;\mathrm{1}\;\mathbf{else}\;\mathrm{0}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Functions \ensuremath{\Varid{toNumber}}, \ensuremath{\Varid{toString}} and \ensuremath{\Varid{toBool}} attempt to convert a value to
+the specified type, producing a \ensuremath{\Conid{XlError}} value if the input is not
+convertible.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{30}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{38}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{39}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{toNumber}\mathbin{::}(\Conid{XlValue},\Conid{XlValues})\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\\
+\>[B]{}\Varid{toNumber}\;(\Varid{v},\Varid{vs})\mathrel{=}(\Varid{coerce}\;\Varid{v},\Varid{vs}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlString}\;\Varid{s}){}\<[28]%
+\>[28]{}\mathrel{=}\mathbf{case}\;\Varid{reads}\;\Varid{s}\mathbin{::}[\mskip1.5mu (\Conid{Double},\Conid{String})\mskip1.5mu]\;\mathbf{of}{}\<[E]%
+\\
+\>[28]{}\hsindent{2}{}\<[30]%
+\>[30]{}[\mskip1.5mu \mskip1.5mu]{}\<[39]%
+\>[39]{}\to \Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\
+\>[28]{}\hsindent{2}{}\<[30]%
+\>[30]{}[\mskip1.5mu (\Varid{n},\anonymous )\mskip1.5mu]{}\<[39]%
+\>[39]{}\to \Conid{XlNumber}\;\Varid{n}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlBool}\;\Varid{b}){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlNumber}\;(\Varid{bool2num}\;\Varid{b}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlEmpty}){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlNumber}\;\mathrm{0}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlMatrix}\;\anonymous ){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;\Varid{v}{}\<[28]%
+\>[28]{}\mathrel{=}\Varid{v}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{toString}\mathbin{::}(\Conid{XlValue},\Conid{XlValues})\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\\
+\>[B]{}\Varid{toString}\;(\Varid{v},\Varid{vs})\mathrel{=}(\Varid{coerce}\;\Varid{v},\Varid{vs}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlNumber}\;\Varid{n}){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlString}\;(\Varid{num2str}\;\Varid{n}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlBool}\;\Varid{b}){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlString}\;(\mathbf{if}\;\Varid{b}\equiv \Conid{True}\;\mathbf{then}\;\text{\tt \char34 1\char34}\;\mathbf{else}\;\text{\tt \char34 0\char34}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlEmpty}){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlString}\;\text{\tt \char34 \char34}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlMatrix}\;\anonymous ){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;\Varid{v}{}\<[28]%
+\>[28]{}\mathrel{=}\Varid{v}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{toBool}\mathbin{::}(\Conid{XlValue},\Conid{XlValues})\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\\
+\>[B]{}\Varid{toBool}\;(\Varid{v},\Varid{vs})\mathrel{=}(\Varid{coerce}\;\Varid{v},\Varid{vs}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlNumber}\;\mathrm{0}){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlBool}\;\Conid{False}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlNumber}\;\anonymous ){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlBool}\;\Conid{True}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlString}\;\Varid{s}){}\<[28]%
+\>[28]{}\mathrel{=}\mathbf{case}\;\Varid{map}\;\Varid{toUpper}\;\Varid{s}\;\mathbf{of}{}\<[E]%
+\\
+\>[28]{}\hsindent{2}{}\<[30]%
+\>[30]{}\text{\tt \char34 TRUE\char34}{}\<[38]%
+\>[38]{}\to \Conid{XlBool}\;\Conid{True}{}\<[E]%
+\\
+\>[28]{}\hsindent{2}{}\<[30]%
+\>[30]{}\text{\tt \char34 FALSE\char34}\to \Conid{XlBool}\;\Conid{False}{}\<[E]%
+\\
+\>[28]{}\hsindent{2}{}\<[30]%
+\>[30]{}\anonymous {}\<[38]%
+\>[38]{}\to \Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlEmpty}){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlBool}\;\Conid{False}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;(\Conid{XlMatrix}\;\anonymous ){}\<[28]%
+\>[28]{}\mathrel{=}\Conid{XlError}\;\text{\tt \char34 \#VALUE!\char34}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{coerce}\;\Varid{v}{}\<[28]%
+\>[28]{}\mathrel{=}\Varid{v}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Function \ensuremath{\Varid{checkErr}} checks input values for errors before performing
+a binary operation. The order errors are evaluated is relevant: if
+the first argument contains an error, it takes precedence.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{43}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{checkErr}\mathbin{::}(\Conid{XlValue}\to \Conid{XlValue}\to \Conid{XlValue})\to \Conid{XlValue}\to \Conid{XlValue}\to \Conid{XlValue}{}\<[E]%
+\\
+\>[B]{}\Varid{checkErr}\;\Varid{op}\;\Varid{e}\mathord{@}(\Conid{XlError}\;\anonymous )\;{}\<[28]%
+\>[28]{}\anonymous {}\<[43]%
+\>[43]{}\mathrel{=}\Varid{e}{}\<[E]%
+\\
+\>[B]{}\Varid{checkErr}\;\Varid{op}\;\anonymous \;{}\<[28]%
+\>[28]{}\Varid{e}\mathord{@}(\Conid{XlError}\;\anonymous ){}\<[43]%
+\>[43]{}\mathrel{=}\Varid{e}{}\<[E]%
+\\
+\>[B]{}\Varid{checkErr}\;\Varid{op}\;\Varid{a}\;{}\<[28]%
+\>[28]{}\Varid{b}{}\<[43]%
+\>[43]{}\mathrel{=}\Varid{op}\;\Varid{a}\;\Varid{b}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Demonstration}
+
+In Appendix [***appendix***] we present a demonstration of use of this
+interpreter, showcasing a series of tests that correspond to sections of the
+OpenDocument specification for the \text{\tt \char46{}ods} format [***reference***] and the ISO
+Open Office XML specification for the \text{\tt \char46{}xlsx} format [***reference***], as
+well as our own additional tests that cover some unspecified behavior.
+
