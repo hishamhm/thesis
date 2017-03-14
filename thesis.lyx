@@ -2098,6 +2098,22 @@ name "chap:Dataflow-UI-langs"
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+chaptermark{Design alternatives}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Research on the dataflow paradigm has seen a decrease in activity since
  the early 1990s.
  The revolution of visual languages inspired by GUI systems that was expected
