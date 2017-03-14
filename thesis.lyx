@@ -2149,6 +2149,13 @@ In this chapter, we will discuss a number of alternatives in dataflow language
 
 \begin_layout Section
 Hils's classification of design alternatives
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Hils's-classification"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2425,6 +2432,13 @@ informative, significant, responsive and live
 
 \begin_layout Section
 An extension to Hils's classification
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:An-extension-to-Hils"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11272,7 +11286,7 @@ compare hot and cold inlets in Pure Data to data execute pins in VEE
 \end_layout
 
 \begin_layout Section
-Natron
+Blender
 \end_layout
 
 \begin_layout Standard
@@ -11280,7 +11294,144 @@ Natron
 status open
 
 \begin_layout Plain Layout
-TODO write
+TODO organize and finish
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The node language is used in different parts of Blender.
+ The node editor is the interface for creating materials in the render engine,
+ for compositing and for texture editing.
+ Each of these activities have their own set of nodes available to them.
+ A restricted form of the node language called the "Logic Editor" is also
+ available for integrating 3D objects with game scripting code.
+ The remainder of this section will focus on the more general Node Editors
+ available for the other tasks.
+\end_layout
+
+\begin_layout Standard
+Programs in the Blender node language are directed acyclic graphs.
+\end_layout
+
+\begin_layout Standard
+Four data types: color, numeric, vector and shader.
+\end_layout
+
+\begin_layout Standard
+Ports (called sockets) have different colors according to their data types.
+\end_layout
+
+\begin_layout Standard
+Nodes have properties, which are additional input arguments that are "inlined"
+ in the node (that is, it is not necessary to create numeric nodes with
+ constants and connect them to a node to parameterize these arguments).
+\end_layout
+
+\begin_layout Standard
+Node Groups are collection of nodes that can be reused within a file and
+ throughout different files, and the documentation describes them as "similar
+ to functions in programming".
+ Recursion is not allowed.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO what happens when duplicating vs creating a new instance of a group
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Oddly, when made accessible to a different file (through the File → Append
+ menu, which appends the content to one file no another), node groups are
+ called "Node Trees".
+\end_layout
+
+\begin_layout Standard
+Node groups can have particular inputs and outputs from its internal nodes
+ that are made available to the outside, in a similar manner to how tunnels
+ work in LabVIEW.
+ These tunnels are accessible when the node group is collapsed both as sockets
+ and as properties.
+\end_layout
+
+\begin_layout Standard
+The documentation warns the user not to include input and output nodes inside
+ node groups.
+\end_layout
+
+\begin_layout Standard
+The documentation mixes the presentation of the language, explaining concepts
+ such as sockets and properties, with the presentation of the UI, explaining
+ menus and keyboard shortcuts.
+\end_layout
+
+\begin_layout Standard
+Blender is scriptable in Python.
+ An example of the power of its scripting support is the Animation Nodes
+ add-on 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/JacquesLucke/animation_nodes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, which adds a whole new node system for controlling animations, allowing
+ users to specify visually tasks that previously required Python code.
+\end_layout
+
+\begin_layout Standard
+It is worth noting, however, that Blender's scripting interface is not without
+ its limitation.
+ For instance, it allows manipulating a node tree in the material editor,
+ but not creating new node types.
+ The Cycles Render Engine supports creating new node types written in OSL
+ (Open Shading Language).
+\end_layout
+
+\begin_layout Standard
+A user created a Boolean if-then-else node using the shader language.
+ Another user in the same forum thread where this node was announced mentioned
+ this node was equivalent to the "Condition" node in competing product Maya.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://blenderartists.org/forum/showthread.php?354949-Cycles-Boolean-Node-(Not-Sh
+ader)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -11304,20 +11455,54 @@ name "chap:A-Dataflow-Engine"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO rewrite
-\end_layout
+In this chapter, we revisit the classifications of design alternatives for
+ dataflow end-user programmable languages presented in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Dataflow-UI-langs"
 
 \end_inset
 
+, illuminated by the study of contemporary languages of this kind presented
+ throughout this work, and in particular the in-depth case studies of Chapters
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Pure-Data"
 
+\end_inset
+
+ to 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "appendix:LabVIEW"
+
+\end_inset
+
+, which covered particularly successful examples of end-user programmable
+ applications.
+ We present here a critique of these various design choices and the impact
+ of their inherent trade-offs.
+ As we consider each of the design dimensions proposed in the survey by
+ Hils 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hils1992DFVPLSurvey"
+
+\end_inset
+
+ and the additional ones proposed in this work, our aim is to discuss which
+ choices have shown to be especially appropriate or inappropriate for different
+ scenarios.
+ We consider especially appropriate those choices that contribute to the
+ usefulness of the application within its domain.
+ We consider inappropriate design choices those that are related to the
+ various pitfalls and shortcomings that we identified in the design of the
+ various languages studied and presented in the previous chapters.
 \end_layout
 
 \begin_layout Standard
-We present in Table 
+We begin by presenting in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Hils-comparison"
@@ -11331,17 +11516,38 @@ key "Hils1992DFVPLSurvey"
 
 \end_inset
 
-, applying the list of design alternatives to a different set of contemporary
- dataflow languages.
- The only language in that study that is also in our list is LabVIEW 
+, applying the list of design alternatives from that work (discussed in
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Hils's-classification"
+
+\end_inset
+
+) to a different set of contemporary dataflow languages.
+ The only language from that study that is also in our list is LabVIEW 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "LabVIEWgettingstarted"
 
 \end_inset
 
+
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+This is in itself a testament to LabVIEW's continued success.
+\end_layout
+
+\end_inset
+
 .
- 
+ It is worth noting that in Hils's larger set of 15 visual dataflow programming
+ languages the majority of them were academic projects.
+ In our shorter list, we restricted ourself to successful languages (both
+ proprietary and open-source) with a proven track in terms of longevity
+ and user base.
 \end_layout
 
 \begin_layout Standard
@@ -11366,8 +11572,9 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Tabular
-<lyxtabular version="3" rows="15" columns="6">
+<lyxtabular version="3" rows="18" columns="7">
 <features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -11430,11 +11637,20 @@ LabVIEW
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 VEE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Blender
 \end_layout
 
 \end_inset
@@ -11515,7 +11731,7 @@ key "LabVIEWgettingstarted"
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -11526,6 +11742,216 @@ key "vee93userguide"
 \end_inset
 
 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citep
+key "blender"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Licensing
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Proprietary
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3-clause BSD
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Proprietary
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Proprietary
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Proprietary
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+GNU GPL v2+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial release
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1999
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1996
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1985
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1986
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1991
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1995
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Latest release
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2015
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2016
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2016
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2016
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2013
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2017
 \end_layout
 
 \end_inset
@@ -11587,11 +12013,20 @@ Engineering
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Engineering
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3D graphics
 \end_layout
 
 \end_inset
@@ -11634,6 +12069,15 @@ domain
 
 \size small
 Productivity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -11708,6 +12152,15 @@ No
 \begin_layout Plain Layout
 
 \size small
+Yes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 Yes
 \end_layout
 
@@ -11812,7 +12265,7 @@ Yes
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -11831,6 +12284,15 @@ The iteration node fires its outputs a given number of times.
 \end_inset
 
 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No
 \end_layout
 
 \end_inset
@@ -11887,6 +12349,15 @@ No
 \begin_layout Plain Layout
 
 \size small
+Yes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 Yes
 \end_layout
 
@@ -11951,6 +12422,15 @@ Yes (IF)
 \begin_layout Plain Layout
 
 \size small
+Yes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 Yes
 \end_layout
 
@@ -12022,6 +12502,15 @@ Uni
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Uni
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -12088,11 +12577,20 @@ Yes
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Yes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No
 \end_layout
 
 \end_inset
@@ -12106,6 +12604,15 @@ Yes
 
 \size small
 execution construct
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -12212,11 +12719,20 @@ Yes
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 No
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Yes
 \end_layout
 
 \end_inset
@@ -12273,6 +12789,15 @@ No
 \begin_layout Plain Layout
 
 \size small
+No
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 No
 \end_layout
 
@@ -12344,6 +12869,15 @@ Data-driven
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Data-driven
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -12410,11 +12944,20 @@ Liveness level
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
 \end_layout
 
 \end_inset
@@ -12457,27 +13000,24 @@ A comparison of contemporary dataflow UI-level languages, using Hils's design
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO comment on the table above
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Table 
+We complement that table with Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Our-comparison"
 
 \end_inset
 
- summarizes our observations of the studied dataflow UI-level languages.
+, which enumerates the design dimensions proposed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:An-extension-to-Hils"
+
+\end_inset
+
+, summarizing the design choices made by the various applications analyzed
+ in this work.
+ In the remainder of this chapter, we will go through those design dimensions
+ one by one and comment on these choices.
 \end_layout
 
 \begin_layout Standard
@@ -12488,8 +13028,9 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Tabular
-<lyxtabular version="3" rows="9" columns="6">
+<lyxtabular version="3" rows="10" columns="7">
 <features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -12542,11 +13083,20 @@ LabVIEW
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 VEE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Blender
 \end_layout
 
 \end_inset
@@ -12576,6 +13126,15 @@ Static
 
 \begin_layout Plain Layout
 Dynamic
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Static
 \end_layout
 
 \end_inset
@@ -12654,6 +13213,15 @@ No
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -12669,7 +13237,7 @@ No
 \begin_inset Text
 
 \begin_layout Plain Layout
-Separate graph / UI
+Separate programming
 \end_layout
 
 \end_inset
@@ -12697,6 +13265,15 @@ No
 
 \begin_layout Plain Layout
 No
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Yes
 \end_layout
 
 \end_inset
@@ -12714,7 +13291,72 @@ Yes
 \begin_inset Text
 
 \begin_layout Plain Layout
-Yes
+No
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+and use views
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -12766,7 +13408,7 @@ No
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -12780,6 +13422,15 @@ TODO
 \end_inset
 
 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No
 \end_layout
 
 \end_inset
@@ -12831,11 +13482,20 @@ Yes
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Yes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No
 \end_layout
 
 \end_inset
@@ -12887,7 +13547,7 @@ Yes
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -12905,6 +13565,15 @@ TODO
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No
+\end_layout
+
+\end_inset
+</cell>
 </row>
 <row>
 <cell alignment="center" valignment="top" leftline="true" usebox="none">
@@ -12912,6 +13581,15 @@ TODO
 
 \begin_layout Plain Layout
 indirect connections
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -12977,6 +13655,15 @@ Textual sub-language
 
 \begin_layout Plain Layout
 No
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Yes
 \end_layout
 
 \end_inset
