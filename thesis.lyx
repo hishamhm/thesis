@@ -1971,7 +1971,7 @@ d-driven+dataflow&source=bl&ots=bMTKoHR-RQ&sig=6rgUvPGf4ZbKWEesYnhyWEi4lHY&hl=en
 \end_layout
 
 \begin_layout Subsection
-Uni and bidirectional flow
+Uni and bi-directional flow
 \end_layout
 
 \begin_layout Standard
@@ -4275,6 +4275,13 @@ TODO explain we have something that actually plays music
 
 \begin_layout Section
 Discussion: Syntax and semantics in visual languages
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Discussion:-Syntax-and-semantics"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Description
@@ -13679,7 +13686,7 @@ N-to-1 inputs
 \begin_layout Plain Layout
 
 \size small
-Yes (merge)
+Yes
 \end_layout
 
 \end_inset
@@ -14500,8 +14507,9 @@ key "Dennis85Models,kavi2015dataflow"
 
 \begin_layout Standard
 This improves efficiency, however, understanding and debugging a dataflow
- graph is easier when there is a single token per arc, and only one iteration
- of a loop is running at a time.
+ graph is easier when there is a single token per arc (or a fixed number
+ of values, as in the case of audio buffers), and only one iteration of
+ a loop is running at a time.
  For end-user programming, understandability is more important than parallel
  efficiency, so it is our view that end-user dataflow languages should present
  a static dataflow view of program execution.
@@ -14546,8 +14554,95 @@ Excel is demand-driven but this is mostly transparent, because of its static
 Uni and bi-directional dataflow
 \end_layout
 
+\begin_layout Standard
+All languages studied in this work employ the traditional uni-directional
+ style of dataflow.
+ In Hils's work, only one language featured bi-directional flow of data:
+ Fabrik 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Ingalls:1988:FVP:62083.62100"
+
+\end_inset
+
+, a language for designing user interfaces.
+\end_layout
+
+\begin_layout Standard
+Bi-directional constraint systems have been present in research for end-user
+ development systems since the early days of Sketchpad 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Sutherland1963Sketchpad"
+
+\end_inset
+
+ and the paradigm continues to be researched for this day 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Apparatus"
+
+\end_inset
+
+, but what we observe in industry practice is that the simpler uni-directional
+ model has become established as the norm in dataflow.
+ GUI construction systems (notably the same domain as Fabrik) have taken
+ up bi-directional constraint systems 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Jamil2014constraintsolvers"
+
+\end_inset
+
+, with Cassowary 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Badros:2001:CLA:504704.504705"
+
+\end_inset
+
+ being integrated into Apple's standard GUI libraries, but those are used
+ as an internal component and not as end-user programming languages of their
+ own.
+\end_layout
+
 \begin_layout Subsubsection
 N-to-1 inputs
+\end_layout
+
+\begin_layout Standard
+Pure Data is the only language in our study that supports N-to-1 inputs,
+ that is, multiple wires connecting to a single input port in a node.
+ The way it handles these inputs is deeply linked to its dataflow evaluation
+ model.
+ For audio wires, which use a static and synchronous model, the incoming
+ data is merged using additive synthesis (that is, the input argument for
+ the port is a buffer where each sample value is the sum of the sample values
+ at the corresponding positions from the incoming wire buffers).
+ For message wires, which use a dynamic model, it queues inputs, causing
+ multiple incoming inputs arriving to a single port through different wires
+ to fire the node multiple times.
+ Queueing also leads to concerns with ordering, as discussed in Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Discussion:-Syntax-and-semantics"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+It seems clear that disallowing N-to-1 inputs leads to a simpler conceptual
+ model and less suprising behavior.
+ Not all domains have an obvious choice on what to do when merging inputs
+ (and even in Pure Data's domain of audio processing, some synthesizers
+ use subtractive synthesis, for example) so having an explicit merge node
+ is a clearer why of presenting what is happening with the data.
+ The convenience that N-to-1 inputs bring could be obtained by automatically
+ inserting those nodes when multiple wires are plugged to an input port,
+ similarly to how LabVIEW auto-inserts feedback nodes.
 \end_layout
 
 \begin_layout Subsubsection
