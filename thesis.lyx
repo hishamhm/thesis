@@ -11151,6 +11151,12 @@ TODO chapter intro
 
 \end_layout
 
+\begin_layout Standard
+Other applications considered were: Grasshopper (3D modeling); Nuke (video
+ editing); Blueprints, (game scripting); Natron, (video compositing); vvvv
+ (multimedia).
+\end_layout
+
 \begin_layout Section
 Reaktor
 \end_layout
@@ -11288,52 +11294,6 @@ y distinct languages.
  In Core, replicated events arrive logically simultaneously, so if one output
  is plugged into two inputs of the same cell, a single firing event is produced
  (whereas in Primary, this would produce two events).
-\end_layout
-
-\begin_layout Standard
-Although not stated explicitly in its documentation, the evaluation of Reaktor's
- Primary mode is demand-driven.
- This can be inferred from the fact that graphs that do not connect to an
- audio output need to have their terminal nodes marked as 
-\begin_inset Quotes eld
-\end_inset
-
-always active
-\begin_inset Quotes erd
-\end_inset
-
- in order to trigger continuous evaluation.
- In one tutorial from the vendor, the documentation instructs to add a dummy
- 
-\begin_inset Quotes eld
-\end_inset
-
-lamp
-\begin_inset Quotes erd
-\end_inset
-
- output marked as always-on just to achieve this same effect 
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Flex URL
-status open
-
-\begin_layout Plain Layout
-
-https://support.native-instruments.com/hc/en-us/articles/209588249-How-to-Use-an-E
-vent-Table-as-Copy-Buffer-in-REAKTOR-5
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Standard
@@ -11791,7 +11751,7 @@ reference "chap:Pure-Data"
  to 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "appendix:LabVIEW"
+reference "chap:LabVIEW"
 
 \end_inset
 
@@ -14140,18 +14100,7 @@ No
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\size small
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
-\end_layout
-
-\end_inset
-
-
+No
 \end_layout
 
 \end_inset
@@ -14464,6 +14413,15 @@ The following sections discuss these design dimensions organized logically
  Being the focus of this work, the first three sections discuss semantic
  aspects, namely graph evaluation, language features and type checking;
  the fourth section groups the remaining aspects.
+ Unless otherwise stated, all remarks about Excel below apply to all spreadsheet
+s discussed in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Spreadsheets"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -14530,18 +14488,104 @@ Data-driven and demand-driven dataflow
 \end_layout
 
 \begin_layout Standard
-Data-driven is better for EUP
+In the classic literature on the dataflow paradigm, the data-driven and
+ demand-driven models are presented as equally proeminent, complementary
+ approaches 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Treleaven:1982:DDC:356869.356873"
+
+\end_inset
+
+.
+ Yet in the context of end-user programming, we identify a tendency towards
+ data-driven execution, considering not only the six languages selected
+ here, but also the ones that were preliminarily studied to perform the
+ selection.
 \end_layout
 
 \begin_layout Standard
-TODO: Reaktor is demand-driven, and it shows
+We believe this is understandable because the data-driven approach more
+ directly maps to the mental model one has about the evaluation of a graph,
+ with the order of execution matching the way the data flows from input
+ nodes toward output nodes.
 \end_layout
 
 \begin_layout Standard
-Excel is demand-driven but this is mostly transparent, because of its static
- dataflow model, lack of time-dependent firing and purely functional nature
- (with no imperative textual sub-language).
+Only two languages in this study employ demand-driven evaluation: Excel
+ and Reaktor.
+ Demand-driven evaluation is natural in a spreadsheet because cells are
+ written as textual expressions, which translate to an expression tree that
+ is evaluated top-down, that is, starting from the output node.
+ The fact that Excel is demand-driven is mostly transparent, because of
+ its static dataflow model, its lack of time-dependent firing its and purely
+ functional nature (with no imperative textual sub-language).
+ Beyond the basic intuition about expression trees, one way to verify that
+ a spreadsheet is indeed demand-driven is by forcing side-effects via the
+ scripting layer of the application, and confirming that these only happens
+ when cells are scrolled into view.
+ We confirmed this successfully in all spreadsheets analyzed
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The JavaScript-based scripting layer of Google Sheets tries to prevent side-effe
+cts (we could not make it pop up a message box as we did in the other applicatio
+ns), but we still verified the demand-driven execution by writing a computation-
+intensive script that caused a noticeable delay.
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The case of Reaktor is a good illustration of how demand-driven execution
+ can be a poor choice for end-user applications.
+ Although not stated explicitly in its documentation and indistinguishable
+ in most cases, the evaluation of Reaktor's Primary mode is demand-driven.
+ This can be inferred from the fact that graphs that do not connect to an
+ audio output need to have their terminal nodes marked as 
+\begin_inset Quotes eld
+\end_inset
+
+always active
+\begin_inset Quotes erd
+\end_inset
+
+ in order to trigger continuous evaluation.
+ In one tutorial from the vendor, the documentation instructs to add a dummy
  
+\begin_inset Quotes eld
+\end_inset
+
+lamp
+\begin_inset Quotes erd
+\end_inset
+
+ output marked as always-on just to achieve this same effect 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://support.native-instruments.com/hc/en-us/articles/209588249-How-to-Use-an-E
+vent-Table-as-Copy-Buffer-in-REAKTOR-5
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -14761,6 +14805,15 @@ TODO Cite Naiad, reinvented LabVIEW loops
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+VEE also performs an implicit 
+\begin_inset Formula $map$
+\end_inset
+
+ operation when passing an array to a function that expects a scalar, similarly
+ to Excel.
 \end_layout
 
 \begin_layout Subsection
