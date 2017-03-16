@@ -2809,7 +2809,7 @@ no; yes (auto-merge); yes (queueing)
 \begin_inset Text
 
 \begin_layout Plain Layout
-Time-based evaluation
+Time-dependent firing
 \end_layout
 
 \end_inset
@@ -3052,17 +3052,20 @@ Time and rate-based evaluation
 
 \begin_layout Standard
 An aspect of program evaluation that is not much a design decision as much
- as it is a domain-dependent constraint is the need to take time into account.
+ as it is a domain-dependent requirement is the need to take time into account.
  If a programmable application needs to process events which happen in a
- time-dependent rate, that needs to be reflected in its language.
+ time-dependent manner or according to fixed rates, that needs to be reflected
+ in its language.
  Still, when this necessity arises there is still a design space to be explored
  on how to handle it.
 \end_layout
 
 \begin_layout Standard
 There are two ways to consider the issue of time.
- One is that of time-dependent nodes, that is, nodes that produce different
- outputs depending on the time when they were fired 
+ One is that of rate-based execution, which refers to the need of consuming
+ or producing data at a certain frequency.
+ The other is that of time-dependent nodes, that is, nodes that behave different
+ly depending on the time when they were fired 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Wipliez2010"
@@ -3070,8 +3073,6 @@ key "Wipliez2010"
 \end_inset
 
 .
- The other is that of rate-based execution, which refers to the need of
- consuming or producing data at a certain frequency.
 \end_layout
 
 \begin_layout Standard
@@ -3152,9 +3153,19 @@ Time-dependency is closely related to rate-dependency, since predictable
  rates at a known clock speed results in predictable times, but rate-based
  evaluation may also be motivated by concerns other than time, such as memory
  efficiency as buffer sizes can be are minimized with optimized schedules.
- Time-dependent execution, on its turn, has its own set of concerns as it
- can bring a level of indeterminacy to the evaluation (e.g.
- when a node depends on system real-time clock).
+ Time-dependent execution refers to all sorts of dependency on time, such
+ as nodes that return the current time, delay nodes that pause for a given
+ number of microseconds, and so on.
+ Supporting this kind of nodes has its own set of concerns as it can bring
+ a level of indeterminacy to the evaluation, affecting scheduling.
+\end_layout
+
+\begin_layout Standard
+In the context of end-user programming, an application with rate-dependent
+ data processing may combine rate-based and non-rate-based events (e.g.
+ handling audio streams and button clicks).
+ The interaction between these two worlds in the evaluation engine of the
+ language also needs to be taken into account.
 \end_layout
 
 \begin_layout Subsection
@@ -13915,20 +13926,7 @@ No
 
 \series bold
 \size small
-Time/rate-based evaluation
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-
-\series bold
-\size small
-split?
-\end_layout
-
-\end_inset
-
-
+Rate-based evaluation
 \end_layout
 
 \end_inset
@@ -13983,16 +13981,7 @@ Synchronous
 \begin_layout Plain Layout
 
 \size small
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
-\end_layout
-
-\end_inset
-
-
+No
 \end_layout
 
 \end_inset
@@ -14650,35 +14639,77 @@ Timing considerations
 \end_layout
 
 \begin_layout Standard
-In end-user applications, timing constraints depend on the domain.
+When considering issues of timing, let us look at both time-dependent firing
+ and rate-based evaluation at once, as we see in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:The-comparison"
+
+\end_inset
+
+ three distinct patterns.
+ We have two languages that support time-dependent firing and use a synchronous
+ dataflow model for rate-based evaluation: Pure Data and Reaktor; two languages
+ that support time-dependent firing but do not feature rate-based evaluation
+ (that is, using a purely static model): LabVIEW and VEE; and two languages
+ that do not have either: Excel and Blender.
+\end_layout
+
+\begin_layout Standard
+The approach of these languages with regard to timing is linked to their
+ domains, and the kind of data and activity they perform.
+ Pure Data and Reaktor, both of them music applications, operate on audio
+ streams.
+ Processing digital audio in real-time requires rate-based evaluation, and
+ music creation demands the ability to specify transformations of data based
+ on time.
+ LabVIEW and VEE, engineering applications, require supporting activities
+ such as periodic reading and writing of data, but since they don't have
+ a single domain-specific target for this processing rates like music applicatio
+ns do, such as 
+\begin_inset Quotes eld
+\end_inset
+
+48000 Hz 24-bit stereo
+\begin_inset Quotes erd
+\end_inset
+
+, which can be made fully implicit in the evaluation loop.
+ Since rates of various instruments supported by those tools vary, the user
+ needs to essentially construct the rate-processing loop by hand, using
+ arrays and delay objects.
+ The waveform types available in both LabVIEW and VEE (essentially records
+ with arrays and timestamps) are an abstraction to help in this task.
+ Languages whose domains do not deal with time avoid these features entirely:
+ Excel and Blender have no time-based evaluation of any kind (except for
+ the occasional Excel function like 
+\family typewriter
+TODAY()
+\family default
+, but that is clearly not integrated with the language's evaluation model
+ — for one, the cell value does not update automatically as time passes)
+\end_layout
+
+\begin_layout Standard
+Another issue related to timing that is often a concern in language design
+ is synchronization.
+ In end-user applications, timing constraints depend on the domain.
  In the field of music, for example, timing precision matters up to the
  scale of human-perceptible audio latency, which is in the order of a few
  hundredths of seconds.
-\end_layout
-
-\begin_layout Standard
-This means that synchronization can be often satisfactorily approximated
+ This means that synchronization can be often satisfactorily approximated
  via real-time clock events.
  As we saw in the case of LabVIEW, timing primitives with millisecond precision
  are used to cause iterations of parallel loops to proceed in tandem.
-\end_layout
-
-\begin_layout Standard
-Due to the nature of the dataflow model, 
-\end_layout
-
-\begin_layout Standard
-They can be in the order of milliseconds or sometimes even tenths of seconds.
-\end_layout
-
-\begin_layout Standard
-TODO: glitch
-\end_layout
-
-\begin_layout Standard
-In the context of end-user programming, an application with rate-dependent
- data processing may combine rate-based and non-rate-based events (e.g.
- handling audio streams and button clicks).
+ When a language combines two evaluation models, as is the case of Pure
+ Data, which uses dynamic dataflow for messages and synchronous dataflow
+ for audio, it is also important to avoid synchronization issues.
+ Pure Data solves this adequately by alternating message and audio evaluation
+ and keeping an audio buffer large enough to give the evaluation of message
+ graph time to run.
+ This can still lead to audio drop-outs if message processing is excessive,
+ but musicians nowadays are used to the notion that heavy computations can
+ make audio stutter, and adapt accordingly.
 \end_layout
 
 \begin_layout Subsubsection
