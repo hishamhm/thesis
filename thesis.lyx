@@ -14934,18 +14934,97 @@ This work has not focused much on type checking issues, since the type systems
  of all languages studied are very simple.
  In at least one case, it was deliberately simplified by the language designers,
  with the restriction on recursive data types in LabVIEW.
+ Still, there are interesting observations to be made about type checking
+ in dataflow end-user applications.
 \end_layout
 
 \begin_layout Standard
-It goes without saying that high-level end-user languages must be strongly
- typed.
+We define type checking in the context of dataflow as a verification provided
+ by the environment, prior to execution, that the types of values expected
+ by an input port matches the types of values produced by an output port
+ connected to it.
+ In the case of an environment with liveness level 2, this means that the
+ system reports a type mismatch before entering the "use" mode.
+ In the case of a responsive environment (i.e.
+ one with liveness level 3), we expect the system to flag a type incompatibility
+ immediately as the user attempts to add an invalid connection, disallowing
+ the creation of the wire in the first place.
+ 
+\end_layout
+
+\begin_layout Standard
+LabVIEW performs type checking, and the various data types supported are
+ visually identified through colors in nodes and wires.
+ When a user draws incorrect wires those remain in the diagram marked as
+ such and running the program is not possible.
+ As explained in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:LabVIEW"
+
+\end_inset
+
+, LabVIEW's inference system for tunnel directions can cause previously
+ correct wires to become flagged as incorrect, sometimes with wide-ranging
+ and confusing results, and unhelpful error messages.
+ The well-intentioned convenience provided by the inference system has proven
+ to be, in our opinion, inappropriate for an end-user programming system.
+ 
+\end_layout
+
+\begin_layout Standard
+Pure Data offers limited type checking, in the sense that the interface
+ provides a clear separation between message and audio data, differentiating
+ both nodes and wires of these two kinds and disallowing mismatching connections
+, but type mismatches between various message data types are not checked.
+ In various senses, Pure Data works almost like two languages in one, with
+ its single-typed synchronous model for audio flow on one side, and a dynamicall
+y-typed dynamic dataflow model for message passing on the other.
+ 
+\end_layout
+
+\begin_layout Standard
+Both Blender and Reaktor provide visual hints about the types of their input
+ and output ports, and only allow connecting wires between ports of compatible
+ types.
+ Type errors are impossible.
+\end_layout
+
+\begin_layout Standard
+Excel and VEE are dynamically typed: type errors are reported only at runtime.
+ Since Excel is a responsive application and connections between cells are
+ given by the user textually, there is no way for the language to prevent
+ type errors in the manner of Blender and Reaktor.
+ However, one could conceive of a statically-typed spreadsheet that, in
+ the event of cell errors, instead of merely producing an error value for
+ the whole formula
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Not to mention that such errors in dynamically-typed spreadsheets are subject
+ to often-arbitrary error propagation semantics as we have seen in Chapter
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Spreadsheets"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+, produced an error message indicating which term of the expression caused
+ the type error, as modern compilers do.
 \end_layout
 
 \begin_layout Standard
 There are other interesting issues related to types which we did not focus
  in this work.
  Efficient handling of data structures and avoiding excessive copying of
- data between nodes is a matter of concern 
+ data between nodes are matters of concern 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "DinamicaVM,Foley-Bourgon:2016:EIC:2989225.2989235"
