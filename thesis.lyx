@@ -2534,24 +2534,24 @@ selector and/or distributor
 \emph default
 : whether the language includes classic dataflow constructs for directing
  the routing of data through a control input (a selector is a function 
-\begin_inset Formula $select(k,a_{1},...,a_{n})=a_{k}$
+\begin_inset Formula $\sigma(v_{1},...,v_{n},k)=v_{k}$
 \end_inset
 
 , i.e.
- one of many inputs is forwarded to the single output port according to
- control input 
+ the 
 \begin_inset Formula $k$
 \end_inset
 
-; a distributor is a function 
-\begin_inset Formula $distribute(k,a)$
+-th input is forwarded to the node's only output; a distributor is a function
+ 
+\begin_inset Formula $\pi(k,v)$
 \end_inset
 
- with multiple outputs, where its input 
-\begin_inset Formula $a$
+, where value 
+\begin_inset Formula $v$
 \end_inset
 
- is fired to the 
+ is fired to the node's 
 \begin_inset Formula $k$
 \end_inset
 
@@ -10944,6 +10944,13 @@ on.
 
 \begin_layout Subsection
 LabVIEW and Pure Data compared
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:LabVIEW-and-PD"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11155,6 +11162,17 @@ TODO chapter intro
 Other applications considered were: Grasshopper (3D modeling); Nuke (video
  editing); Blueprints, (game scripting); Natron, (video compositing); vvvv
  (multimedia).
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO referências
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -12651,19 +12669,6 @@ Yes (cycles)
 
 \size small
 Limited
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-
-\size small
-A non-scalar evaluation mode is the only way to apply a formula over multiple
- cells at once.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -12686,26 +12691,6 @@ Yes (construct)
 
 \size small
 Limited
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-
-\size small
-There is no iteration structure, only an 
-\begin_inset Quotes eld
-\end_inset
-
-iteration
-\begin_inset Quotes erd
-\end_inset
-
- node that acts as a counter node.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -12717,18 +12702,6 @@ iteration
 
 \size small
 Yes
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-
-\size small
-The iteration node fires its outputs a given number of times.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -14778,15 +14751,126 @@ Language features
 \end_layout
 
 \begin_layout Subsection
+Selector/distributor
+\end_layout
+
+\begin_layout Standard
+Selector and distributor nodes are the most basic features in a dataflow
+ language.
+ Unsurprisingly, all languages studied here implement them and there is
+ not much design variation among them.
+ For more complex data types, such as images in Blender and audio in Pure
+ Data and Reaktor, a selector 
+\begin_inset Formula $\sigma(k,v_{1},v_{2})$
+\end_inset
+
+ can work like a 
+\begin_inset Quotes eld
+\end_inset
+
+mixer
+\begin_inset Quotes erd
+\end_inset
+
+ node, in which 
+\begin_inset Formula $k$
+\end_inset
+
+ is a blend value between 0 and 1 instead of a boolean.
+\end_layout
+
+\begin_layout Subsection
 Iteration
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+In stark contrast with selectors and distributors, iteration constructs
+ are the ones that show the greatest amount of variation in design among
+ dataflow languages, leading even to a survey specifically about it 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Mosconi:2000:ICD:2245742.2245907"
+
+\end_inset
+
+.
+ And indeed, no two languages among the ones presented in this work implement
+ iteration the same way.
+\end_layout
+
+\begin_layout Standard
+We consider here iteration in a broad sense of the word, defining it as
+ any language feature that allows evaluating a subgraph a specified number
+ of times, taking at least one different input argument on each of the repeated
+ evaluations.
+\end_layout
+
+\begin_layout Standard
+Pure Data, being a dynamic dataflow language, allows for cycles, and this
+ is a simple way of producing iteration.
+ Evidently, cycles are only allowed in the dynamic part of the language,
+ that is, between message handling nodes.
+ Cycles between audio nodes are detected and rejected as soon as the DSP
+ engine is activated.
+\end_layout
+
+\begin_layout Standard
+
+\size small
+In Excel, a non-scalar evaluation mode is the only way to apply a formula
+ over multiple cells at once.
+ This can be done with array formulas or with a few functions which evaluate
+ their arguments in an array context.
+ Array formulas may be considered a limited form of iteration, since they
+ allow evaluating multiple times for a given range of values a single expression
+ tree.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-TODO move footnotes from table here
+\align center
+\begin_inset Graphics
+	filename naiad.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Naiad"
+
+\end_inset
+
+Loop contexts in Naiad 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Murray:2013:NTD:2517349.2522738"
+
+\end_inset
+
+, featuring a very similar structure to that of Show and Tell and LabVIEW
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -14795,25 +14879,73 @@ TODO move footnotes from table here
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO Cite Naiad, reinvented LabVIEW loops
-\end_layout
+LabVIEW features structured constructs for looping, based on the idea of
+ a frame around a subgraph, with values flowing between iterations through
+ shift registers.
+ The design of this construct is essentially the same as that of Hierarchical
+ Data Flow introduced in Show and Tell 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Kimura1985HDF,Kimura86ShowAndTell"
 
 \end_inset
 
+.
+ More recently, this model of structured loops in static dataflow graphs
+ has been reinvented in Naiad 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Murray:2013:NTD:2517349.2522738"
 
+\end_inset
+
+, a modern distributed system for Big Data processing, which advertises
+ static dataflow with structured loops as one of its main features.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Naiad"
+
+\end_inset
+
+, from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Murray:2013:NTD:2517349.2522738"
+
+\end_inset
+
+, illustrates the similarities: nodes 
+\begin_inset Formula $I$
+\end_inset
+
+ and 
+\begin_inset Formula $E$
+\end_inset
+
+ work like LabVIEW tunnels, and node 
+\begin_inset Formula $F$
+\end_inset
+
+ works like a shift register, with the difference that Naiad employs a tagged-to
+ken system to allow for parallel iterations.
 \end_layout
 
 \begin_layout Standard
-VEE also performs an implicit 
+Reaktor has no iteration structure per se, but it features a node called
+ "Iteration" which acts as a counter, producing a series of values that
+ can be used for firing other subgraphs and indexing values.
+ VEE has a similar iteration node to Reaktor, but because of its support
+ for sequence pins that dictate control flow, it is a more powerful construct
+ for triggering arbitrary subgraphs.
+ VEE also performs an implicit 
 \begin_inset Formula $map$
 \end_inset
 
  operation when passing an array to a function that expects a scalar, similarly
- to Excel.
+ to Excel's array context.
+ Finally, Blender notably lacks an iteration construct.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -14852,8 +14984,8 @@ Moreover, when end-users perceive an abstraction as a single subgraph referenced
  see the shared subgraph as a single entity in memory.
  In case of stateful nodes, this is especially relevant, because that determines
  if multiple invocations of the abstraction in the main graph affect each
- other or not (this is equivalent to seeing all local variables in a C function
- as being 
+ other or not (which would be equivalent, for example, to declaring all
+ local variables in a C function as being 
 \family typewriter
 static
 \family default
@@ -14889,10 +15021,6 @@ transparency: Purity of functions vs.
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Selector/distributor
 \end_layout
 
 \begin_layout Subsection
@@ -14961,6 +15089,15 @@ key "Hils1991datavis"
 \end_inset
 
 , a research language for scientific visualization.
+ In 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Fukunaga:1993:FOD:170791.170832"
+
+\end_inset
+
+, higher-order functions for dataflow visual languages are again discussed
+ only in the context of general-purpose languages.
 \end_layout
 
 \begin_layout Standard
@@ -14985,8 +15122,9 @@ Type checking
 \begin_layout Standard
 This work has not focused much on type checking issues, since the type systems
  of all languages studied are very simple.
- In at least one case, it was deliberately simplified by the language designers,
- with the restriction on recursive data types in LabVIEW.
+ In at least one case, the type system of a language was deliberately simplified
+ by the language designers, with the restriction on recursive data types
+ in LabVIEW.
  Still, there are interesting observations to be made about type checking
  in dataflow end-user applications.
 \end_layout
@@ -15240,7 +15378,83 @@ A more useful observation may be that the applications that attain level
 \end_layout
 
 \begin_layout Subsection
-Textual sub-language
+Textual sub-language and scripting
+\end_layout
+
+\begin_layout Standard
+There are two distinct aspects with regard to integration with textual languages.
+ The first aspect is what we call a textual sub-language, which is a textual
+ part of the UI-level language.
+ As such, it is a uniquely syntactic distinction: the interpreters in Chapters
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Pure-Data"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Spreadsheets"
+
+\end_inset
+
+ implement their textual parts as AST nodes that are intertwined with the
+ program representation as a whole.
+ The second aspect is the integration of a scripting language in the application
+, reflecting the architecture described in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Background"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The textual sub-languages of Excel and Pure Data are at the forefront of
+ their respective applications, and they are central to their dataflow languages
+ as the dataflow languages are central to the UI as a whole.
+ In line with the three-layer architecture, both applications allow for
+ more advanced scripting as well.
+ Excel, as part of the Microsoft Office family, integrates with Visual Basic
+ for Applications.
+ The vanilla package of Pure Data does not ship with a scripting engine
+ by default, but it is extensible through plug-ins and there are extensions
+ available that add Python and Lua scripting, the latter being available
+ from the main Pure Data community site and included by default in some
+ distributions of the application.
+ Max/MSP is also extensible with a number of options of scripting language
+ plugins, including Python, Lua, Ruby and JavaScript.
+\end_layout
+
+\begin_layout Standard
+Reaktor and Blender are the only two languages to lack a textual sub-language.
+ Blender integrates with textual languages at the scripting language level,
+ but Reaktor presents its scripting layer as a second graphical language.
+ It is notable how, in spite of avoiding textual languages, the design of
+ Reaktor evolved to the same three-layer structure described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:three-layer"
+
+\end_inset
+
+: Reaktor Core was introduced in 2005, adding more powerful, lower-level
+ programming capabilities to the application.
+ In many aspects, the semantics of the higher-level Reaktor Primary language
+ resemble those of Pure Data, and the semantics of the lower-level Reaktor
+ Core resemble those of LabVIEW (further fueling the discussion introduced
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:LabVIEW-and-PD"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -15282,19 +15496,6 @@ MATLAB node
 
 , which connects to an external MATLAB instance for execution.
  The latter two nodes allow for side-effects.
-\end_layout
-
-\begin_layout Subsection
-Scripting
-\end_layout
-
-\begin_layout Standard
-Pure Data does not include scripting by default, but it is extensible through
- plug-ins and there are extensions available that add Python and Lua scripting,
- the latter being available from the main Pure Data community site and included
- in some distributions of the application.
- LabVIEW includes its own implementation of a subset of MATLAB, called MathScrip
-t, and also integration with the actual MATLAB application by MathWorks.
 \end_layout
 
 \begin_layout Section
