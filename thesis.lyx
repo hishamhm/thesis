@@ -14414,46 +14414,46 @@ n (and thus any sequence of firings) should produce identical results.
  However, since real-world programs are usually not purely functional and
  include visible effects, the underlying dataflow model can become apparent
  to the end-user: for example, in a static model, a fast operation can be
- held back by a slow operation in a different branch of a bifurcated pipeline,
- even though there is no data dependency between these two operations.
- Dynamic dataflow models avoid these artificial dependencies, but their
- more complicated models present different trade-offs 
+ held back by a slow operation further ahead in the pipeline, due to the
+ lack of queueing.
+ Dynamic dataflow models avoid these bottlenecks, but their more complicated
+ models present different trade-offs 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Dennis85Models,kavi2015dataflow"
 
 \end_inset
 
-, some of which become apparent in the resulting language — for example,
- one possibility is to allow parallel executions of a given node only for
- different iterations of a running loop, given explicitly marked looping
- constructs in the language.
-\end_layout
-
-\begin_layout Standard
-This improves efficiency, however, understanding and debugging a dataflow
- graph is easier when there is a single token per arc (or a fixed number
- of values, as in the case of audio buffers), and only one iteration of
- a loop is running at a time.
- For end-user programming, understandability is more important than parallel
- efficiency, so it is our view that end-user dataflow languages should present
- a static dataflow view of program execution.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-opinion!
-\end_layout
+, some of which become apparent in the resulting language.
+ Of the languages compared in this work, only Pure Data employs a dynamic
+ model.
+ A side-effect of this model is that ordering issues arise.
+ As discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Discussion:-Syntax-and-semantics"
 
 \end_inset
 
+, we believe these issues were not addressed appropriately.
+\end_layout
+
+\begin_layout Standard
+Another side of this trade-off which favors static and synchronous dataflow
+ models is that understanding and debugging a dataflow graph is easier when
+ there is a single token per arc (or a fixed number of values, as in the
+ case of synchronous dataflow), and only one iteration of a loop is running
+ at a time.
+ For end-user programming, understandability is more important than parallel
+ efficiency, so it is our view that end-user dataflow languages should present
+ a static dataflow view of program execution.
  When the language contains explicit looping constructs, it should be possible
  to achieve a dynamic flow of execution in certain loops as a user-transparent
- optimization, if the contents of a loop are detected to be purely functional,
+ optimization, if the contents of a loop are known to be purely functional,
  for example.
- Such an optimization can then be automatically disabled when the user is
- probing the flow of tokens for debugging purposes, restoring a one-token-per-wi
-re view.
+ Such an optimization could then be automatically disabled when the user
+ is probing the flow of tokens for debugging purposes, restoring a one-token-per
+-wire view.
 \end_layout
 
 \begin_layout Subsection
