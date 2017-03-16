@@ -2555,16 +2555,7 @@ selector and/or distributor
 \begin_inset Formula $k$
 \end_inset
 
--th output — the simplest kinds of selectors and distributors take a boolean
- 
-\begin_inset Formula $k$
-\end_inset
-
- and two 
-\begin_inset Formula $a$
-\end_inset
-
- ports);
+-th output);
 \end_layout
 
 \begin_layout Itemize
