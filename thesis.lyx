@@ -12909,6 +12909,16 @@ Yes (
 IF
 \family default
 )
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+tirar
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -14457,15 +14467,19 @@ ion style of each application.
 
 \end_layout
 
-\begin_layout Section
-Semantic aspects
+\begin_layout Standard
+The following sections discuss these design dimensions organized logically
+ into four groups.
+ Being the focus of this work, the first three sections discuss semantic
+ aspects, namely graph evaluation, language features and type checking;
+ the fourth section groups the remaining aspects.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Graph evaluation
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Static and dynamic dataflow models
 \end_layout
 
@@ -14520,7 +14534,7 @@ opinion!
 re view.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Data-driven and demand-driven dataflow
 \end_layout
 
@@ -14539,7 +14553,7 @@ Excel is demand-driven but this is mostly transparent, because of its static
  
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Uni and bi-directional dataflow
 \end_layout
 
@@ -14595,7 +14609,7 @@ key "Badros:2001:CLA:504704.504705"
  own.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 N-to-1 inputs
 \end_layout
 
@@ -14634,7 +14648,7 @@ It seems clear that disallowing N-to-1 inputs leads to a simpler conceptual
  similarly to how LabVIEW auto-inserts feedback nodes.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Timing considerations
 \end_layout
 
@@ -14687,7 +14701,7 @@ ns do, such as
 TODAY()
 \family default
 , but that is clearly not integrated with the language's evaluation model
- — for one, the cell value does not update automatically as time passes)
+ — for one, the cell value does not update automatically as time passes).
 \end_layout
 
 \begin_layout Standard
@@ -14705,14 +14719,14 @@ Another issue related to timing that is often a concern in language design
  Data, which uses dynamic dataflow for messages and synchronous dataflow
  for audio, it is also important to avoid synchronization issues.
  Pure Data solves this adequately by alternating message and audio evaluation
- and keeping an audio buffer large enough to give the evaluation of message
- graph time to run.
+ while using an audio buffer to give the evaluation of the message cascades
+ enough time to run.
  This can still lead to audio drop-outs if message processing is excessive,
  but musicians nowadays are used to the notion that heavy computations can
  make audio stutter, and adapt accordingly.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Indirect and dynamic connections
 \end_layout
 
@@ -14724,11 +14738,11 @@ in the case of a box-wire diagram, what was once an explicit connection
  the matter: spreadsheets are an example of ...
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Language features
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Iteration
 \end_layout
 
@@ -14758,7 +14772,7 @@ TODO Cite Naiad, reinvented LabVIEW loops
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Procedural abstractions
 \end_layout
 
@@ -14803,10 +14817,23 @@ static
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 TODO fechar a seção
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 TODO Referential
 \begin_inset space ~
 \end_inset
@@ -14815,19 +14842,99 @@ transparency: Purity of functions vs.
  Undo
 \end_layout
 
-\begin_layout Subsubsection
-Selector/distributor
-\end_layout
+\end_inset
 
-\begin_layout Subsubsection
-Sequence construct
-\end_layout
 
-\begin_layout Subsubsection
-Higher-order functions
 \end_layout
 
 \begin_layout Subsection
+Selector/distributor
+\end_layout
+
+\begin_layout Subsection
+Sequence construct
+\end_layout
+
+\begin_layout Standard
+A sequence construct is a way to specify that one subgraph should execute
+ after another, without having a data dependency between them (akin to sequencin
+g two statements 
+\begin_inset Formula $s_{1};s_{2}$
+\end_inset
+
+ in textual programming languages).
+ As such, it is a fundamentally imperative construct.
+\end_layout
+
+\begin_layout Standard
+The only languages from our survey to include explicit sequencing constructs
+ are LabVIEW and VEE.
+ Given that they are both engineering applications and are the only ones
+ to feature constructs clearly named after their textual-language counterparts
+ such as 
+\begin_inset Quotes eld
+\end_inset
+
+for
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+while
+\begin_inset Quotes erd
+\end_inset
+
+, we speculate that explicit sequencing was added to ease the transition
+ from users who had some previous programming experience.
+ 
+\end_layout
+
+\begin_layout Standard
+It is interesting to note that all the other applications lack sequencing
+ constructs.
+ This seems to indicate that for domain specialists without preconceived
+ notions about programming, imperative constructs are not a necessity and
+ declarative programming can be used successfully.
+\end_layout
+
+\begin_layout Subsection
+Higher-order functions
+\end_layout
+
+\begin_layout Standard
+None of the languages presented here include support for defining higher-order
+ functions.
+ In fact, the only languages with support for higher-order functions in
+ Hils's original survey are all either general-purpose programming languages
+ (outside of the scope of this work) or Hils's own DataVis 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Hils1991datavis"
+
+\end_inset
+
+, a research language for scientific visualization.
+\end_layout
+
+\begin_layout Standard
+It is unsurprising that successful end-user programmable applications lack
+ higher-order functions: those applications feature languages tailored for
+ their specific domains, and a language is most effective when it is designed
+ to work in terms of objects of its intended domain 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "West:2015:CSR:2814228.2814247"
+
+\end_inset
+
+.
+ Higher-order functions are objects of the domain of the professional programmer.
+\end_layout
+
+\begin_layout Section
 Type checking
 \end_layout
 
@@ -14862,19 +14969,196 @@ Other aspects
 \end_layout
 
 \begin_layout Subsection
-Visual presentation
+Liveness, representation and modes
 \end_layout
 
 \begin_layout Standard
-Box-line representation
+All languages from this study score either 2 or 3 in Tanimoto's liveness
+ scale 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "tanimoto1990liveness"
+
+\end_inset
+
+.
+ Recalling the meaning of each level, we have that in level 2 the visual
+ representation is the executable program, and that in level 3 the visual
+ representation is responsive: editing the visual representation triggers
+ updates to the evaluation of the program.
 \end_layout
 
 \begin_layout Standard
-Separate edit/use views
+Level 2 is therefore a syntactic feature: all visual languages fit this
+ criterion.
+ All languages presented in this work apart from the spreadsheets use box-line
+ graph representations, but the (semantically significant!) spatial layout
+ of a spreadsheet is also a visual representation of the program.
+\end_layout
+
+\begin_layout Standard
+Level 3 refers to the lack of separate 
+\begin_inset Quotes eld
+\end_inset
+
+edit
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+use
+\begin_inset Quotes erd
+\end_inset
+
+ modes.
+ Depending on the the language, having a responsive loop may have a semantic
+ impact or not: if a spreadsheet was made non-responsive, with explicit
+ 
+\begin_inset Quotes eld
+\end_inset
+
+edit
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+use
+\begin_inset Quotes erd
+\end_inset
+
+ modes, that would only mean that recalculations would have to be triggered
+ explicitly by a 
+\begin_inset Quotes eld
+\end_inset
+
+Run
+\begin_inset Quotes erd
+\end_inset
+
+ button (which would briefly send the program into 
+\begin_inset Quotes eld
+\end_inset
+
+use
+\begin_inset Quotes erd
+\end_inset
+
+ mode and back).
+ Effectively, our interpreter from Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Spreadsheets"
+
+\end_inset
+
+ would be unchanged.
+ For a program with long-running loops, however, adding a responsive interface
+ would bring new questions about the language's behavior: what would happen
+ in a responsive version of LabVIEW if graphs could gain or lose nodes and
+ wires as the program runs? Our interpreter from Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:LabVIEW"
+
+\end_inset
+
+ would be very different.
+\end_layout
+
+\begin_layout Standard
+None of the programs we analyzed implements liveness at Tanimoto's level
+ 4, in which the program is 
+\begin_inset Quotes eld
+\end_inset
+
+responsive and live
+\begin_inset Quotes erd
+\end_inset
+
+ in the sense that results update continually as the program is edited beyond
+ merely reacting to the user's edits.
+ Pure Data does continue to produce audio if the user switches from 
+\begin_inset Quotes eld
+\end_inset
+
+use
+\begin_inset Quotes erd
+\end_inset
+
+ back to 
+\begin_inset Quotes eld
+\end_inset
+
+edit
+\begin_inset Quotes erd
+\end_inset
+
+ mode, but the sets of actions allowed in each mode are disjoint.
+ So, in that sense, it does not qualify for level 3 in terms of inputs but
+ it reaches level 4 in terms of outputs.
+ That may in fact indicate a shortcoming in Tanimoto's classification method.
+\end_layout
+
+\begin_layout Standard
+A more useful observation may be that the applications that attain level
+ 3 of liveness, Excel and Blender, share some important traits in their
+ semantics that make their responsiveness possible: they combine static
+ dataflow with the absence of time-dependent firings and no side-effecting
+ nodes.
+ This allows both applications to re-evaluate subgraphs as needed and present
+ the user an instant update each time they make an edit.
+ 
 \end_layout
 
 \begin_layout Subsection
 Textual sub-language
+\end_layout
+
+\begin_layout Standard
+LabVIEW has a somewhat blurred boundary between its textual sub-language
+ and its scripting capabilities: it offers a gradient of options, starting
+ from a functional 
+\begin_inset Quotes eld
+\end_inset
+
+expression node
+\begin_inset Quotes erd
+\end_inset
+
+ in which a single-variable mathematical expression can be entered textually;
+ a 
+\begin_inset Quotes eld
+\end_inset
+
+formula note
+\begin_inset Quotes erd
+\end_inset
+
+ in which small imperative programs can be written in a safe subset of C,
+ accessing data only via the node's input and output ports; a 
+\begin_inset Quotes eld
+\end_inset
+
+script node
+\begin_inset Quotes erd
+\end_inset
+
+ which accepts MathScript, a subset of MATLAB; and a 
+\begin_inset Quotes eld
+\end_inset
+
+MATLAB node
+\begin_inset Quotes erd
+\end_inset
+
+, which connects to an external MATLAB instance for execution.
+ The latter two nodes allow for side-effects.
 \end_layout
 
 \begin_layout Subsection
