@@ -11868,7 +11868,7 @@ reference "tab:The-comparison"
 
 \end_inset
 
-, an update to the table presented in 
+ an update to the table presented in 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Hils1992DFVPLSurvey"
@@ -11884,14 +11884,14 @@ reference "sec:Hils's-classification"
 \end_inset
 
 ) to a different set of contemporary dataflow languages, while also extending
- it with additional design dimensions (as presented in Section 
+ it with the additional design dimensions as presented in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:An-extension-to-Hils"
 
 \end_inset
 
-).
+.
  The only language from that survey that is also in our list is LabVIEW
  
 \begin_inset CommandInset citation
@@ -14467,6 +14467,16 @@ reference "chap:Spreadsheets"
 Graph evaluation
 \end_layout
 
+\begin_layout Standard
+In this section, we discuss design aspects that refer to the evaluation
+ of the dataflow graph as a whole.
+ In other words, we will discuss aspects which affect the design of the
+ graph evaluator's main loop and not that of specific nodes.
+ This way, we present the discussion of semantic aspects in a top-down fashion,
+ the same way we presented the interpreters in previous chapters.
+ 
+\end_layout
+
 \begin_layout Subsection
 Static and dynamic dataflow models
 \end_layout
@@ -14557,7 +14567,7 @@ Only two languages in this study employ demand-driven evaluation: Excel
  written as textual expressions, which translate to an expression tree that
  is evaluated top-down, that is, starting from the output node.
  The fact that Excel is demand-driven is mostly transparent, because of
- its static dataflow model, its lack of time-dependent firing its and purely
+ its static dataflow model, its lack of time-dependent firing and purely
  functional nature (with no imperative textual sub-language).
  Beyond the basic intuition about expression trees, one way to verify that
  a spreadsheet is indeed demand-driven is by forcing side-effects via the
@@ -14728,7 +14738,8 @@ Timing considerations
 
 \begin_layout Standard
 When considering issues of timing, let us look at both time-dependent firing
- and rate-based evaluation at once, as we see in Table 
+ and rate-based evaluation at once.
+ We see in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:The-comparison"
@@ -14745,7 +14756,7 @@ reference "tab:The-comparison"
 
 \begin_layout Standard
 The approach of these languages with regard to timing is linked to their
- domains, and the kind of data and activity they perform.
+ domains and to the kind of data and activity they perform.
  Pure Data and Reaktor, both of them music applications, operate on audio
  streams.
  Processing digital audio in real-time requires rate-based evaluation, and
@@ -14753,8 +14764,10 @@ The approach of these languages with regard to timing is linked to their
  on time.
  LabVIEW and VEE, engineering applications, require supporting activities
  such as periodic reading and writing of data, but since they don't have
- a single domain-specific target for this processing rates like music applicatio
-ns do, such as 
+ a single domain-specific target for these processing rates which can be
+ made fully implicit in the evaluation loop, as it happens, for example,
+ with music applications do, processing buffers at standard rates such as
+ 
 \begin_inset Quotes eld
 \end_inset
 
@@ -14762,15 +14775,39 @@ ns do, such as
 \begin_inset Quotes erd
 \end_inset
 
-, which can be made fully implicit in the evaluation loop.
- Since rates of various instruments supported by those tools vary, the user
- needs to essentially construct the rate-processing loop by hand, using
- arrays and delay objects.
- The waveform types available in both LabVIEW and VEE (essentially records
- with arrays and timestamps) are an abstraction to help in this task.
- Languages whose domains do not deal with time avoid these features entirely:
- Excel and Blender have no time-based evaluation of any kind (except for
- the occasional Excel function like 
+ (
+\begin_inset Formula $48000\times3\times2=288000$
+\end_inset
+
+ bytes per second).
+ Since sampling rates of various data acquisition instruments supported
+ by those engineering tools vary, the user needs to essentially construct
+ the rate-processing loop by hand, using arrays and delay objects.
+ Both LabVIEW and VEE define 
+\begin_inset Quotes eld
+\end_inset
+
+waveform
+\begin_inset Quotes erd
+\end_inset
+
+ types as abstractions to help in this task, but those are no more than
+ a 
+\begin_inset Quotes eld
+\end_inset
+
+typedef
+\begin_inset Quotes erd
+\end_inset
+
+ of a record type, storing an array and a timestamp.
+ 
+\end_layout
+
+\begin_layout Standard
+Languages whose domains do not deal with time avoid time-based evaluation
+ features entirely: Excel and Blender have no support them (except for the
+ occasional Excel function like 
 \family typewriter
 TODAY()
 \family default
@@ -14797,7 +14834,15 @@ Another issue related to timing that is often a concern in language design
  enough time to run.
  This can still lead to audio drop-outs if message processing is excessive,
  but musicians nowadays are used to the notion that heavy computations can
- make audio stutter, and adapt accordingly.
+ make audio stutter, known in the community jargon as 
+\begin_inset Quotes eld
+\end_inset
+
+audio dropouts
+\begin_inset Quotes erd
+\end_inset
+
+, and adapt accordingly.
 \end_layout
 
 \begin_layout Subsection
@@ -14842,13 +14887,31 @@ INDIRECT
  This may be related to the fact that, given that Pure Data already employs
  a dynamic dataflow model, these connections behave like any other ones.
  In static dataflow systems like Excel and LabVIEW, the use of dynamic connectio
-ns bring issues
+ns can cause issues.
+ It is easy to find on the internet examples of user problems with dynamic
+ connections in both Excel
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
-The internet has a number of examples of user problems with dynamic connections
- in both Excel (
+\begin_inset Quotes eld
+\end_inset
+
+No #REF! error, the cell just doesnt update with the new value (just stays
+ exactly the same), even though the reference is correct and the referenced
+ cell is obviously updated
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+I actually tried rebooting, didnt help.
+\begin_inset Quotes erd
+\end_inset
+
+ 
 \begin_inset Flex URL
 status open
 
@@ -14860,13 +14923,60 @@ ference-another-excel-file
 
 \end_inset
 
-) and LabVIEW (
+
+\end_layout
+
+\end_inset
+
+ and LabVIEW
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Typing 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+labview object reference
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ in Google auto-suggests 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+labview object reference is invalid
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ In one of the results, the LabVIEW knowledge base reports 
+\begin_inset Quotes eld
+\end_inset
+
+This is a documented known issue that occurs in LabVIEW Real-Time versions
+ 2014 and 2015.
+ After making a modification to the VI, Error 1055 is thrown from any property
+ node attempting to access the dynamic refnum.
+ In order to resolve this error, close and re-open the VI.
+\begin_inset Quotes erd
+\end_inset
+
+ (
 \begin_inset Flex URL
 status open
 
 \begin_layout Plain Layout
 
-http://digital.ni.com/public.nsf/allkb/D3E32C4C60BF627486256CB4006D861C
+http://digital.ni.com/public.nsf/allkb/2E848F065A18570986257F3800708328
 \end_layout
 
 \end_inset
@@ -14881,6 +14991,12 @@ http://digital.ni.com/public.nsf/allkb/D3E32C4C60BF627486256CB4006D861C
 
 \begin_layout Section
 Language features
+\end_layout
+
+\begin_layout Standard
+We now move to the second part of the discussion on semantic aspects.
+ Here, we discuss the design of specific nodes and features that may or
+ may not be present in a dataflow language.
 \end_layout
 
 \begin_layout Subsection
@@ -14927,36 +15043,60 @@ key "Mosconi:2000:ICD:2245742.2245907"
 \end_inset
 
 .
- And indeed, no two languages among the ones presented in this work implement
+ And indeed, no two languages among those presented in this work implement
  iteration the same way.
-\end_layout
-
-\begin_layout Standard
-We consider here iteration in a broad sense of the word, defining it as
- any language feature that allows evaluating a subgraph a specified number
- of times, taking at least one different input argument on each of the repeated
- evaluations.
+ We consider here iteration in a broad sense of the word, defining it as
+ any language feature that allows evaluating a subgraph a number of times.
 \end_layout
 
 \begin_layout Standard
 Pure Data, being a dynamic dataflow language, allows for cycles, and this
  is a simple way of producing iteration.
  Evidently, cycles are only allowed in the dynamic part of the language,
- that is, between message handling nodes.
+ that is, between message-handling nodes.
  Cycles between audio nodes are detected and rejected as soon as the DSP
  engine is activated.
 \end_layout
 
 \begin_layout Standard
+In Excel, a array formulas may be considered a limited form of iteration,
+ since they allow evaluating multiple times for a given range of values
+ a single expression tree.
+ Some array formula patterns combining common functions were turned into
+ predefined functions which always evaluate their arguments in an array
+ context, like 
+\family typewriter
+SUMPRODUCT
+\family default
+ and 
+\family typewriter
+SUMIF
+\family default
 
-\size small
-In Excel, a non-scalar evaluation mode is the only way to apply a formula
- over multiple cells at once.
- This can be done with array formulas or with a few functions which evaluate
- their arguments in an array context.
- Array formulas may be considered a limited form of iteration, since they
- allow evaluating multiple times for a given range of values a single expression
- tree.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Excel users invented an idiom to produce the equivalent of the missing function
+ 
+\family typewriter
+\size normal
+SUMPRODUCTIF
+\family default
+\size default
+ without resorting to array formulas: the expression 
+\family typewriter
+\size normal
+SUMPRODUCT(--(C1:C10="flag"),A1:A10,B1:B10))
+\family default
+\size default
+ uses double negation to coerce boolean values into 0 or 1, annulling elements
+ of the product when the condition does not match.
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -14999,10 +15139,6 @@ key "Murray:2013:NTD:2517349.2522738"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -15104,8 +15240,8 @@ In end-user programming languages, and especially visual ones, abstractions
  programming professionals.
  When copying a node representing an abstracted subgraph for reuse, end-users
  have different intuitions whether these two nodes are references to the
- same subgraph or if they are two separate copies, that can be modified
- without affecting the other one.
+ same subgraph or if they are two separate copies that can be modified without
+ affecting the other one.
  Translating to the world of textual languages, this is the question whether
  an abstraction behaves as a newly-declarated function used in two places,
  or if it is merely a visual (syntactic) abbreviation, akin to those achieved
@@ -15134,7 +15270,7 @@ static
 status open
 
 \begin_layout Plain Layout
-TODO fechar a seção
+TODO fechar a seção, clarear diferença e relação entre as duas questões
 \end_layout
 
 \end_inset
@@ -15202,7 +15338,7 @@ while
 \end_layout
 
 \begin_layout Standard
-It is interesting to note that all the other applications lack sequencing
+It is interesting to note that all the other applications do not have sequencing
  constructs.
  This seems to indicate that for domain specialists without preconceived
  notions about programming, imperative constructs are not a necessity and
@@ -15351,8 +15487,8 @@ reference "chap:Spreadsheets"
 \begin_layout Standard
 There are other interesting issues related to types which we did not focus
  in this work.
- Efficient handling of data structures and avoiding excessive copying of
- data between nodes are matters of concern 
+ Efficient handling of data structures and strategies to avoid excessive
+ copying of data between nodes are matters of concern 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "DinamicaVM,Foley-Bourgon:2016:EIC:2989225.2989235"
@@ -15364,6 +15500,14 @@ key "DinamicaVM,Foley-Bourgon:2016:EIC:2989225.2989235"
 
 \begin_layout Section
 Other aspects
+\end_layout
+
+\begin_layout Standard
+Finally, we discuss other aspects with primarily syntactic or pragmatic
+ impact.
+ Since these affect the design of the language as a whole, choices made
+ one way or another in these aspects may influence other choices in the
+ semantic aspects discussed above.
 \end_layout
 
 \begin_layout Subsection
@@ -15412,9 +15556,8 @@ use
 \end_inset
 
  modes.
- Depending on the the language, having a responsive loop may have a semantic
- impact or not: if a spreadsheet was made non-responsive, with explicit
- 
+ Depending on the the language, a responsive loop may have a semantic impact
+ or not: if a spreadsheet was made non-responsive, with explicit 
 \begin_inset Quotes eld
 \end_inset
 
