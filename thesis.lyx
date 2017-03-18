@@ -566,7 +566,7 @@ key "Bentley:1986:little"
 
 \end_inset
 
- — examples are small single-purpose languages such as 
+—examples are small single-purpose languages such as 
 \family typewriter
 eqn
 \family default
@@ -629,7 +629,7 @@ accidental
 
 \begin_layout Itemize
 Then, powerful domain-specific languages emerged, such as GraForth, WordBasic
- in Microsoft Word and AutoLISP in AutoCAD — these languages often adapted
+ in Microsoft Word and AutoLISP in AutoCAD—these languages often adapted
  the design of existing general-purpose programming languages, producing
  application-specific dialects;
 \end_layout
@@ -644,8 +644,8 @@ key "Ousterhout:1998:SHP:619027.620930"
 \end_inset
 
 , we saw the introduction of general-purpose scripting languages such as
- Tcl, Python and Lua — these languages have embeddable implementations,
- allowing them to be linked as libraries and reused in many applications.
+ Tcl, Python and Lua—these languages have embeddable implementations, allowing
+ them to be linked as libraries and reused in many applications.
  Some of these languages became popular in particular domains in spite of
  not having been specifically designed for those fields: several graphics
  programs use Python as a scripting language, and Lua is particularly successful
@@ -1481,8 +1481,8 @@ scripting
 \end_inset
 
 .
- Still, scripting — in the sense of embedding the power of a full programming
- language to provide advanced control of applications — remains an essential
+ Still, scripting—in the sense of embedding the power of a full programming
+ language to provide advanced control of applications—remains an essential
  aspect of end-user programming.
 \end_layout
 
@@ -1991,7 +1991,7 @@ todo: reorganize this to match the title
 A field that is closely related to dataflow languages is that of constraint-base
 d systems, but as we will see, these concepts are not equivalent and it
  is important to establish the distinction here.
- Constraints allow the specification of relationships between values — for
+ Constraints allow the specification of relationships between values—for
  example, one may specify the equation 
 \family typewriter
 9*C = 5*(F - 32)
@@ -2117,7 +2117,7 @@ Research on the dataflow paradigm has seen a decrease in activity since
  by some never came to pass, as object-oriented programming systems remained
  textual.
  Massively-parallel dataflow hardware architectures proved difficult to
- implement efficiently and are now historical artifacts — modern GPUs obtain
+ implement efficiently and are now historical artifacts—modern GPUs obtain
  massive parallelism via vector processing based on imperative machine code.
 \end_layout
 
@@ -2139,9 +2139,13 @@ key "Hils1992DFVPLSurvey"
 \end_layout
 
 \begin_layout Standard
-In this chapter, we will discuss a number of alternatives in dataflow language
- design, which will inform our presentation of dataflow UI-level languages
- in the following chapters.
+So, dataflow languages continue to be created and used successfully, but
+ mostly away from the sphere of research.
+ A closer look at this class of languages, especially from the perspective
+ of end-user programming, is long overdue.
+ In this chapter, we begin to explore the design space of dataflow languages
+ by presenting a series of design alternatives that come up in their constructio
+n.
 \end_layout
 
 \begin_layout Section
@@ -2163,9 +2167,10 @@ key "Hils1992DFVPLSurvey"
 
 \end_inset
 
-, Hils presented an extensive survey of dataflow visual languages (both
- domain-specific and general-purpose) and produced a list of design alternatives
- through which those languages can be classified in various axes.
+, Daniel Hils presented an extensive survey of dataflow visual languages
+ (both domain-specific and general-purpose) and produced a list of design
+ alternatives through which those languages can be classified in various
+ axes.
  Here, we reuse and expand upon this list while shifting our focus from
  dataflow visual languages to what we call dataflow UI-level languages.
  We felt it was necessary to coin this term and to make a distinction from
@@ -2215,8 +2220,8 @@ visual
 
  because we want to cover the entire spectrum of languages that fall within
  our focus, without having to worry whether a language is visual or not.
- Notably missing from Hils's work is most widely used application-specific
- dataflow language — spreadsheet formulas.
+ Notably missing from Hils's work is the most widely used application-specific
+ dataflow language—the spreadsheet formula language.
  Granted, the relationship between data cells in a spreadsheet is presented
  symbolically rather than visually, but it is remarkable how, apart from
  this fact, spreadsheets would fit every other aspect of that study.
@@ -2306,7 +2311,7 @@ no; limited; yes (cycles); yes (construct)
 \begin_inset Text
 
 \begin_layout Plain Layout
-Procedural abstraction
+Subprogram abstraction
 \end_layout
 
 \end_inset
@@ -2478,7 +2483,7 @@ name "tab:Hils-design-options"
 
 \end_inset
 
-Additional design dimensions for dataflow end-user languages
+Hils's design dimensions for dataflow visual languages 
 \end_layout
 
 \end_inset
@@ -2494,7 +2499,14 @@ Additional design dimensions for dataflow end-user languages
 \begin_layout Standard
 Apart from this distinction on the criteria for selecting languages, the
  list of design alternatives can be directly reused in our work.
- Hils's original list of design alternatives can be summarized as follows:
+ Hils's original list of design alternatives, summarized in Table, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Hils-design-options"
+
+\end_inset
+
+, can be described as follows:
 \end_layout
 
 \begin_layout Itemize
@@ -2503,8 +2515,9 @@ Apart from this distinction on the criteria for selecting languages, the
 box-line representation
 \emph default
 : whether the language is presented as a visual graph depicting nodes as
- boxes and edges as connected by lines (this is the only syntactic aspect
- discussed, but we retain it in the table for completeness);
+ boxes and edges as connected by lines or as some other visual approach,
+ such as hierarchical frames (this is the only syntactic aspect discussed,
+ but we retain it in the table for completeness);
 \end_layout
 
 \begin_layout Itemize
@@ -2522,9 +2535,27 @@ iteration
 \begin_layout Itemize
 
 \emph on
-procedural abstraction
+subprogram abstraction
 \emph default
-: does the language support abstracting subgraphs as reusable subprograms;
+: whether the language supports abstracting subgraphs as reusable subprograms
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In Hils's original article this item was called 
+\begin_inset Quotes eld
+\end_inset
+
+procedural abstraction
+\begin_inset Quotes erd
+\end_inset
+
+; we changed the term to avoid confusion.
+\end_layout
+
+\end_inset
+
+;
 \end_layout
 
 \begin_layout Itemize
@@ -2533,7 +2564,8 @@ procedural abstraction
 selector and/or distributor
 \emph default
 : whether the language includes classic dataflow constructs for directing
- the routing of data through a control input (a selector is a function 
+ the routing of data through a control input.
+ A selector is a function 
 \begin_inset Formula $\sigma(v_{1},...,v_{n},k)=v_{k}$
 \end_inset
 
@@ -2555,7 +2587,7 @@ selector and/or distributor
 \begin_inset Formula $k$
 \end_inset
 
--th output);
+-th output;
 \end_layout
 
 \begin_layout Itemize
@@ -2574,7 +2606,7 @@ sequential execution construct
 type checking
 \emph default
 : in Hils's classification, this entry discussed whether the arcs in the
- dataflow graph are typed — in other words, whether the graph is statically
+ dataflow graph are typed—in other words, whether the graph is statically
  typed.
  Statically-typed graphs provide checking when constructing the graph, disallowi
 ng incorrect connections.
@@ -2704,9 +2736,9 @@ In addition to the axes of comparison proposed by Hils, we identified a
  number of additional criteria to compare these languages.
  This new list of design alternatives for dataflow languages both informed
  and was informed by the study of existing end-user applications and their
- languages that will be presented in the following chapters.
- We hereby present an extension to the classification first proposed by
- Hils, summarized in Table 
+ languages that we will present in the following chapters.
+ We hereby present an extension to the classification proposed by Hils,
+ summarized in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Additional-design-dimensions"
@@ -2955,7 +2987,7 @@ The choice between static and dynamic dataflow models embodies typical computing
 \begin_layout Standard
 The question of which one is easier to understand, especially in the context
  of end-user programming, is not at all obvious.
- On one hand, the static model is conceptually simpler and program execution
+ On the one hand, the static model is conceptually simpler and program execution
  may be easier to introspect.
  On the other hand, to the user's point of view the restrictions may seem
  arbitrary: in a number of situations the user may justifiably want to specify
@@ -2991,8 +3023,8 @@ N-to-1 inputs
 \emph on
 single
 \emph default
- input port in a node — in our analogy, that would mean having multiple
- incoming values for argument 
+ input port in a node—in our analogy, that would mean having multiple incoming
+ values for argument 
 \begin_inset Formula $a$
 \end_inset
 
@@ -3056,7 +3088,11 @@ There are two ways to consider the issue of time.
  One is that of rate-based execution, which refers to the need of consuming
  or producing data at a certain frequency.
  The other is that of time-dependent nodes, that is, nodes that behave different
-ly depending on the time when they were fired 
+ly depending on the time when they were fired
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Wipliez2010"
@@ -3083,7 +3119,11 @@ d ahead-of-time, allowing for efficient compilation.
 \emph on
 Synchronous dataflow
 \emph default
- 
+
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Lee1987synchdataflow"
@@ -3097,7 +3137,11 @@ key "Lee1987synchdataflow"
 \emph on
 Cyclo-static dataflow
 \emph default
- 
+
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Bilsen1995cyclo"
@@ -3108,19 +3152,27 @@ key "Bilsen1995cyclo"
  model while retaining its analysis properties.
  In it, the consumption and production rates for a node can vary over time,
  respecting a predetermined cycle.
- A number of other models have been proposed since to further extend the
+ A number of other models have also been proposed to further extend the
  model of computation: 
 \emph on
 quasi-static
 \emph default
- models such as boolean-controlled dataflow 
+ models such as boolean-controlled dataflow
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Buck:1993:SDD:921086"
 
 \end_inset
 
- and parameterized dataflow 
+ and parameterized dataflow
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Bhattacharya:2001:PDM:2197975.2202339"
@@ -3129,7 +3181,11 @@ key "Bhattacharya:2001:PDM:2197975.2202339"
 
  attempt to restrict dynamic scheduling to data-dependent nodes while statically
  scheduling the rest of the graph, with further enhancements continuing
- to be an area of research 
+ to be an area of research
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Falk:2013:RQS:2442116.2442124,Schwarzer:2015:TCD:2764967.2764972"
@@ -3246,10 +3302,10 @@ use
 \end_layout
 
 \begin_layout Standard
-While strictly speaking having separate views for development and use this
- is a matter of presentation, and hence with immediate effects on syntax,
- we claim that this design decision is most closely related to a language's
- pragmatics: having the 
+While strictly speaking the existence of separate views for development
+ and use is a matter of presentation, and hence with immediate effects on
+ syntax, we claim that this design decision is most closely related to a
+ language's pragmatics: having the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3372,9 +3428,9 @@ status collapsed
 \begin_layout Plain Layout
 One might argue that even in typical programming languages, the sub-grammar
  of mathematical expressions (including relational and logical operators)
- is an embedded domain-specific sub-language of its own, as it usually contains
+ is an embedded domain-specific language of its own, as it usually contains
  a number of syntactic rules that do not apply anywhere else in the language,
- such as infix operators and precedence rules, and which are often similar
+ such as infix operators and precedence rules, and that are often similar
  even in languages which otherwise vary widely.
 \end_layout
 
@@ -3492,7 +3548,7 @@ Case studies
 
 \begin_layout Standard
 In the following chapters, we will present in-depth case studies analyzing
- the semantics of three of the end-user programmable applications:
+ the semantics of three end-user programmable applications:
 \end_layout
 
 \begin_layout Itemize
@@ -3506,12 +3562,15 @@ the spreadsheet formula language, as used in Excel, LibreOffice and Google
 \end_layout
 
 \begin_layout Itemize
-and LabVIEW, an engineering application focused on data acquisition.
+LabVIEW, an engineering application focused on data acquisition.
 \end_layout
 
 \begin_layout Standard
-We modelled the semantics of those languages by implementing interpreters
- for them in Haskell, written in the style of structural operational semantics.
+Those languages were chosen because of their relevancy, their distinct domains,
+ and because they cover different points of the language design space in
+ many aspects.
+ We modelled their semantics by implementing definitional interpreters for
+ them in Haskell, written in the style of structural operational semantics.
  Each interpreter is written as a set of evaluation functions, one for each
  language construct.
  As a whole, this set serves as a specification of the language being interprete
@@ -3526,9 +3585,9 @@ The interpreters do not intend to be a complete specification of each language,
  but aim to capture the notable features of their semantics.
  We will discuss the languages in terms of the various design dimensions
  presented in this chapter.
- We will see to which extent to which these languages are purely declarative,
- how time affects the flow graph, the semantics of iteration constructs,
- their support for abstraction, and so on.
+ We will see to which extent these languages are purely declarative, how
+ time affects the flow graph, the semantics of iteration constructs, their
+ support for abstraction, and so on.
  In these studies, we identify what are the common patterns that are present,
  assessing to which extent those languages are 
 \begin_inset Quotes eld
@@ -5988,8 +6047,8 @@ Whenever a scalar value is expected and a matrix value is given, the value
 
  of the matrix is returned.
  The UI of a spreadsheet displays cell values by default.
- Some functions, however, operate on cell contents — that is, there are
- functions 
+ Some functions, however, operate on cell contents—that is, there are functions
+ 
 \emph on
 f
 \emph default
@@ -11022,8 +11081,8 @@ run mode
 \end_inset
 
  as the music is produced.
- This means both applications have two modes of operation — in LabVIEW,
- execution is toggled with the 
+ This means both applications have two modes of operation—in LabVIEW, execution
+ is toggled with the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -11096,8 +11155,8 @@ When running a LabVIEW program, there is no way to affect the program itself
 \begin_layout Standard
 In Pure Data, the user of the program and the developer are often the same:
  a computer musician programming audio synthesis and sequencing.
- Even when that is not the case — and there are communities where Pure Data
- programs are shared — the explicit nature of the graph structure invites
+ Even when that is not the case—and there are communities where Pure Data
+ programs are shared—the explicit nature of the graph structure invites
  users to tweak the patches to their liking, producing their own sounds.
 \end_layout
 
@@ -11114,7 +11173,7 @@ This would lead us to conclude that Pure Data has a stronger focus on end-users,
 \begin_layout Standard
 Language features such as (auto-generated) feedback nodes make it easier
  to understand and debug cycle constructs; data coercion nodes (also auto-generc
-ated) make explicit any precision loss — a problem that also affects musicians
+ated) make explicit any precision loss—a problem that also affects musicians
  using Pure Data, where it is perceived as degraded audio quality.
  
 \end_layout
@@ -12733,7 +12792,7 @@ No
 
 \series bold
 \size small
-Procedural abstraction
+Subprogram abstraction
 \end_layout
 
 \end_inset
@@ -14715,8 +14774,8 @@ ns do, such as
 \family typewriter
 TODAY()
 \family default
-, but that is clearly not integrated with the language's evaluation model
- — for one, the cell value does not update automatically as time passes).
+, but that is clearly not integrated with the language's evaluation model—for
+ one, the cell value does not update automatically as time passes).
 \end_layout
 
 \begin_layout Standard
@@ -15023,7 +15082,7 @@ Reaktor has no iteration structure per se, but it features a node called
 \end_layout
 
 \begin_layout Subsection
-Procedural abstractions
+Subprogram abstractions
 \end_layout
 
 \begin_layout Standard
@@ -15033,7 +15092,7 @@ TODO FINISH
 \begin_layout Standard
 The ability to abstract away subprograms is a commonplace feature in modern
  programming languages.
- In the dataflow model, a procedural abstraction means replacing a subgraph
+ In the dataflow model, a subprogram abstraction means replacing a subgraph
  with a node that represents it.
  In graphical languages, this feature becomes especially necessary to tame
  the visual clutter of the graph representation.
