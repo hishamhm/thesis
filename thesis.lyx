@@ -3287,6 +3287,13 @@ reference "sub:three-layer"
 
 \begin_layout Subsection
 Indirect connections
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Indirect-connections"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -14739,11 +14746,78 @@ Indirect and dynamic connections
 \end_layout
 
 \begin_layout Standard
-in the case of a box-wire diagram, what was once an explicit connection
- with a visual, spatial representation, becomes an implicit one with a symbolic
- representation.
- The use of symbolic representations over visual ones is not the crux of
- the matter: spreadsheets are an example of ...
+As discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Indirect-connections"
+
+\end_inset
+
+, while the presence of indirect connections is a syntactic feature, the
+ occurrence of connections determined at runtime has semantic consequences.
+ Dynamic connections make it impossible to determine a static schedule for
+ node evaluation in advance (as is done for audio nodes in Pure Data, for
+ example), to optimize in-place replacement of buffers to avoid array copying
+ (since any intermediate node may be fired at any time) and to reliably
+ detect loops in advance.
+\end_layout
+
+\begin_layout Standard
+Pure Data, Excel and LabVIEW support dynamic connections.
+ As should be no surprise by now, Pure Data supports dynamic connections
+ only for message data, not audio.
+ An indirect connection, dynamic or not, consists of two nodes, a sender
+ and a receiver.
+ In Pure Data, only the sender node can have its target dynamically defined;
+ the identifier of a receiver node cannot be changed at runtime.
+\end_layout
+
+\begin_layout Standard
+Of the three languages that support dynamic connections, Pure Data presents
+ them as a basic feature of the language; Excel and LabVIEW treat them as
+ advanced features, in the form of Excel's 
+\family typewriter
+INDIRECT
+\family default
+ function and LabVIEW's object reference system.
+ This may be related to the fact that, given that Pure Data already employs
+ a dynamic dataflow model, these connections behave like any other ones.
+ In static dataflow systems like Excel and LabVIEW, the use of dynamic connectio
+ns bring issues
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+The internet has a number of examples of user problems with dynamic connections
+ in both Excel (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.wallstreetoasis.com/forums/excel-help-cells-do-not-update-when-they-re
+ference-another-excel-file
+\end_layout
+
+\end_inset
+
+) and LabVIEW (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://digital.ni.com/public.nsf/allkb/D3E32C4C60BF627486256CB4006D861C
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -14950,6 +15024,10 @@ Reaktor has no iteration structure per se, but it features a node called
 
 \begin_layout Subsection
 Procedural abstractions
+\end_layout
+
+\begin_layout Standard
+TODO FINISH
 \end_layout
 
 \begin_layout Standard
@@ -15764,6 +15842,10 @@ Architectural patterns of programmable applications
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+TODO EXPANDIR
 \end_layout
 
 \begin_layout Standard
