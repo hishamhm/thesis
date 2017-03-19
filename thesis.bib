@@ -3003,6 +3003,19 @@ Studies of collaborative work practices showed that there are three types of use
   Url                      = {http://www.miramontes.com/writing/twinklinglights/}
 }
 
+@Electronic{NI2013reentrancy,
+  Title                    = {Reentrancy: Allowing Simultaneous Calls to the Same {SubVI}},
+  Author                   = {{National Instruments}},
+  HowPublished             = {LabVIEW 2013 Help},
+  Month                    = {jun},
+  Url                      = {http://zone.ni.com/reference/en-XX/help/371361K-01/lvconcepts/reentrancy/},
+  Year                     = {2013},
+
+  Abstract                 = {By default, when LabVIEW calls the same subVI from multiple locations within either the same VI or different VIs, only one instance of that subVI can run at a time. This limitation occurs because the subVI reserves only a single space in memory to store its data, so all instances of the subVI must take turns using that data space. However, if you configure the subVI for reentrant execution, LabVIEW can execute all instances of the subVI simultaneously. In reentrant execution, LabVIEW allocates copies, or clones, of the data space so that separate instances of the subVI have distinct locations to store their data.},
+  Owner                    = {hisham},
+  Timestamp                = {2017-03-19}
+}
+
 @Manual{LabVIEWgettingstarted,
   Title                    = {Getting Started With {LabVIEW}},
 
@@ -3303,6 +3316,24 @@ The thesis thus draws together a number of previously-separate ideas: a reasonab
   Url                      = {http://dx.doi.org/10.1023/A:1010075320153}
 }
 
+@Article{Reynolds1993,
+  Title                    = {The discoveries of continuations},
+  Author                   = {Reynolds, John C.},
+  Journal                  = {LISP and Symbolic Computation},
+  Year                     = {1993},
+  Number                   = {3},
+  Pages                    = {233--247},
+  Volume                   = {6},
+
+  Abstract                 = {We give a brief account of the discoveries of continuations and related concepts by A. van Wijngaarden, A. W. Mazurkiewicz, F. L. Morris, C. P. Wadsworth, J. H. Morris, M. J. Fischer, and S. K. Abdali.},
+  Doi                      = {10.1007/BF01019459},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/The discoveries of continuations.pdf:PDF},
+  ISSN                     = {1573-0557},
+  Owner                    = {hisham},
+  Timestamp                = {2017-03-19},
+  Url                      = {http://dx.doi.org/10.1007/BF01019459}
+}
+
 @InProceedings{Reynolds:1972:DIH:800194.805852,
   Title                    = {Definitional Interpreters for Higher-order Programming Languages},
   Author                   = {Reynolds, John C.},
@@ -3317,6 +3348,7 @@ The thesis thus draws together a number of previously-separate ideas: a reasonab
   Abstract                 = {Higher-order programming languages (i.e., languages in which procedures or labels can occur as values) are usually defined by interpreters which are themselves written in a programming language based on the lambda calculus (i.e., an applicative language such as pure LISP). Examples include McCarthy's definition of LISP, Landin's SECD machine, the Vienna definition of PL/I, Reynolds' definitions of GEDANKEN, and recent unpublished work by L. Morris and C. Wadsworth. Such definitions can be classified according to whether the interpreter contains higher-order functions, and whether the order of application (i.e., call-by-value versus call-by-name) in the defined language depends upon the order of application in the defining language. As an example, we consider the definition of a simple applicative programming language by means of an interpreter written in a similar language. Definitions in each of the above classifications are derived from one another by informal but constructive methods. The treatment of imperative features such as jumps and assignment is also discussed.},
   Acmid                    = {805852},
   Doi                      = {10.1145/800194.805852},
+  File                     = {:Users/hisham/ac/dr/reading/pdf/Definitional interpreters.pdf:PDF},
   Keywords                 = {Applicative language, Closure, Continuation, GEDANKEN, Higher-order function, Interpreter, J-operator, LISP, Lambda calculus, Language definition, Order of application, PAL, Programming language, Reference, SECD machine},
   Location                 = {Boston, Massachusetts, USA},
   Numpages                 = {24},

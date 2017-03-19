@@ -121,7 +121,7 @@ each.
 \\
 \>[14]{}\mid {}\<[14E]%
 \>[17]{}\Conid{PdMsgBox}\;{}\<[28]%
-\>[28]{}[\mskip1.5mu \Conid{PdCommand}\mskip1.5mu]{}\<[E]%
+\>[28]{}[\mskip1.5mu \Conid{PdCmd}\mskip1.5mu]{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
@@ -143,7 +143,7 @@ Note that a single message box may contain a number of messages.
 \column{21}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{29}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\mathbf{data}\;\Conid{PdCommand}\mathrel{=}\Conid{PdCommand}\;\Conid{PdReceiver}\;[\mskip1.5mu \Conid{PdToken}\mskip1.5mu]{}\<[E]%
+\>[B]{}\mathbf{data}\;\Conid{PdCmd}\mathrel{=}\Conid{PdCmd}\;\Conid{PdReceiver}\;[\mskip1.5mu \Conid{PdToken}\mskip1.5mu]{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
@@ -627,7 +627,7 @@ given name.
 \column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{10}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{runCommand}\mathbin{::}\Conid{PdPatch}\to \Conid{Int}\to \Conid{PdState}\to \Conid{PdCommand}\to \Conid{PdState}{}\<[E]%
+\>[B]{}\Varid{runCommand}\mathbin{::}\Conid{PdPatch}\to \Conid{Int}\to \Conid{PdState}\to \Conid{PdCmd}\to \Conid{PdState}{}\<[E]%
 \\
 \>[B]{}\Varid{runCommand}\;\Varid{p}\;i_{N}\;(\Conid{PdState}\;\Varid{ts}\;\Varid{nss}\;\Varid{logw}\;\Varid{evs})\;\Varid{cmd}\mathrel{=}{}\<[E]%
 \\
@@ -698,9 +698,9 @@ with a number get the prefix \texttt{list}.
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{ffor}\;\Varid{a}\;\Varid{f}\mathrel{=}\Varid{fmap}\;\Varid{f}\;\Varid{a}{}\<[E]%
 \\[\blanklineskip]%
-\>[B]{}\Varid{dollarExpansion}\mathbin{::}\Conid{PdCommand}\to [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\to (\Conid{PdReceiver},[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]){}\<[E]%
+\>[B]{}\Varid{dollarExpansion}\mathbin{::}\Conid{PdCmd}\to [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\to (\Conid{PdReceiver},[\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]){}\<[E]%
 \\
-\>[B]{}\Varid{dollarExpansion}\;(\Conid{PdCommand}\;\Varid{recv}\;\Varid{tokens})\;\Varid{inlData}\mathrel{=}{}\<[E]%
+\>[B]{}\Varid{dollarExpansion}\;(\Conid{PdCmd}\;\Varid{recv}\;\Varid{tokens})\;\Varid{inlData}\mathrel{=}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}(\Varid{recv'},\Varid{atoms'}){}\<[E]%

@@ -93,6 +93,16 @@
 \begin_body
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+fix all ~[references]
+\end_layout
+
+\end_inset
+
+
 \begin_inset Box Frameless
 position "t"
 hor_pos "c"
@@ -3609,6 +3619,101 @@ The underlying goal is to understand what is the required functionality
  designs of those languages under similar terms.
 \end_layout
 
+\begin_layout Section
+Discussion: On the use of definitional interpreters
+\end_layout
+
+\begin_layout Standard
+Providing the definition of a language under discussion through the use
+ of a definitional interpreter written in another language is a classic
+ technique for describing semantics.
+ In his classic 1972 paper, Reynolds 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Reynolds:1972:DIH:800194.805852"
+
+\end_inset
+
+ describes the process of writing definitional interpreters, introducing
+ the idea of defunctionalization and an early description of continuations.
+ Both techniques were put to use in our interpreters.
+\end_layout
+
+\begin_layout Standard
+Writing an interpreter for language, at first glance, seems like a way to
+ unavoidably consider its entire semantics, since all constructs need to
+ be describe in the precise language of computer code.
+ However, as observed by Reynolds, the primary concern when writing a definition
+al interpreter is being aware of which aspects of the language used to implement
+ the interpreter (which Reynolds calls the 
+\emph on
+defining
+\emph default
+ language) leak into the semantics of the language to be interpreted (called
+ the 
+\emph on
+defined
+\emph default
+ language).
+ Using a construct of the defining language to implement the same construct
+ in the defined language gives us a working implementation, but fails to
+ describe what the semantics of the construct are.
+\end_layout
+
+\begin_layout Standard
+In our interpreters, we made conscious decisions of which semantic aspects
+ to leak and which not.
+ Aspects which are not related to the dataflow evaluation logic are orthogonal
+ to our discussion and not of particular interest, so were simply reused
+ from our defining language Haskell: the addition of numbers, for example,
+ is simply the addition as in Haskell, with the same overflow rules, etc.
+ Aspects which are crucial to the dataflow logic were carefully separated:
+ Haskell's lazy evaluation semantics do not leak into our defined languages
+ (interpreters are defunctionalized, so both eager and lazy evaluation are
+ explicitly implemented).
+ We also avoided the more sophisticated features of Haskell such as monads
+ and type classes, using the language as much as possible as a form of executabl
+e 
+\begin_inset Formula $\lambda$
+\end_inset
+
+-calculus (albeit one with a considerable amount of notational convenience).
+ We hope that this will also prove beneficial for the reader unfamiliar
+ with Haskell.
+ At the same time, we consider a description written in a programming language
+ to be more in line with the interdisciplinary nature of this work, as opposed
+ to one written in the notation of operational semantics used by the programming
+ language theory community.
+\end_layout
+
+\begin_layout Standard
+It is important to stress here that a definitional interpreter is not written
+ as a 
+\begin_inset Quotes eld
+\end_inset
+
+prototype
+\begin_inset Quotes erd
+\end_inset
+
+ interpreter.
+ A prototype is typically a concise implementation of a subset of a program,
+ written to give an idea of how the final product would work.
+ Our concern in a definitional interpreter is with the precise specification
+ of the defined language, and while we are implementing subsets of languages,
+ we sacrifice concision whenever precision is important.
+ The end result is quite different from a typical prototype.
+ In particular, no care is given to performance: time, for example, is implement
+ed by simulating the clock and incrementing it manually, resulting in a
+ deterministic and precise description of events.
+\end_layout
+
+\begin_layout Standard
+Finally, using an executable interpreter provides us with an easy way to
+ test our implementation (and hence our definition) with larger, somewhat
+ more practical examples.
+\end_layout
+
 \begin_layout Chapter
 Case study: Pure Data
 \begin_inset CommandInset label
@@ -3671,7 +3776,17 @@ https://cycling74.com/products/max/
 \end_layout
 
 \begin_layout Section
-The language
+Overview of the language
+\end_layout
+
+\begin_layout Standard
+In this section, we give a presentation of the application, which doubles
+ as an overview of its UI-level language.
+ When a user opens Pure Data, they are greeted with a main window which
+ contains the main menu and a blank log panel.
+ The user's first step is to create a new file or open an existing one,
+ which then opens a canvas window where the dataflow graph representing
+ audio synthesis operations is edited and used.
 \end_layout
 
 \begin_layout Subsection
@@ -3685,7 +3800,7 @@ patch
 \emph default
  in Pd jargon
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 In this section, terms in Pd jargon are presented in italics.
@@ -3695,6 +3810,7 @@ In this section, terms in Pd jargon are presented in italics.
 
 , is represented as a graph of nodes (operations) and edges (the flow of
  data between them).
+ The user creates nodes of different kinds in a canvas an 
 \end_layout
 
 \begin_layout Standard
@@ -3782,7 +3898,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename ../proposta_hisham/puredata.png
+	filename puredata_first_example.png
 	width 60col%
 
 \end_inset
@@ -3800,22 +3916,11 @@ name "fig:puredata"
 
 \end_inset
 
-The demo for the oscillator node 
+A patch demonstrating the oscillator node 
 \family typewriter
 osc~
 \family default
-, from the Pure Data documentation.
- Thin lines are message connections, bold lines are audio connections; their
- types are determined by their outlets.
- Boxes with a slanted top-right corner are atom boxes, editable in 
-\begin_inset Quotes eld
-\end_inset
-
-run mode
-\begin_inset Quotes erd
-\end_inset
-
-; boxes with a recessed right side are clickable message boxes.
+, based on an example from the Pure Data documentation.
 \end_layout
 
 \end_inset
@@ -3836,44 +3941,34 @@ reference "fig:puredata"
 
 \end_inset
 
- gives an example of a Pure Data patch.
- This program produces a 1000Hz sine wave (the 
+ gives an illustrative example of a Pure Data patch.
+ Thin lines are message connections, thicker lines are audio connections;
+ their types are determined by their outlets.
+ Boxes with a slanted top-right corner are atom boxes, editable in 
 \begin_inset Quotes eld
 \end_inset
 
-
-\family typewriter
-osc~ 1000
-\family default
-
+run mode
 \begin_inset Quotes erd
 \end_inset
 
- object), which has its amplitude multiplied (
-\begin_inset Quotes eld
-\end_inset
+; boxes with a recessed right side are clickable message boxes.
+\end_layout
 
-
+\begin_layout Standard
+This program produces a 880Hz sine wave (via the the [
+\family typewriter
+osc~
+\family default
+] object), which has its amplitude multiplied ([
 \family typewriter
 *~
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
-) according to a linear function (
-\begin_inset Quotes eld
-\end_inset
-
-
+]) according to a linear function ([
 \family typewriter
 line~
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
-) prior to be sent to the DSP
+]) prior to be sent to the DSP
 \begin_inset Foot
 status open
 
@@ -3883,44 +3978,28 @@ Digital Signal Processing
 
 \end_inset
 
- output (
-\begin_inset Quotes eld
-\end_inset
-
-
+ output ([
 \family typewriter
 dac~
 \family default
+], as in 
+\begin_inset Quotes eld
+\end_inset
 
+Digital-to-Analog Converter
 \begin_inset Quotes erd
 \end_inset
 
 ).
- The sine wave is also sampled at a rate of 500Hz (
-\begin_inset Quotes eld
-\end_inset
-
-
+ The sine wave is also sampled at a rate of 500Hz ([
 \family typewriter
 metro 500
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
-) into a visual representation (
-\begin_inset Quotes eld
-\end_inset
-
-
+]) into a visual representation ([
 \family typewriter
-tabwrite~ array99
+tabwrite~ view
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
-).
+]).
  The user may interact with the program by setting a new frequency to the
  oscillator (typing in new values in the atom box that initially contains
  
@@ -3929,37 +4008,21 @@ tabwrite~ array99
 
 
 \family typewriter
-0
+880
 \family default
 
 \begin_inset Quotes erd
 \end_inset
 
-), by clicking the message boxes that reconfigure the linear function (
-\begin_inset Quotes eld
-\end_inset
-
-
+), by clicking the message boxes that reconfigure the linear function ([
 \family typewriter
 0 100
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
-, which will configure 
-\begin_inset Quotes eld
-\end_inset
-
-
+], which will configure [
 \family typewriter
 line~
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
- to produce a slope from its current value to 0 over the course of 100ms,
+] to produce a slope from its current value to 0 over the course of 100ms,
  or 
 \begin_inset Quotes eld
 \end_inset
@@ -3973,61 +4036,24 @@ line~
 \end_inset
 
 , which will cause the value to slide to 0.1 over 1s) or by toggling the
- tabulation of the graph (message boxes 
-\begin_inset Quotes eld
-\end_inset
-
-
+ update of the graph by sending the value [
 \family typewriter
-metroToggle 0
+0
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-
+] or [
 \family typewriter
-metroToggle 1
+1
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
-, which sends the value 0 or 1 to the 
-\begin_inset Quotes eld
-\end_inset
-
-receiver
-\begin_inset Quotes erd
-\end_inset
-
- object with that name, declared as 
-\begin_inset Quotes eld
-\end_inset
-
-
+] to [
 \family typewriter
-r metroToggle
+metro 500
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
-)
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-change r to receive
-\end_layout
-
-\end_inset
-
-.
+], done here via an indirect connection for demonstration purposes, sending
+ the value through a receiver object declared as [
+\family typewriter
+receive toggle
+\family default
+].
 \end_layout
 
 \begin_layout Subsection
@@ -4035,16 +4061,153 @@ Messages and the textual sub-language
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
+Nodes in Pure Data are similar to spreadsheet cells, in the sense that they
+ are primarily containers for a textual language.
+ Once the user selects 
+\begin_inset Quotes eld
+\end_inset
 
-\begin_layout Plain Layout
-TODO write
-\end_layout
+Object
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Message
+\begin_inset Quotes erd
+\end_inset
+
+ in the 
+\begin_inset Quotes eld
+\end_inset
+
+Put
+\begin_inset Quotes erd
+\end_inset
+
+ menu, a new node with the corresponding shape appears in the canvas and
+ the keyboard focus switches to it immediately.
+ The user then types in the contents of the node, based on which Pure Data
+ determines its number of inlets and outlets, which appear as connectors
+ at the top and bottom of the node's box.
+ For example, in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:puredata"
 
 \end_inset
 
+ node [
+\family typewriter
+metro 500
+\family default
+] has inlets (with only the left one connected) and outlet; node [
+\family typewriter
+dac~ 1
+\family default
+] has only one inlet and no outlets.
+\end_layout
 
+\begin_layout Standard
+When editing the graph, apart from connecting outlets to inlets and positioning
+ nodes, everything else is done with the textual language.
+ It is a very basic imperative command language, more similar to the language
+ of primitive interactive shells than that of typical programming languages.
+ When a command is entered in an object box, the first token represents
+ the internal function to be executed (e.g.
+ [
+\family typewriter
+osc~
+\family default
+], [
+\family typewriter
+metro
+\family default
+]) and the remaining tokens are arguments to that function.
+ In message boxes, multiple commands may be entered, separated by a semicolon.
+ The first command is always a message to be sent through the outlet of
+ the message box, in subsequent commands, the first token is the receiver
+ and the remaining tokens are messages.
+ Values received in inlets are available for token substitution using numbered
+ variables such as 
+\family typewriter
+$1
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+A precise definition of the language semantics will be given in Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Interpreter-Pure-Data"
+
+\end_inset
+
+, but to give a feel of the language we will describe two examples from
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:puredata"
+
+\end_inset
+
+.
+ The first example is the simplest use of message boxes: message box [
+\family typewriter
+0 100
+\family default
+] simply sends tokens 
+\family typewriter
+0
+\family default
+ and 
+\family typewriter
+100
+\family default
+ to [
+\family typewriter
+line~
+\family default
+] when clicked.
+ The second example demonstrates variable substitution and indirect connections.
+ When the user clicks message boxes [
+\family typewriter
+0
+\family default
+] or [
+\family typewriter
+1
+\family default
+], this feeds the value to message box [
+\family typewriter
+; pd dsp $1; toggle $1
+\family default
+], which contains three commands.
+ The first command is empty, indicating there is nothing to be sent to the
+ outlet port.
+ The second command is sent to receiver 
+\family typewriter
+pd
+\family default
+, which is Pure Data's internal receiver—here it is used to enable and disable
+ the audio engine.
+ The third command sends the value 
+\family typewriter
+0
+\family default
+ or 
+\family typewriter
+1
+\family default
+ to the user-defined receiver 
+\family typewriter
+toggle
+\family default
+.
 \end_layout
 
 \begin_layout Subsection
@@ -4228,6 +4391,13 @@ s can be simulated multiplying a signal by 0.
 
 \begin_layout Section
 An interpreter modeling the semantics of Pure Data
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Interpreter-Pure-Data"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4248,12 +4418,25 @@ Our model implements a simulation of the run mode, in which the graph is
  fixed and input events are fed into it.
  It replicates the synchronous behavior of Pure Data, processing cascades
  of message events and DSP ticks for propagating audio buffers.
- Our model is precise enough so that the numeric values produced in audio
- buffers can be converted to a sound file format and played back.
+ It does not implement 
+\begin_inset Quotes eld
+\end_inset
+
+abstractions
+\begin_inset Quotes erd
+\end_inset
+
+ (which is Pure Data jargon for loading subprograms from separate files),
+ and dollar-expansion in object boxes, which is only used when loading abstracti
+ons.
+ Still, our model is complete and precise enough so that the numeric values
+ produced in audio buffers can be converted to a sound file format and played
+ back.
 \end_layout
 
 \begin_layout Standard
-This section was written in Literate Haskell 
+This entire section describing the interpreter was written in Literate Haskell
+ 
 \begin_inset Note Note
 status open
 
@@ -15931,7 +16114,18 @@ http://forum.pdpatchrepo.info/topic/8803/state-saving-abstractions/14
 \end_layout
 
 \begin_layout Standard
-In LabVIEW, sub-VIs are not reentrant by default.
+In LabVIEW, sub-VIs are not reentrant by default
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NI2013reentrancy"
+
+\end_inset
+
+.
  There is a single instance in memory, as in scenario 3 above.
  Note that this leads effectively to a situation with N-to-1 wires leading
  to input ports, even though LabVIEW does not allow it otherwise.
