@@ -100,6 +100,14 @@ status open
 fix all ~[references]
 \end_layout
 
+\begin_layout Plain Layout
+Would be nice:
+\end_layout
+
+\begin_layout Plain Layout
+implement [trigger] in Pure Data?
+\end_layout
+
 \end_inset
 
 
@@ -3899,7 +3907,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename puredata_first_example.png
-	width 60col%
+	scale 80
 
 \end_inset
 
@@ -4054,6 +4062,63 @@ metro 500
 receive toggle
 \family default
 ].
+ We will expand on these concepts below.
+\end_layout
+
+\begin_layout Subsection
+Graph evaluation
+\end_layout
+
+\begin_layout Standard
+Pure Data has two modes of execution, an 
+\emph on
+edit mode
+\emph default
+ in which the graph structure can be edited, and a 
+\emph on
+run mode
+\emph default
+ in which input values can be produced by interacting with the graph.
+ The DSP engine can be toggled on or off independently of the mode of execution.
+ Most importantly, the dataflow program is running at all times: the user
+ can create nodes in the graph, switch to run mode, trigger a loop that
+ produces audio waves, return to edit mode and modify the graph while the
+ loop is still running.
+\end_layout
+
+\begin_layout Standard
+Execution in Pure Data is synchronous.
+ The tree of DSP nodes is processed periodically, updating their buffers
+ and propagating audio data.
+ A complete propagation of audio is called a 
+\emph on
+DSP tick
+\emph default
+, during which only audio nodes are processed.
+ When an input or timing event happens, the entire cascade of messages produced
+ is processed in sequence, before the next DSP tick 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PuckettePd"
+
+\end_inset
+
+.
+ This means that excessive processing of messages may produce noticeable
+ audio drop-outs, but the audio buffer with a user-specified size mitigates
+ this.
+ 
+\end_layout
+
+\begin_layout Standard
+It is possible to wire nodes in the Pd interface so that cycles in the graph
+ are created.
+ If those graphs involve audio wires, the resulting loops in the audio processin
+g chain are detected and propagation is halted.
+ When cycles happen in the message flow, messages may also produce infinite
+ loops, but being dynamic they cannot be detected a priori: those are caught
+ during run mode, reporting a stack overflow.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -4139,6 +4204,29 @@ $1
 \end_layout
 
 \begin_layout Standard
+The system of messaging via named receivers allows the program to send data
+ between nodes that are not explicitly linked via connections.
+ The relationship between a message and a receiver can be thought of as
+ an implicit edge in the dataflow graph.
+ Since the textual language of messages supports variable arguments fed
+ via input ports, receiver destinations can change during execution: this
+ makes the dataflow graph, in effect, mutable at runtime.
+ This, however, is limited to discrete messages, and only the destination
+ of a message can be changed at runtime, and not the identifier a receiver
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+listening
+\begin_inset Quotes erd
+\end_inset
+
+ to.
+ The flow of audio data cannot be re-routed while in run mode, but disconnection
+s can be simulated multiplying a signal by 0.
+\end_layout
+
+\begin_layout Standard
 A precise definition of the language semantics will be given in Section
  
 \begin_inset CommandInset ref
@@ -4184,7 +4272,7 @@ line~
 \family default
 ], this feeds the value to message box [
 \family typewriter
-; pd dsp $1; toggle $1
+;pd dsp $1;toggle $1
 \family default
 ], which contains three commands.
  The first command is empty, indicating there is nothing to be sent to the
@@ -4211,66 +4299,134 @@ toggle
 \end_layout
 
 \begin_layout Subsection
-Graph evaluation
-\end_layout
-
-\begin_layout Standard
-Pure Data has two modes of execution, an 
-\emph on
-edit mode
-\emph default
- in which the graph structure can be edited, and a 
-\emph on
-run mode
-\emph default
- in which input values can be produced by interacting with the graph.
- The DSP engine can be toggled on or off independently of the mode of execution.
- Most importantly, the dataflow program is running at all times: the user
- can create nodes in the graph, switch to run mode, trigger a loop that
- produces audio waves, return to edit mode and modify the graph while the
- loop is still running.
-\end_layout
-
-\begin_layout Standard
-Execution in Pure Data is synchronous.
- The tree of DSP nodes is processed periodically, updating their buffers
- and propagating audio data.
- A complete propagation of audio is called a 
-\emph on
-DSP tick
-\emph default
-, during which only audio nodes are processed.
- When an input or timing event happens, the entire cascade of messages produced
- is processed in sequence, before the next DSP tick 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "PuckettePd"
-
-\end_inset
-
-.
- This means that excessive processing of messages may produce noticeable
- audio drop-outs, but the audio buffer with a user-specified size mitigates
- this.
- 
-\end_layout
-
-\begin_layout Standard
-It is possible to wire nodes in the Pd interface so that cycles in the graph
- are created.
- If those graphs involve audio wires, the resulting loops in the audio processin
-g chain are detected and propagation is halted.
- When cycles happen in the message flow, messages may also produce infinite
- loops, but being dynamic they cannot be detected a priori: those are caught
- during run mode, reporting a stack overflow.
- 
-\end_layout
-
-\begin_layout Subsection
 Node triggering
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Node-triggering"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top" width="30col%">
+<column alignment="center" valignment="top" width="30col%">
+<column alignment="center" valignment="top" width="30col%">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename puredata_inlets_cold.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename puredata_inlets_bad.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename puredata_inlets_good.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(a)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(b)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(c)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Inlets"
+
+\end_inset
+
+Behavior of hot and cold inlets in Pure Data
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
 
 \end_inset
 
@@ -4316,17 +4472,14 @@ float
 \begin_inset Quotes erd
 \end_inset
 
-) and sending the result back via a secondary, cold inlet
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-insert figure
-\end_layout
+) and sending the result back via a secondary, cold inlet (see Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Inlets"
 
 \end_inset
 
-.
+(a)).
  This will 
 \emph on
 not
@@ -4350,43 +4503,52 @@ key "PuckettePd"
 \end_inset
 
 .
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-insert figure
-\end_layout
+ The example in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Inlets"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Subsection
-Indirect messages
-\end_layout
-
-\begin_layout Standard
-The system of messaging via named receivers allows the program to send data
- between nodes that are not explicitly linked via connections.
- The relationship between a message and a receiver can be thought of as
- an implicit edge in the dataflow graph.
- Since the textual language of messages supports variable arguments fed
- via input ports, receiver destinations can change during execution: this
- makes the dataflow graph, in effect, mutable at runtime.
- This, however, is limited to discrete messages, and only the destination
- of a message can be changed at runtime, and not the identifier a receiver
- is 
+(b) was taken directly from the documentation, which says: 
 \begin_inset Quotes eld
 \end_inset
 
-listening
+Here, I connected the left inlet before connecting the right hand one (although
+ this is not evident in the appearance of the patch)
 \begin_inset Quotes erd
 \end_inset
 
- to.
- The flow of audio data cannot be re-routed while in run mode, but disconnection
-s can be simulated multiplying a signal by 0.
+.
+ In fact, disconnecting node [
+\family typewriter
+6
+\family default
+] from [
+\family typewriter
++
+\family default
+] and connecting the left inlet first makes it work as intended, updating
+ the bottom box with the double of the top box as we edit the value at the
+ top.
+ The documentation suggests as a workaround disambiguating the graph by
+ using the object [
+\family typewriter
+t
+\family default
+] (shorthand for [
+\family typewriter
+trigger
+\family default
+]), which triggers its outlets from right to left, as depicted in Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Inlets"
+
+\end_inset
+
+(c).
 \end_layout
 
 \begin_layout Section
@@ -4437,12 +4599,9 @@ ons.
 \begin_layout Standard
 This entire section describing the interpreter was written in Literate Haskell
  
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-cite
-\end_layout
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hinze2015lhs2tex"
 
 \end_inset
 
@@ -4512,11 +4671,110 @@ Demonstration
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Float figure
+placement b
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-TODO explain we have something that actually plays music
+\align center
+\begin_inset Graphics
+	filename puredata_example.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Pure-Data-example"
+
+\end_inset
+
+A Pure Data patch equivalent to the example code in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "appendix:Pure-Data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "appendix:Pure-Data"
+
+\end_inset
+
+, the present a practical demonstration of the interpreter in use.
+ We run the patch depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Pure-Data-example"
+
+\end_inset
+
+.
+ In includes atom boxes, objects and message boxes, and features message
+ and audio processing, variable expansion, indirect messages and delayed
+ execution.
+ Running the interpreter emulates Pure Data's 
+\begin_inset Quotes eld
+\end_inset
+
+use
+\begin_inset Quotes erd
+\end_inset
+
+ mode: the graph cannot be modified, but atom boxes can receive new values
+ and message boxes can be clicked, producing events.
+ The interpreter simulates this interactive experience by receiving as inputs
+ a list of interaction events with timestamps.
+\end_layout
+
+\begin_layout Standard
+Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "appendix:Pure-Data"
+
+\end_inset
+
+ also includes a main wrapper function that launches the interpreter and
+ converts its output to .WAV format.
+ The resulting audio file produced by the execution of the above graph by
+ the interpreter when given a specific series of inputs can be played at
+ 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://hisham.hm/thesis/
 \end_layout
 
 \end_inset
