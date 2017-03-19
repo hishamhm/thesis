@@ -12894,21 +12894,7 @@ Yes
 \begin_layout Plain Layout
 
 \size small
-Yes (
-\family typewriter
-IF
-\family default
-)
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-tirar
-\end_layout
-
-\end_inset
-
-
+Yes
 \end_layout
 
 \end_inset
@@ -15218,85 +15204,6 @@ Reaktor has no iteration structure per se, but it features a node called
 \end_layout
 
 \begin_layout Subsection
-Subprogram abstractions
-\end_layout
-
-\begin_layout Standard
-TODO FINISH
-\end_layout
-
-\begin_layout Standard
-The ability to abstract away subprograms is a commonplace feature in modern
- programming languages.
- In the dataflow model, a subprogram abstraction means replacing a subgraph
- with a node that represents it.
- In graphical languages, this feature becomes especially necessary to tame
- the visual clutter of the graph representation.
-\end_layout
-
-\begin_layout Standard
-In end-user programming languages, and especially visual ones, abstractions
- present semantic complications that are usually missing in languages for
- programming professionals.
- When copying a node representing an abstracted subgraph for reuse, end-users
- have different intuitions whether these two nodes are references to the
- same subgraph or if they are two separate copies that can be modified without
- affecting the other one.
- Translating to the world of textual languages, this is the question whether
- an abstraction behaves as a newly-declarated function used in two places,
- or if it is merely a visual (syntactic) abbreviation, akin to those achieved
- by code-folding text editors.
-\end_layout
-
-\begin_layout Standard
-Moreover, when end-users perceive an abstraction as a single subgraph referenced
- in two different places, then there is the question if they perceive the
- subgraph as reentrant: in other words, whether they see the two invocations
- of the subgraph as fully independent executions (that is, like usual function
- calls where each invocation has its own activation record), or if they
- see the shared subgraph as a single entity in memory.
- In case of stateful nodes, this is especially relevant, because that determines
- if multiple invocations of the abstraction in the main graph affect each
- other or not (which would be equivalent, for example, to declaring all
- local variables in a C function as being 
-\family typewriter
-static
-\family default
- or not).
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO fechar a seção, clarear diferença e relação entre as duas questões
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO Referential
-\begin_inset space ~
-\end_inset
-
-transparency: Purity of functions vs.
- Undo
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Sequence construct
 \end_layout
 
@@ -15346,15 +15253,743 @@ It is interesting to note that all the other applications do not have sequencing
 \end_layout
 
 \begin_layout Subsection
+Subprogram abstractions
+\end_layout
+
+\begin_layout Standard
+The ability to abstract away subprograms is a commonplace feature in modern
+ programming languages.
+ In the dataflow model, a subprogram abstraction means replacing a subgraph
+ with a node that represents it.
+ In graphical languages, this feature becomes especially necessary to tame
+ the visual clutter of the graph representation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename subgraph_1.eps
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:subgraph"
+
+\end_inset
+
+A graph containing two occurrences of a subgraph 
+\begin_inset Formula $S$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In end-user programming languages, and especially visual ones, abstractions
+ present semantic complications that are usually missing in languages for
+ professional programmers.
+ A typical motivation for abstracting a subgraph is to reuse it.
+ In the example of Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph"
+
+\end_inset
+
+, subgraph 
+\begin_inset Formula $S$
+\end_inset
+
+ appears twice in the main diagram.
+ Expanding both occurences of 
+\begin_inset Formula $S$
+\end_inset
+
+, one would find the same subgraph with nodes 
+\begin_inset Formula $X$
+\end_inset
+
+, 
+\begin_inset Formula $Y$
+\end_inset
+
+ and 
+\begin_inset Formula $Z$
+\end_inset
+
+.
+ When copying a node representing an abstracted subgraph for reuse, end-users
+ have different intuitions whether these two nodes are references to the
+ same subgraph or if they are two separate copies that can be modified without
+ affecting the other one.
+ Translating to the world of textual languages, this is the question whether
+ an abstraction behaves as a newly-declarated function used in two places,
+ or if it is merely a visual (syntactic) abbreviation, akin to those achieved
+ by code-folding text editors.
+\end_layout
+
+\begin_layout Standard
+Moreover, when end-users perceive an abstraction as a single subgraph referenced
+ in two different places, then there is the question if they perceive the
+ subgraph as reentrant: in other words, whether they see the two invocations
+ of the subgraph as fully independent executions (that is, like usual function
+ calls where each invocation has its own activation record), or if they
+ see the shared subgraph as a single entity in memory.
+ In case of stateful nodes, this is especially relevant, because that determines
+ if multiple invocations of the abstraction in the main graph affect each
+ other or not (which would be equivalent, for example, to declaring all
+ local variables in a C function as being 
+\family typewriter
+static
+\family default
+ or not).
+\end_layout
+
+\begin_layout Standard
+Note that these two issues of copying and reentrancy are related: copies
+ naturally have no reentrancy problems.
+ We have therefore three possible behaviors:
+\end_layout
+
+\begin_layout Enumerate
+copying a subgraph produces a new, unrelated subgraph with identical contents;
+\end_layout
+
+\begin_layout Enumerate
+copying a subgraph produces a new reference to the same subgraph, but each
+ reference produces a new instance in memory at runtime;
+\end_layout
+
+\begin_layout Enumerate
+copying a subgraph produces a new reference to the same subgraph, which
+ has a single instance in memory at runtime.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement t
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="4">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+separate subgraph
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+same subgraph
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+separate at runtime
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+same at runtime
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" rotate="90" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+after editing
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename subgraph_w_separate_graphs.eps
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename subgraph_w_single_graph.eps
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename subgraph_w_single_graph.eps
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomspace="0.2cm">
+<cell alignment="left" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(a1)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(b1)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(c1)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" rotate="90" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+at runtime
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename subgraph_w_separate_graph_runtime.eps
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename subgraph_w_single_graph_separate_runtime.eps
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename subgraph_w_single_graph_runtime.eps
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomspace="0.2cm">
+<cell alignment="left" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(a2)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(b2)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(c2)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:subgraph-behavior"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph-behavior"
+
+\end_inset
+
+ illustrates the effect of editing the graph from Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph"
+
+\end_inset
+
+ under these different behaviors.
+ Consider that the user expands the right-hand occurrence of 
+\begin_inset Formula $S$
+\end_inset
+
+ and changes 
+\begin_inset Formula $Z$
+\end_inset
+
+ to 
+\begin_inset Formula $W$
+\end_inset
+
+.
+ In the first scenario, editing the second occurrence of 
+\begin_inset Formula $S$
+\end_inset
+
+ does not affect the first (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph-behavior"
+
+\end_inset
+
+(a1)), and their executions will also be independent (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph-behavior"
+
+\end_inset
+
+(a2)).
+ In the second scenario, all references point to the same subgraph (Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph-behavior"
+
+\end_inset
+
+(b1)), but the execution of each instance is independent (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph-behavior"
+
+\end_inset
+
+(b2)).
+ In the third scenario, there is a single copy of 
+\begin_inset Formula $S$
+\end_inset
+
+, both in the diagram (note that Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph-behavior"
+
+\end_inset
+
+(c1) is identical to Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph-behavior"
+
+\end_inset
+
+(b1)) and in memory (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph-behavior"
+
+\end_inset
+
+(b1)), meaning that the execution is not re-entrant.
+\end_layout
+
+\begin_layout Standard
+Seasoned programmers used to textual languages will expect the behavior
+ of scenario 2, with a single representation of a function in the program
+ and separate instances in memory as it executes, which is the best one
+ in terms of code reuse and safe execution.
+ Note, however, that of the three scenarios depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subgraph-behavior"
+
+\end_inset
+
+, this is the only one where the visual presentation when editing the program
+ does not represent the behavior in memory.
+\end_layout
+
+\begin_layout Standard
+Different applications approach these issues in different ways.
+ Pure Data has two ways of representing subprograms: 
+\begin_inset Quotes eld
+\end_inset
+
+subpatches
+\begin_inset Quotes erd
+\end_inset
+
+, which behave according to scenario 1, and are stored as part of the same
+ file as the main graph, and 
+\begin_inset Quotes eld
+\end_inset
+
+abstractions
+\begin_inset Quotes erd
+\end_inset
+
+, which are stored as separate graph files, and behave according to scenario
+ 2.
+ A problem arises, though, when saving abstractions.
+ Pure Data persists the internal state of graphs when saving them, so when
+ a patch contains multiple instances of an abstraction, the internal state
+ of only one of them is saved.
+ Users are advised to make the initialization of their abstractions stateless
+ through the use of creation arguments, but they still look for workarounds
+ to save their state.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://forum.pdpatchrepo.info/topic/8803/state-saving-abstractions/14
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In LabVIEW, sub-VIs are not reentrant by default.
+ There is a single instance in memory, as in scenario 3 above.
+ Note that this leads effectively to a situation with N-to-1 wires leading
+ to input ports, even though LabVIEW does not allow it otherwise.
+ This breaks LabVIEW's static dataflow model and introduces queueing.
+ The user can enable reentrancy, producing one instance in memory per reference,
+ changing its behavior to scenario 2.
+ Sub-VIs cannot be recursive.
+ Each instance remains in memory even when not running, to save the state
+ of shift registers and feedback nodes.
+ There is also a third setting, in which LabVIEW creates a pool of instances
+ as a way to reduce memory usage, but in this case sub-VIs become stateless.
+\end_layout
+
+\begin_layout Standard
+A Node Group in Blender shows in its collapsed box a number that represents
+ the number of 
+\begin_inset Quotes eld
+\end_inset
+
+linked
+\begin_inset Quotes erd
+\end_inset
+
+ instances.
+ When a Node Group is copied, this number increments in all instances to
+ denote that the same Node Group is being used in multiple places.
+ The user can turn an instance into an independent copy by clicking this
+ number.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO Referential
+\begin_inset space ~
+\end_inset
+
+transparency: Purity of functions vs.
+ Undo
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Higher-order functions
 \end_layout
 
 \begin_layout Standard
 None of the languages presented here include support for defining higher-order
  functions.
- In fact, the only languages with support for higher-order functions in
- Hils's original survey are all either general-purpose programming languages
- (outside of the scope of this work) or Hils's own DataVis 
+ In fact, the only languages with support for user-defined higher-order
+ functions in Hils's original survey are all either general-purpose programming
+ languages (outside of the scope of this work) or Hils's own DataVis 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Hils1991datavis"
@@ -15385,7 +16020,50 @@ key "West:2015:CSR:2814228.2814247"
 \end_inset
 
 .
- Higher-order functions are objects of the domain of the professional programmer.
+ Domain specialists think in terms of objects of their domain: numbers in
+ a spreadsheet represent monetary values, a matrix in a graphics editor
+ represents an image.
+ Functions as first-class objects are a reification of programs.
+ First-order functions represent programs that are operations on objects
+ of the domain: a function 
+\begin_inset Formula $transpose:Score\times Key\rightarrow Score$
+\end_inset
+
+ represents the work of transposing a musical score into another key (e.g.
+ from 
+\begin_inset Formula $C\sharp$
+\end_inset
+
+ to 
+\begin_inset Formula $B\flat$
+\end_inset
+
+), and as such it is an activity within the specialist's domain.
+ Higher-order functions are one step removed from the domain in terms of
+ abstraction: they are programs that are operations on other programs.
+ The addition of higher-order functions to the set of first-class values,
+ thus, makes the universe of discourse
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+in Boole's original sense 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Boole1854Thought"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ strictly larger, and the added objects are familiar (and of interest) to
+ computing professionals, not to domain specialists.
+ An argument of the same nature could be made in the opposite direction
+ of the abstraction ladder, to explain the absence of low-level access to
+ bits and bytes.
 \end_layout
 
 \begin_layout Section
