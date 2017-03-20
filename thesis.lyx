@@ -5108,7 +5108,8 @@ good enough
 \begin_inset Quotes erd
 \end_inset
 
- and it would take a major leap to move into something different.
+, solutions to typical design requirements are well-known and it would take
+ a major leap to move into something different.
  In the world of visual languages, it seems clear that we have not yet reached
  this point.
 \end_layout
@@ -5125,15 +5126,6 @@ name "chap:Spreadsheets"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Popularity
-\end_layout
-
-\end_inset
-
 The spreadsheet is arguably the most successful end-user programmable applicatio
 n 
 \begin_inset CommandInset citation
@@ -5144,7 +5136,12 @@ key "Scaffidi:2005:ENE:1092357.1092394"
 
 .
  Microsoft Excel is the most successful product of this kind, as part of
- Microsoft Office, a productivity suite with over 1.2 billion users 
+ Microsoft Office, a productivity suite with over 1.2 billion users, with
+ an estimated 750 million users of Excel
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Microsoft2014ByTheNumbers"
@@ -5152,6 +5149,8 @@ key "Microsoft2014ByTheNumbers"
 \end_inset
 
 .
+ The spreadsheet formula language is therefore the most popular programming
+ language in the world.
 \end_layout
 
 \begin_layout Standard
@@ -5327,16 +5326,76 @@ key "OASIS2011ODFFormula"
 \end_layout
 
 \begin_layout Itemize
-Google Sheets, a prominent web-based spreadsheet; 
+Google Sheets, a prominent web-based spreadsheet
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://sheets.google.com
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+; 
 \end_layout
 
 \begin_layout Itemize
-Microsoft Excel Online, Microsoft's own web-based version of Excel;
+Microsoft Excel Online, Microsoft's own web-based version of Excel
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://office.live.com/start/Excel.aspx
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+;
 \end_layout
 
 \begin_layout Itemize
 Microsoft Excel for Android version 16.0.7127.1010, Microsoft's mobile version
- of Excel.
+ of Excel
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://play.google.com/store/apps/details?id=com.microsoft.office.excel
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -7006,7 +7065,7 @@ B
 
 \begin_inset Graphics
 	filename excel_evaluation.eps
-	width 75col%
+	width 60col%
 
 \end_inset
 
@@ -7033,6 +7092,12 @@ B
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:The-usual-representation"
+
+\end_inset
+
 The usual representation of a spreadsheet with a grid layout and a textual
  formula language, and its conceptual dataflow graph displaying data dependencie
 s.
@@ -7049,11 +7114,58 @@ s.
 \end_layout
 
 \begin_layout Standard
-Our study of the semantics of Excel has uncovered other oddities: 
+The collection of cells and formulas in a spreadsheet forms a dataflow graph,
+ and evaluation of each cells follows a top-down evaluation of the abstract
+ syntax tree of each formula.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:The-usual-representation"
+
+\end_inset
+
+(a) depicts the typical visual representation of a spreadsheet (here, with
+ all formulas exposed for clarity—normally only one formula is visible at
+ a time, and cells display their computed values).
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:The-usual-representation"
+
+\end_inset
+
+(b) depicts the same data as a dataflow graph
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+A quick remark on syntax: while the representation in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:The-usual-representation"
+
+\end_inset
+
+(a) is definitely more concise, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:The-usual-representation"
+
+\end_inset
+
+(b) makes it a lot more evident that there is a cycle.
+\end_layout
+
+\end_inset
+
+.
+ This top-down evaluation corresponds to a typical demand-driven dataflow
+ model.
 \end_layout
 
 \begin_layout Standard
-Built-in functions 
+The evaluation rules of individual nodes, however, are far from simple.
+ Built-in functions 
 \family typewriter
 IF()
 \family default
@@ -9106,8 +9218,13 @@ An interpreter modeling spreadsheet semantics
 \end_layout
 
 \begin_layout Standard
-This is an interpreter designed to model the core semantics of spreadsheets,
- with a focus on the dataflow language at its core.
+In the previous sections we gave a general overview of the spreadsheet language,
+ taking into account the familiarity most readers probably have with this
+ kind of application and focusing only on its more peculiar aspects.
+ Now, we proceed with a more formal and complete presentation.
+ In this section, we present definitional interpreter designed to model
+ the core semantics of spreadsheets, with a focus on the dataflow language
+ at its core.
  Our intention here is to illustrate the various design decisions that go
  into specifying precise semantics for a spreadsheet containing a realistic
  set of features, showcasing how complexity arises from what is usually
@@ -10277,8 +10394,12 @@ ty.
  not only historical, as it manifests itself in compatibility issues between
  modern variants, even by the same vendor.
  Further, when evaluating the compatibility of various spreadsheet implementatio
-ns we need to define what is meant by compatibility.
- When looking at spreadsheets as 
+ns it is necessary to define what exactly is meant by compatibility.
+ 
+\end_layout
+
+\begin_layout Standard
+When looking at spreadsheets as 
 \emph on
 documents
 \emph default
@@ -10290,15 +10411,15 @@ file format compatibility
 \begin_inset Quotes erd
 \end_inset
 
-: an application should be able to load a file and render it correctly.
+ as such: an application should be able to load a file and render it correctly.
  This definition of compatibility is insufficient, as it does not account
- the dynamic semantics of the language: how the state of the program changes
- over time as the program executes.
+ the dynamic semantics of the language, that is, how the state of the program
+ changes over time as the program executes.
  When one looks at a spreadsheet as an 
 \emph on
 interactive program
 \emph default
-, then the newly-loaded document defines the initial state of the program
+, then the newly-loaded document defines only the initial state of the program
  and further edits to cells are inputs that cause state updates.
 \end_layout
 
@@ -10689,7 +10810,14 @@ Compatible languages should have equivalent dynamic semantics.
  results in each program.
  In other words, the dynamic semantics of their formula languages differ.
  Case in point, all three variants of Excel have different behavior in face
- of circular references.
+ of circular references, as illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Circular-references"
+
+\end_inset
+
+.
  In desktop and mobile Excel, the application pops a dialog warning the
  user about the circular references; in the web-based version no such warning
  is present.
@@ -10698,7 +10826,10 @@ Compatible languages should have equivalent dynamic semantics.
  produce error values; in Excel Online and mobile Excel, the most recently
  updated cell produces the value zero and the other one retains its previous
  value.
- That such a striking difference in behavior has made it to production seems
+\end_layout
+
+\begin_layout Standard
+That such a striking difference in behavior has made it to production seems
  to show that the UI was not treated as a well-defined language whose behavior
  was meant to be duplicated.
  While care has certainly been taken to ensure that Excel Online and mobile
