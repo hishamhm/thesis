@@ -12459,33 +12459,84 @@ Some other languages
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO chapter intro
-\end_layout
+With our extensive discussion of Pure Data (Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Pure-Data"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-Other applications considered were: Grasshopper (3D modeling); Nuke (video
- editing); Blueprints, (game scripting); Natron, (video compositing); vvvv
- (multimedia).
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO referências
-\end_layout
+), spreadsheets (Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Spreadsheets"
 
 \end_inset
 
+) and LabVIEW (Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:LabVIEW"
 
+\end_inset
+
+), we covered a wide range of the space of design alternatives discussed
+ in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Dataflow-UI-langs"
+
+\end_inset
+
+.
+ In this chapter, we extend our panorama of dataflow languages through overviews
+ of three more applications, which can now be presented through the frame
+ of reference of the languages presented earlier:
+\end_layout
+
+\begin_layout Itemize
+Reaktor
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Reaktor6Primary"
+
+\end_inset
+
+ - a music application for constructing modular synthesizers;
+\end_layout
+
+\begin_layout Itemize
+VEE
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "vee93userguide"
+
+\end_inset
+
+ - an engineering application for data acquisition and test-and-measurement;
+\end_layout
+
+\begin_layout Itemize
+Blender
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "blender"
+
+\end_inset
+
+ - a 3D computer graphics software.
 \end_layout
 
 \begin_layout Section
@@ -12493,9 +12544,72 @@ Reaktor
 \end_layout
 
 \begin_layout Standard
-Reaktor is a commercial application by Native Instruments for constructing
- synthesizers, which can be used either stand-alone or as plugins for different
- music applications.
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename reaktor.png
+	width 95col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Reaktor"
+
+\end_inset
+
+A screenshot of Reaktor.
+ Source: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.native-instruments.com
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+Reaktor (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Reaktor"
+
+\end_inset
+
+) is a commercial application by Native Instruments for constructing synthesizer
+s, which can be used either stand-alone or as plugins for different music
+ applications.
  The interface has separate Edit and Play modes, and separate Panel Layouts
  with the input and output widgets for interaction, and a Structure View
  with the dataflow graph for editing.
@@ -12897,6 +13011,62 @@ Blender
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename blender_materials.png
+	width 95col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Blender"
+
+\end_inset
+
+The node editor for creating materials in Blender.
+ Source: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.blender.org
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
@@ -13011,8 +13181,8 @@ https://github.com/JacquesLucke/animation_nodes
 \end_layout
 
 \begin_layout Standard
-It is worth noting, however, that Blender's scripting interface is not without
- its limitation.
+It is important to note, however, that Blender's scripting interface is
+ not without its limitations.
  For instance, it allows manipulating a node tree in the material editor,
  but not creating new node types.
  The Cycles Render Engine supports creating new node types written in OSL
@@ -13048,6 +13218,12 @@ ader)
 
 \begin_layout Section
 Discussion: Dataflow end-user programming, then and now
+\end_layout
+
+\begin_layout Standard
+Other applications considered were: Grasshopper (3D modeling); Nuke (video
+ editing); Blueprints, (game scripting); Natron, (video compositing); vvvv
+ (multimedia).
 \end_layout
 
 \begin_layout Chapter
@@ -18180,6 +18356,14 @@ languages.
 
 \begin_layout Description
 And...?
+\end_layout
+
+\begin_layout Standard
+Our discussion of the applications in Chapter XXX and their dataflow languages
+ was be informed by the design aspects covered in the in-depth discussions
+ from previous chapters, allowing us to review these applications more concisely.
+ In fact, constructing the conceptual framework for discussing languages
+ of this kind efficiently was one of the goals from this work.
 \end_layout
 
 \begin_layout Standard
