@@ -2070,7 +2070,7 @@ constraint system
  in 
 \begin_inset CommandInset citation
 LatexCommand citep
-key "Abelson1996SICP"
+key "Abelson:1996:SIC:547755"
 
 \end_inset
 
@@ -4424,10 +4424,6 @@ Behavior of hot and cold inlets in Pure Data
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -4793,24 +4789,285 @@ name "sec:Discussion:-Syntax-and-semantics"
 
 \end_layout
 
-\begin_layout Description
-Ordering: Pure Data does not specify the order in which elements are triggered,
- but as we saw in Chapter 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "chap:Pure-Data"
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top" width="40col%">
+<column alignment="center" valignment="top" width="40col%">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename max_correct.png
+	scale 50
 
 \end_inset
 
-, in some cases this order matters.
- In practice, the implementation of Pure Data follows the order in which
- objects are stored in the 
-\family typewriter
-.pd
-\family default
- file, which matches the order in which elements were created.
- Max/MSP, the commercial relative of Pure Data, does specify that the order
- of message propagation follows that of the visual layout of a patch 
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename max_incorrect.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(a)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(b)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Max-problem"
+
+\end_inset
+
+Impact of semantically significant layout in Max/MSP: Two graphs with identical
+ sets of nodes and edges producing different results.
+ Image adapted from 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Gold2009MaxPoster"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+The design of end-user programmable applications is a field that spans both
+ the worlds of end-user application design and of programming language design.
+ These two areas are often distant from each other.
+ The programming language design community is most often concerned with
+ professionals, and most end-user programs made by application developers
+ nowadays are not programmable.
+ These different groups naturally tend to be biased towards different aspects
+ of design.
+\end_layout
+
+\begin_layout Standard
+This separation happens to the detriment of end-user programming language
+ design.
+ Research in visual languages, in particular, is almost by definition focused
+ primarily on syntax, given the area itself is defined by a style of representat
+ion.
+ But while the programming language community may be guilty of sometimes
+ dismissing matters of syntax
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+As a historical aside, the dismissal of syntax has a long history in the
+ programming language community.
+ This sentiment is perhaps best symbolized by the popularity of the term
+ 
+\begin_inset Quotes eld
+\end_inset
+
+syntactic sugar
+\begin_inset Quotes erd
+\end_inset
+
+.
+ While the term has gained a slightly more neutral connotation over the
+ years to refer to syntactic constructs whose behavior can be replicated
+ using more fundamental constructs of a language, the original coinage of
+ the expression by Peter Landin already set the dismissive tone by calling
+ it 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+mere 
+\begin_inset Quotes eld
+\end_inset
+
+syntactic sugar
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ in its very first occurrence 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Landin1964mechanical"
+
+\end_inset
+
+.
+ The influential Lisp community further cemented the pejorative bias associated
+ to the term, as seen in a footnote remark by Abelson et al.
+ in the classic 
+\emph on
+Structure and Interpretation of Computer Programs
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Abelson:1996:SIC:547755"
+
+\end_inset
+
+ (where they also proclaim their 
+\begin_inset Quotes eld
+\end_inset
+
+disdain for syntax
+\begin_inset Quotes erd
+\end_inset
+
+ literally) and by Perlis in his 
+\emph on
+Epigrams on Programming
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Perlis:1982:SFE:947955.1083808"
+
+\end_inset
+
+.
+ While humorous, these comments reflect an established culture that continues
+ to be reinforced 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Wadler1996law,Tratt2005syntax"
+
+\end_inset
+
+.
+ It is remarkable that, while this view tends to be more associated to the
+ theoretical side of the programming language community, we see among mathematic
+ians a prolific use of notational shorthands (the so-called 
+\begin_inset Quotes eld
+\end_inset
+
+syntactic sugar
+\begin_inset Quotes erd
+\end_inset
+
+) and, most importantly, an acknowledgement of the evolution of notation
+ as being pivotal in the history of mathematics 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Cajori1909math"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ and perpetuating arguably poor syntax in the name of familiarity
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Wadler1996law,Tratt2005syntax"
+
+\end_inset
+
+, the neglect of semantics in the design of the syntax of end-user applications
+ has much graver consequences.
+\end_layout
+
+\begin_layout Standard
+As we saw in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Node-triggering"
+
+\end_inset
+
+, Pure Data specifies the right-to-left order in outlets are processed,
+ but the order in which messages are fired from various connections of a
+ single outlet depend on the order the connections were made, making it
+ possible to produce two visually identical graphs with different behavior.
+ This is a major flaw in the language's syntax, and one that could be easily
+ fixed by exposing in the syntax the ordered nature of the outgoing connections.
+ Two possible solutions would be to draw the connector lines next to each
+ other (and not starting from the same point) making the outlet wider as
+ needed, or to make connection lines visually distinct (e.g.
+ attaching a number to the lines, or simply painting them with different
+ colors according to their sort order).
+\end_layout
+
+\begin_layout Standard
+In Max/MSP, the commercial variant of Pure Data, it is not possible to produce
+ two identical graphs with two behavior, but the solution chosen by its
+ developers may be even worse.
+ Max/MSP establishes that the order of message propagation follows that
+ of the visual layout of a patch, that is, the coordinates on the canvas
+ of nodes
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Gold2011MaxMSP"
@@ -4818,19 +5075,42 @@ key "Gold2011MaxMSP"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO add figure from Max evaluation order
-\end_layout
+ This means that moving nodes around, without changing their connections,
+ can alter the behavior of the graph, leading to situations like the one
+ depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Max-problem"
 
 \end_inset
 
+: two graphs with identical sets of nodes and edges producing different
+ results.
+ It is fair to assume that this counters any intuition a user may have about
+ the interpretation of a diagram.
+\end_layout
 
+\begin_layout Standard
+If syntax evolves at a slow pace in the world of textual languages, it may
+ well be because it has reached a 
+\begin_inset Quotes eld
+\end_inset
+
+local maximum
+\begin_inset Quotes erd
+\end_inset
+
+ in the design space, where current syntaxes are 
+\begin_inset Quotes eld
+\end_inset
+
+good enough
+\begin_inset Quotes erd
+\end_inset
+
+ and it would take a major leap to move into something different.
+ In the world of visual languages, it seems clear that we have not yet reached
+ this point.
 \end_layout
 
 \begin_layout Chapter
