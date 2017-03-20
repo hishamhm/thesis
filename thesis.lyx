@@ -4908,6 +4908,10 @@ This separation happens to the detriment of end-user programming language
 ion.
  But while the programming language community may be guilty of sometimes
  dismissing matters of syntax
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Foot
 status collapsed
 
@@ -4924,10 +4928,10 @@ syntactic sugar
 \end_inset
 
 .
- While the term has gained a slightly more neutral connotation over the
- years to refer to syntactic constructs whose behavior can be replicated
- using more fundamental constructs of a language, the original coinage of
- the expression by Peter Landin already set the dismissive tone by calling
+ While the term, which refers to syntactic constructs whose behavior can
+ be replicated using more fundamental constructs of a language, has gained
+ a slightly more neutral connotation over the years, the original coinage
+ of the expression by Peter Landin already set the dismissive tone by calling
  it 
 \begin_inset Quotes eld
 \end_inset
@@ -4957,11 +4961,22 @@ key "Landin1964mechanical"
 
 .
  The influential Lisp community further cemented the pejorative bias associated
- to the term, as seen in a footnote remark by Abelson et al.
- in the classic 
+ to the term, as seen in its use by Perlis in his 
+\emph on
+Epigrams on Programming
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Perlis:1982:SFE:947955.1083808"
+
+\end_inset
+
+ and in a footnote remark in the classic 
 \emph on
 Structure and Interpretation of Computer Programs
 \emph default
+ by Abelson et al.
  
 \begin_inset CommandInset citation
 LatexCommand citep
@@ -4977,18 +4992,7 @@ disdain for syntax
 \begin_inset Quotes erd
 \end_inset
 
- literally) and by Perlis in his 
-\emph on
-Epigrams on Programming
-\emph default
- 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Perlis:1982:SFE:947955.1083808"
-
-\end_inset
-
-.
+ literally).
  While humorous, these comments reflect an established culture that continues
  to be reinforced 
 \begin_inset CommandInset citation
@@ -5017,6 +5021,11 @@ key "Cajori1909math"
 \end_inset
 
 .
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -10875,8 +10884,8 @@ http://ni.com/labview/
 
 \end_inset
 
- is a commercial tool for data acquisition, instrument control and industrial
- automation, developed by National Instruments.
+ is a tool for data acquisition, instrument control and industrial automation,
+ developed by National Instruments.
  It is a proprietary commercial application, with extensive support for
  typical engineering domains such as digital signal processing.
  The application consists of a graphical programming environment, including
@@ -11087,10 +11096,13 @@ continuous
 \end_layout
 
 \begin_layout Standard
-In single-shot mode, all controls and nodes that do not depend on other
- objects are fired, and execution continue while there are values to be
- propagated.
- If all values propagate to the appropriate indicators, their values are
+In single-shot mode, all nodes and controls structures at the top-level
+ graph are fired at most once; control structures may loop, causing inner
+ nodes to fire multiple times.
+ To begin the execution of this mode, LabVIEW fires all controls and nodes
+ that do not depend on other objects, and execution continues until there
+ are no more values to be propagated.
+ When all values propagate to the appropriate indicators, their values are
  updated in the UI and the execution halts, bringing LabVIEW back to edit
  mode.
  However, if a diagram contains an infinite loop, for example, the program
@@ -11115,130 +11127,23 @@ Continuous mode is equivalent to enclosing the entire program in an infinite
 \end_layout
 
 \begin_layout Standard
-The fact that cycles only happen across iterations combined with the restriction
- that only one wire can be connected to an input port means that at most
- one value will arrive at an input port during an iteration.
+Two restrictions ensure that at most one value arrives at an input port
+ during an iteration: first, that cycles only happen across iterations;
+ second, that only one wire can be connected to an input port.
  This characterizes a static dataflow model, for which no buffers are necessary
  in input ports.
  This greatly simplifies scheduling and memory management: it is not possible
  to produce a stack overflow through an execution cycle, or a buffer overflow
  in nodes (for there are no buffers).
- As we will see below, however, the presencel of aggregate data types brings
+ As we will see below, however, the presence of aggregate data types brings
  back concerns about memory management.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO controls take effect only when fired, so long-running graphs lead to
- unresponsive applications.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Looping and cycles
-\end_layout
-
-\begin_layout Standard
-From the end-user's perspective, LabVIEW programs are graphs that can contain
- cycles, but these are controlled via the use of explicit 
-\emph on
-feedback nodes
-\emph default
- and structured looping constructs.
-\end_layout
-
-\begin_layout Standard
-The LabVIEW UI enforces that the only connections producing explicit cycles
- in a graph are those connecting feedback nodes: wiring any two objects
- in the graph producing a cycle automatically inserts a feedback node between
- them.
- This feedback node exists solely to store the value in between executions
- of the graph.
-\end_layout
-
-\begin_layout Standard
-Structured looping constructs are available, mirroring those available in
- traditional textual languages.
- The 
-\begin_inset Quotes eld
-\end_inset
-
-for-loop
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-while-loop
-\begin_inset Quotes erd
-\end_inset
-
- constructs act as their familiar equivalents (with the distinction that
- the 
-\begin_inset Quotes eld
-\end_inset
-
-while
-\begin_inset Quotes erd
-\end_inset
-
- structure always runs at least once, like a 
-\begin_inset Quotes eld
-\end_inset
-
-do-while
-\begin_inset Quotes erd
-\end_inset
-
- construct).
- In both cases, the looping construct appears in the UI as a frame inside
- the graph.
- This frame encloses a subgraph and controls its iteration.
- The subgraph may produce one or more values that are sent out as the iteration
- completes.
-\end_layout
-
-\begin_layout Standard
-Values may also be sent from one iteration of the loop to the next through
- the use of 
-\emph on
-shift registers
-\emph default
-.
- A shift register appears as a pair of small nodes at the edges of the loop
- frame: one incoming connector at the right and one outgoing connector at
- the left.
- This is conceptually similar to how textual detaflow languages like Lucid
- allow iteration, with 
-\family typewriter
-x
-\family default
- and 
-\family typewriter
-\series bold
-next
-\series default
- x
-\family default
- holding distinct values.
- The presence of a shift register denotes an implicit cycle in the graph.
-\end_layout
-
-\begin_layout Standard
-In short, feedback nodes are constructs for sending data through iterations
- of the main graph when in continuous mode, and shift registers are constructs
- for sending data through iterations of a loop subgraph.
- It is notable that while functionally very similar, they have very different
- representations in the UI.
+Each control is fired only once in single-shot mode and only at the beginning
+ of each iteration of the main graph in continuous mode.
+ This means that having a long-running main graph in continuous mode leads
+ to an unresponsive VI.
 \end_layout
 
 \begin_layout Subsection
@@ -11289,6 +11194,14 @@ dynamic
 \end_layout
 
 \begin_layout Standard
+Some types support automatic coercions.
+ For example, it is possible to connect an integer output port to a floating-poi
+nt input port.
+ The resulting wire has integer type: coercion happens at the input edge
+ of the wire.
+\end_layout
+
+\begin_layout Standard
 Not all types can be visually distinguished in the interface.
  Apart from the especially predefined clusters like waveform and error,
  all user-defined cluster types look alike.
@@ -11297,15 +11210,135 @@ Not all types can be visually distinguished in the interface.
 \end_layout
 
 \begin_layout Standard
-Structured data such as arrays and clusters still flow as a single dataflow
- packet: the transfer of a whole array between two nodes happens as a single
- firing through an array-typed wire.
-\begin_inset Note Note
+Representing data structures is a well known difficulty in the area of dataflow
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Johnston:2004:ADP:1013208.1013209"
+
+\end_inset
+
+.
+ LabVIEW takes a simple approach: structured data such as arrays and clusters
+ still flow as a single dataflow packet.
+ The transfer of a whole array between two nodes happens as a single firing
+ through an array-typed wire.
+ To compensate for the low granularity of arrays in the flow of data, LabVIEW
+ offers a number of nodes with complex array operations.
+ New functionality to make it easier to manipulate arrays continues to be
+ added.
+ All three of the new plug-ins introduced in LabVIEW 2015 that were suggested
+ by users of the vendor's discussion forums deal with array types: 
+\begin_inset Quotes eld
+\end_inset
+
+Change to Array or Element
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+Size Array Constants to Contents
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+Transpose 2D Array
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This indicates that users need high-level array operations.
+\end_layout
+
+\begin_layout Subsection
+Looping and cycles
+\end_layout
+
+\begin_layout Standard
+From the end-user's perspective, LabVIEW programs are graphs that can contain
+ cycles, but these are controlled via the use of explicit 
+\emph on
+feedback nodes
+\emph default
+ and structured looping constructs.
+\end_layout
+
+\begin_layout Standard
+The LabVIEW UI enforces that the only connections producing explicit cycles
+ in a graph are those connecting feedback nodes: wiring any two objects
+ in the graph producing a cycle automatically inserts a feedback node between
+ them.
+ This feedback node exists solely to store the value in between executions
+ of the graph.
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:LabVIEW-windows"
+
+\end_inset
+
+, feedback nodes appear as light orange nodes containing a 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ sign.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-cite here dataflow paper that talks of the difficulty of dealing with structured
- data
+\align center
+\begin_inset Graphics
+	filename labview_for_while.png
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Looping-constructs"
+
+\end_inset
+
+Looping constructs in LabVIEW, a 
+\begin_inset Quotes eld
+\end_inset
+
+for
+\begin_inset Quotes erd
+\end_inset
+
+ and a 
+\begin_inset Quotes eld
+\end_inset
+
+while
+\begin_inset Quotes erd
+\end_inset
+
+ loop.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -11314,11 +11347,117 @@ cite here dataflow paper that talks of the difficulty of dealing with structured
 \end_layout
 
 \begin_layout Standard
-Some types support automatic coercions.
- For example, it is possible to connect an integer output port to a floating-poi
-nt input port.
- The resulting wire has integer type: coercion happens at the input edge
- of the wire.
+Structured looping constructs are available, mirroring those available in
+ traditional textual languages.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+for-loop
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+while-loop
+\begin_inset Quotes erd
+\end_inset
+
+ constructs act as their familiar equivalents.
+ In both cases, the looping construct appears in the UI as a frame inside
+ the graph: they are both depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Looping-constructs"
+
+\end_inset
+
+.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+while
+\begin_inset Quotes erd
+\end_inset
+
+ structure, presented at the right, always runs at least once and the condition
+ can be negated by clicking on the green 
+\begin_inset Formula $\circlearrowleft$
+\end_inset
+
+ symbol, so it is more like either a 
+\begin_inset Quotes eld
+\end_inset
+
+do-while
+\begin_inset Quotes erd
+\end_inset
+
+ or a 
+\begin_inset Quotes eld
+\end_inset
+
+repeat-until
+\begin_inset Quotes erd
+\end_inset
+
+ construct.
+ The frame of the loop encloses a subgraph and controls its iteration.
+ The subgraph may produce one or more values that are sent out as the iteration
+ completes.
+\end_layout
+
+\begin_layout Standard
+Values may also be sent from one iteration of the loop to the next through
+ the use of 
+\emph on
+shift registers
+\emph default
+.
+ A shift register appears as a pair of small nodes at the edges of the loop
+ frame: one incoming connector at the right and one outgoing connector at
+ the left.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+for
+\begin_inset Quotes erd
+\end_inset
+
+ loop at the left in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Looping-constructs"
+
+\end_inset
+
+ showcases a shift register.
+ Shift registers are conceptually similar to how textual dataflow languages
+ like Lucid allow iteration, with 
+\family typewriter
+x
+\family default
+ and 
+\family typewriter
+\series bold
+next
+\series default
+ x
+\family default
+ holding distinct values.
+ The presence of a shift register denotes an implicit cycle in the graph.
+\end_layout
+
+\begin_layout Standard
+In short, feedback nodes are constructs for sending data through iterations
+ of the main graph when in continuous mode, and shift registers are constructs
+ for sending data through iterations of a loop subgraph.
+ It is notable that while functionally very similar, they have very different
+ representations in the UI.
 \end_layout
 
 \begin_layout Subsection
@@ -11385,7 +11524,14 @@ Wait Until Next ms Multiple
 \begin_inset Quotes erd
 \end_inset
 
- is a metronome, a device for counting tempo in music; in Pure Data, the
+ (visible in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Looping-constructs"
+
+\end_inset
+
+) is a metronome, a device for counting tempo in music; in Pure Data, the
  function for generating periodic messages is called 
 \family typewriter
 metro
@@ -11402,141 +11548,15 @@ orchestration
  between parallel agents.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Todo: add forced example without sequencing, then show it with sequencing.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Semantics
+\begin_layout Subsection
+Tunnels
 \end_layout
 
 \begin_layout Standard
-A difficulty in discussing the semantics of LabVIEW is that is has no published
- specification.
- Its documentation often resorts to examples to explain concepts, and does
- not serve an an exhaustive specification of the language.
- Previous attempts on the formalization of LabVIEW have been restricted
- to subsets of the language, and based themselves on its user manual and
- experimenting with the tool itself.
- In 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Mok1998RTLLabVIEW"
-
-\end_inset
-
-, Mok and Stuart map a subset of the language to RTL (real-time logic),
- a first-order logic used for describing real-time and embedded systems;
- they note that design decisions had to be made in points where the precise
- behavior was not clear.
- In 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Kaufmann:2009:FVL:1637837.1637851"
-
-\end_inset
-
-, Kaufmann et al.
- map a purely functional subset of LabVIEW into a dialect of Common Lisp
- used by the ACL2 theorem prover.
-\end_layout
-
-\begin_layout Standard
-In developing a model of LabVIEW's semantics, we are particularly interested
- about modularity issues and management of state.
- In our modeling, we aim to go beyond the functional subset, including the
- relationship between VIs and global variables.
- Like previous work in the literature, we aim to design the model based
- on LabVIEW's documentation and experimentation with the tool itself.
-\end_layout
-
-\begin_layout Standard
-Types:
-\end_layout
-
-\begin_layout Standard
-While LabVIEW supports arrays of clusters, and clusters of arrays, it does
- not support arrays of arrays.
- The recommended alternative is to use an 
-\begin_inset Quotes eld
-\end_inset
-
-array of cluster of array
-\begin_inset Quotes erd
-\end_inset
-
-: an array where elements are single-element clusters containing an array.
- This limitation is an explicit design decision, harking back to the development
- of LabVIEW 2.0 in 1988
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-\begin_inset Flex URL
-status open
-
-\begin_layout Plain Layout
-
-https://forums.ni.com/t5/LabVIEW-Idea-Exchange/Add-Support-for-Array-of-Array/idi-
-p/1875123
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-concerns with excessive array copying
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-new material:
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: 
-\end_layout
-
-\end_inset
-
-Tunnels.
+Tunnels are nodes that send or receive data into or out of a structure.
+ By connecting a wire from a node inside a structure to another node outside
+ it or vice versa, a tunnel is automatically created at the edge of the
+ structure frame.
 \end_layout
 
 \begin_layout Standard
@@ -11703,6 +11723,10 @@ wire connected to an undirected tunnel: a tunnel on this wire cannot determine
 status open
 
 \begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 TODO: 
 \end_layout
 
@@ -11714,7 +11738,7 @@ Three of the new plug-ins introduced in LabVIEW 2015 were suggested by users
  2D Array.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -11728,7 +11752,7 @@ LabVIEW 2015 also introduced a palette with Data Type Parsing controls,
  for introspecting type information of dynamically-typed data.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -11749,7 +11773,7 @@ unofficial feature
  in LabVIEW 2015).
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -11762,22 +11786,7 @@ TODO:
 Feedback nodes, direction, Z-Transform feedback nodes
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
 \begin_layout Plain Layout
-TODO: 
-\end_layout
-
-\end_inset
-
-Program reuse can be achieved encapsulating sub-graphs into sub-VIs.
- LabVIEW supports running several VIs simultaneously, and it provides a
- form of global variables as a means to transfer data between them.
-\end_layout
-
-\begin_layout Standard
 \begin_inset Note Note
 status open
 
@@ -11790,8 +11799,269 @@ TODO:
  XNodes and recursion
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Other control structures
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename labview_case.png
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:LabVIEW-case"
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+Case
+\begin_inset Quotes erd
+\end_inset
+
+ structure in LabVIEW
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+LabVIEW also supports other control structures, two of which will be briefly
+ discussed here: 
+\begin_inset Quotes eld
+\end_inset
+
+case
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+sequence
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Both structures hold an arbitrary number of subgraphs.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+case
+\begin_inset Quotes erd
+\end_inset
+
+ structure is presented a frame that has a number of pages, each of them
+ holding a subgraph for each case.
+ It accepts an enumeration value as inputs to select the active page.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:LabVIEW-case"
+
+\end_inset
+
+ illustrates a 
+\begin_inset Quotes eld
+\end_inset
+
+case
+\begin_inset Quotes erd
+\end_inset
+
+ structure.
+ The enumeration selects which operation is to be applied to the two inputs
+ A and B.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename labview_sequence_parallel.png
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:LabVIEW-sequence"
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+Sequence
+\begin_inset Quotes erd
+\end_inset
+
+ structure in LabVIEW
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Quotes eld
+\end_inset
+
+sequence
+\begin_inset Quotes erd
+\end_inset
+
+ structure is presented in the UI as film roll with a series of frames,
+ each holding one subgraph to be executed one after the other.
+ This is an escape from the pure dataflow model, and provides a way to force
+ a particular control flow structure regardless of data dependencies.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:LabVIEW-case"
+
+\end_inset
+
+ illustrates a 
+\begin_inset Quotes eld
+\end_inset
+
+sequence
+\begin_inset Quotes erd
+\end_inset
+
+ structure.
+ Note that inputs A and B arrive to the input tunnels of both frames immediately
+, but the second frame will only execute after the first frame finishes.
+ The output tunnel for the first frame will only fire after one second,
+ so the 
+\begin_inset Quotes eld
+\end_inset
+
+Numeric
+\begin_inset Quotes erd
+\end_inset
+
+ indicator and the 
+\begin_inset Quotes eld
+\end_inset
+
+Product
+\begin_inset Quotes erd
+\end_inset
+
+ indicator will be updated at the same time.
+\end_layout
+
 \begin_layout Section
 An interpreter modeling the semantics of LabVIEW
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:An-interpreter-LabVIEW"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A difficulty in discussing the semantics of LabVIEW is that is has no published
+ specification.
+ Its documentation often resorts to examples to explain concepts, and does
+ not serve an an exhaustive specification of the language.
+ Previous attempts on the formalization of LabVIEW have been restricted
+ to subsets of the language, and based themselves on its user manual and
+ experimenting with the tool itself.
+ In 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Mok1998RTLLabVIEW"
+
+\end_inset
+
+, Mok and Stuart map a subset of the language to RTL (real-time logic),
+ a first-order logic used for describing real-time and embedded systems;
+ they note that design decisions had to be made in points where the precise
+ behavior was not clear.
+ In 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Kaufmann:2009:FVL:1637837.1637851"
+
+\end_inset
+
+, Kaufmann et al.
+ map a purely functional subset of LabVIEW into a dialect of Common Lisp
+ used by the ACL2 theorem prover.
+\end_layout
+
+\begin_layout Standard
+Like previous work in the literature, we designed the model based on LabVIEW's
+ documentation and experimentation with the tool itself.
+ We limited ourselves to the core logic of graph evaluation, the main control
+ structures, and a few nodes that would allow us to run examples and model
+ time-based execution.
+ Additional features of LabVIEW that were not implemented include: support
+ for multiple non-reentrant VIs; global variables (which are not really
+ global variables in the traditional sense but actually references to external
+ VIs); object-oriented features; advanced event handling for controls and
+ indicators; object references.
+ Still, we believe this work to be a more detailed model than the ones previousl
+y available in the literature.
+ For instance, it models sequences and nodes with side-effects.
 \end_layout
 
 \begin_layout Standard
@@ -11812,6 +12082,131 @@ input{LvInterpreter_text.tex}
 
 \begin_layout Subsection
 Demonstration
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lv_graph_example.png
+	width 99col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:lv-animation"
+
+\end_inset
+
+An animation frame produced by converting the output of the interpreter.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "appendix:LabVIEW"
+
+\end_inset
+
+, we demonstrate the execution of our interpreter through a few example
+ programs that showcase LabVIEW's various control structures.
+ We developed a rendering pipeline to produce a visualization of the execution.
+ Running the interpreter prints in its output the 
+\begin_inset Formula $LvVI$
+\end_inset
+
+ data structure and a series of 
+\begin_inset Formula $LvState$
+\end_inset
+
+ data structures, one for each execution step of the main graph.
+ We then parse this output using a Lua script to generate a series of 
+\family typewriter
+.dot
+\family default
+ files, one for each step, describing the graph alongside the state values.
+ We then convert each 
+\family typewriter
+.dot
+\family default
+ file to an image file containing a diagram using GraphViz
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://graphviz.org
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ and finally combine all frames into a video file using FFMPEG
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://ffmpeg.org
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+ The resulting video contains an animation of the evaluation of the graph
+ over time, with values moving across nodes.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:lv-animation"
+
+\end_inset
+
+ shows a sample frame from one of the animations produced.
 \end_layout
 
 \begin_layout Standard

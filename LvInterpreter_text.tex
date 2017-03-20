@@ -242,10 +242,18 @@ booleans; the \emph{clusters}, which are a heterogeneous tuple of values
 (working like a record or ``struct''); and homogeneous arrays.
 
 Unlike LabVIEW, our implementation allows arbitrarily recursive types (e.g. we
-support a cluster of arrays of arrays of clusters). Since we assume that input
-programs are properly type-checked, implementing the same restrictions that
-LabVIEW enforces to aggregate data types could be easily done in the
-type-checking step.
+support a cluster of arrays of arrays of clusters). 
+
+Though LabVIEW supports arrays of clusters, and clusters of arrays, it does
+not support arrays of arrays. The recommended alternative is to use an ``array
+of cluster of array'': an array where elements are single-element clusters
+containing an array. This limitation is an explicit design decision, harking
+back to the development of LabVIEW 2.0 in
+1988\footnote{\url{https://forums.ni.com/t5/LabVIEW-Idea-Exchange/Add-Support-for-Array-of-Array/idi-p/1875123}}.
+
+Since we assume that input programs are properly type-checked, implementing
+the same restrictions that LabVIEW enforces to aggregate data types could be
+easily done in the type-checking step.
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -2411,10 +2419,10 @@ the empty string) to match the dimensions of \ensuremath{\Varid{x}}.
 \\
 \>[7]{}\hsindent{3}{}\<[10]%
 \>[10]{}\mathbf{then}\;({}\<[18]%
-\>[18]{}\mathbin{\char92 \char95 }\Varid{lx}\;\Varid{ly}{}\<[31]%
+\>[18]{}\lambda \anonymous \;\Varid{lx}\;\Varid{ly}{}\<[31]%
 \>[31]{}\to \Varid{resizeCurr}\;\Varid{id}\;\Varid{lx}\;\Varid{ly},{}\<[E]%
 \\
-\>[18]{}\mathbin{\char92 \char95 }\Varid{lx}\;\Varid{ly}{}\<[31]%
+\>[18]{}\lambda \anonymous \;\Varid{lx}\;\Varid{ly}{}\<[31]%
 \>[31]{}\to \Varid{resizeLower}\;\Varid{lx}\;\Varid{ly},{}\<[E]%
 \\
 \>[18]{}\lambda (\Conid{LvArr}\;\Varid{ly}){}\<[31]%
@@ -2430,7 +2438,7 @@ the empty string) to match the dimensions of \ensuremath{\Varid{x}}.
 \>[24]{}\Varid{ly}{}\<[31]%
 \>[31]{}\to [\mskip1.5mu \Conid{LvArr}\;(\Varid{resizeAll}\;\Varid{x}\;\Varid{ly})\mskip1.5mu],{}\<[E]%
 \\
-\>[18]{}\mathbin{\char92 \char95 }{}\<[31]%
+\>[18]{}\lambda \anonymous {}\<[31]%
 \>[31]{}\to [\mskip1.5mu \Varid{vy}\mskip1.5mu]){}\<[E]%
 \\[\blanklineskip]%
 \>[4]{}\hsindent{3}{}\<[7]%
