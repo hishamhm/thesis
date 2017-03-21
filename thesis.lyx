@@ -884,6 +884,12 @@ on of existing ones, and there has to be linguistic support in the application
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Roles-of-programming"
+
+\end_inset
+
 Roles of programming in end-user applications
 \end_layout
 
@@ -18129,6 +18135,13 @@ MATLAB node
 
 \begin_layout Section
 Discussion: An architectural pattern for end-user programmable applications
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Discussion:-An-architectural"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -18538,29 +18551,14 @@ name "chap:Conclusion"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
 End-user languages for UI interaction are today in the state where scripting
- languages were in the 1980s: ad hoc languages, one for each application,
- with their implementation often mixed with that of the application itself,
- and their design reflecting an organic evolution
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-In the case of scripting languages, many of those evolved out of either
- configuration files or interactive command-line prompts
-\end_layout
-
-\end_inset
-
-.
+ languages were in the 1980s: they are custom ad hoc languages, with their
+ implementation often mixed with that of the application itself, and their
+ design reflecting an organic evolution.
  In the world of scripting, this has since been replaced by out-of-the-box
  implementations of widely used languages, reused among many applications,
- with their implementation clearly isolated from the application, and their
- design reflecting an evolution towards suitability for multiple domains.
+ with their design reflecting an evolution towards suitability for multiple
+ domains.
  Most importantly, this notion of a 
 \begin_inset Quotes eld
 \end_inset
@@ -18570,19 +18568,30 @@ scriptable application
 \end_inset
 
  composed by a low-level core and a scripting language extended with bindings
- to this core has become a common architectural pattern (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Architectural-patterns"
-
-\end_inset
-
-(a)).
+ to this core has become a common architectural pattern.
 \end_layout
 
-\begin_layout Plain Layout
-In this work, we aim to bring a similar evolution to end-user UI-level languages
- one step closer to reality, by means of two main contributions:
+\begin_layout Standard
+We aimed to bring a similar evolution to end-user UI-level languages one
+ step closer to reality.
+ In earlier drafts of this work, our initial goal was to map the design
+ space of dataflow end-user languages, identify the various design options,
+ and from there construct a reusable language in which these various options
+ were provided as building blocks, so that an application developer could
+ construct the UI-level language for their application by combining these
+ blocks at will.
+ However, providing application writers with a toolkit of language building
+ blocks could save them considerable development effort, but the resulting
+ languages would still be ad hoc.
+ As we developed our research, we realized that we needed to step back and
+ perform a deeper analysis of the design space instead.
+ Not only it is important to know what the choices are, but it is fundamental
+ to understand the effects of these choices.
+\end_layout
+
+\begin_layout Standard
+Our work, thus, made the following primary contributions, each one of them
+ leading logically to the next:
 \end_layout
 
 \begin_layout Description
@@ -18614,36 +18623,258 @@ end-user
 \begin_inset space ~
 \end_inset
 
-languages.
- We claim that we need to have a better understanding of the state of dataflow
- languages in the context of end-user programming.
- To lower the barrier of entry for the development of programmable end-user
- applications, we believe that domain developers should be given building
- blocks for designing dataflow domain-specific languages in a coherent way.
- But first of all, we need to understand which are the building blocks they
- need, and which are the ones they are now constructing.
- In this work, we are evaluating a number of candidate end-user languages,
- and selecting among them a few representative examples, producing an in-depth
- analysis of their semantics.
- As an end result, we wish to obtain a clearer view of the design space
- of dataflow end-user languages, rooted on actual practice.
+language
+\begin_inset space ~
+\end_inset
+
+semantics.
+ 
+\begin_inset space ~
+\end_inset
+
+The apparent simplicity of visual diagrams embedded in application interfaces
+ is deceiving.
+ A number of design decisions go into building a dataflow UI-level language.
+ Much of the earlier research work on this class of languages went into
+ studying its visual aspects.
+ Here, we focused on the semantic aspects of those languages, lifting the
+ veil on their underlying complexity.
 \end_layout
 
 \begin_layout Description
-And...?
+A
+\begin_inset space ~
+\end_inset
+
+critique
+\begin_inset space ~
+\end_inset
+
+of
+\begin_inset space ~
+\end_inset
+
+design
+\begin_inset space ~
+\end_inset
+
+alternatives
+\begin_inset space ~
+\end_inset
+
+for
+\begin_inset space ~
+\end_inset
+
+dataflow
+\begin_inset space ~
+\end_inset
+
+end-user
+\begin_inset space ~
+\end_inset
+
+languages.
+ This map of the design space proved to be appropriate as a conceptual framework
+ to compare languages of this kind efficiently.
+ We applied this classification into a group of successful end-user applications
+, allowing us to discuss the effects of each of the design dimensions mapped
+ based in actual practice.
+ This allowed us to verify which design choices worked best and which ones
+ caused problems.
 \end_layout
 
-\begin_layout Plain Layout
-Our discussion of the applications in Chapter XXX and their dataflow languages
- was be informed by the design aspects covered in the in-depth discussions
- from previous chapters, allowing us to review these applications more concisely.
- In fact, constructing the conceptual framework for discussing languages
- of this kind efficiently was one of the goals from this work.
-\end_layout
+\begin_layout Description
+Identifying
+\begin_inset space ~
+\end_inset
+
+interdependencies
+\begin_inset space ~
+\end_inset
+
+in
+\begin_inset space ~
+\end_inset
+
+dataflow
+\begin_inset space ~
+\end_inset
+
+design
+\begin_inset space ~
+\end_inset
+
+choices.
+ Our study concluded that many of the dimensions identified in the design
+ space for this class of languages are dependent on each other.
+ The evaluation provided in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Design-alternatives-critiqued"
 
 \end_inset
 
+ showed that many languages were only able to pick one choice over another
+ in certain design aspects because of their choices in other aspects.
+ This stresses the importance of understanding these design aspects as a
+ whole, at the risk of having one choice bringing unexpected consequences
+ later in the design.
+ It also confirms that a sound design cannot be achieved by merely combining
+ building blocks at will.
+\end_layout
 
+\begin_layout Standard
+In the course of this work, we also made the following secondary contributions:
+\end_layout
+
+\begin_layout Description
+A
+\begin_inset space ~
+\end_inset
+
+specification
+\begin_inset space ~
+\end_inset
+
+of
+\begin_inset space ~
+\end_inset
+
+realistic
+\begin_inset space ~
+\end_inset
+
+spreadsheet
+\begin_inset space ~
+\end_inset
+
+semantics.
+ The existing literature on spreadsheets to this day has always restricted
+ itself to simplified models of their semantics 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "2013arXiv1307.7261T,Abraham:2006:TIS:1140335.1140346,Ahmad2003TypeSystemSpreadsheet,AivaloglouXLGrammar2015"
+
+\end_inset
+
+, ignoring the variations across different implementations.
+ The major omissions in official specification documents 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "ISO29500_OfficeOpenXML,OASIS2011ODFFormula"
+
+\end_inset
+
+ and the incompatibilities between implementations from the same vendor
+ suggest that these languages are not understood in detail at all.
+ In this work we provide what we believe to be the most comprehensive formal
+ specification of a realistic spreadsheet semantics so far.
+\end_layout
+
+\begin_layout Description
+Executable
+\begin_inset space ~
+\end_inset
+
+models
+\begin_inset space ~
+\end_inset
+
+of
+\begin_inset space ~
+\end_inset
+
+Pure
+\begin_inset space ~
+\end_inset
+
+Data
+\begin_inset space ~
+\end_inset
+
+and
+\begin_inset space ~
+\end_inset
+
+LabVIEW.
+ In a similar vein, both Pure Data and LabVIEW are relevant languages that
+ have been studied in academia, not only within their respective domains
+ but also by the programming language community 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Barkati:2013:SPA:2543581.2543591,Burlet:2015:ESE:2820518.2820554,Mok1998RTLLabVIEW,Kaufmann:2009:FVL:1637837.1637851"
+
+\end_inset
+
+.
+ None of these languages had any kind of specification, and this work provides
+ the first realistic models of their core semantics.
+\end_layout
+
+\begin_layout Description
+Insights
+\begin_inset space ~
+\end_inset
+
+on
+\begin_inset space ~
+\end_inset
+
+multi-language
+\begin_inset space ~
+\end_inset
+
+application
+\begin_inset space ~
+\end_inset
+
+architecture.
+ Throughout this work, we made some observations on language and application
+ architecture that we believe to be novel in the literature: the concept
+ of roles of end-user programming languages, with the distiction between
+ central and peripheral end-user languages (Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Roles-of-programming"
+
+\end_inset
+
+); identifying Nardi's three profiles of users with the presence of a three-laye
+r architecture in successful end-user programmable applications (Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:three-layer"
+
+\end_inset
+
+); the effects of API bindings and architectural alternatives to ensure
+ proper language projections in multi-language designs (Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Discussion:-An-architectural"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+All in all, this work provided a better understanding of the state of dataflow
+ languages in the context of end-user programming, with a view towards the
+ advancement of this field.
+ We believe the the evolution of scripting languages hints at a possible
+ path for the evolution of UI-level languages.
+ Scripting languages evolved from initially ad hoc shell and configuration
+ languages, as these started to make use of the lessons learned by earlier
+ high-level programming languages.
+ We believe UI-level languages will follow the same path, adopting lessons
+ from decades of research in dataflow.
+ In our view, reusable UI-level dataflow languages will eventually become
+ a reality, provided that the application architecture is considered as
+ a whole and the design constraints are well-understood.
+ This in itself is an exciting avenue for future work.
 \end_layout
 
 \begin_layout Standard
