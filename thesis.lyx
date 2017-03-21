@@ -452,10 +452,10 @@ hable from using the application proper.
  Our focus is on the dataflow paradigm, since this paradigm is representative
  of a number of applications where end-user programmability takes center
  stage.
- Based on this understanding, our goal is to provide a better understanding
- of dataflow semantics in the context of end-user programming and propose
- guidelines for the development of dataflow languages for end-user programmable
- applications.
+ Based on this analysis, our goal is to provide a better understanding of
+ dataflow semantics in the context of end-user programming and propose guideline
+s for the development of dataflow languages for end-user programmable applicatio
+ns.
  
 \end_layout
 
@@ -749,7 +749,11 @@ key "Johnston:2004:ADP:1013208.1013209"
  Thus, the problem domain we focus our attention on is that of dataflow
  UI-level languages, as these are representative of a number of languages
  where end-user programmability takes center stage, and the problem we address
- in particular is that of ad hoc semantics in dataflow programmable UIs.
+ in particular is that of 
+\emph on
+ad hoc semantics in dataflow programmable UIs
+\emph default
+.
 \end_layout
 
 \begin_layout Standard
@@ -762,13 +766,14 @@ We identify the need for UI-level dataflow languages to go through a similar
 \end_layout
 
 \begin_layout Standard
-This research attempts to provide developers of end-user programmable applicatio
-ns with a semantics for dataflow, designed for integrating between a program's
- interface and its underlying back-end.
- The research question, therefore, is this: 
+This research attempts to provide the first steps towards providing designers
+ of end-user programmable applications with a structured knowledge base
+ for reasoning about dataflow semantics for their UI-level languages.
+ Our research question, therefore, can be framed as such: 
 \emph on
-if dataflow languages in end-user applications were designed for reuse in
- different applications, what would their semantics be like?
+when designing a dataflow language for an end-user programmable application,
+ which design choices should be taken into consideration with regard to
+ its semantics and what are their effects?
 \end_layout
 
 \begin_layout Standard
@@ -781,17 +786,19 @@ reference "chap:Background"
 \end_inset
 
 .
- Then, we sharpen our focus to define dataflow UI-level languages in Chapter
- 
+ Then, in Chapter 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "chap:Dataflow-UI-langs"
 
 \end_inset
 
-, which is the class of languages we will be working from there on.
- We analyze existing UI-level dataflow languages, and produce semantics
- for a number of them, understanding their features and shortcomings.
+ we sharpen our focus to define dataflow UI-level languages and present
+ a list of design alternatives for the construction of dataflow languages
+ for end-user programming.
+ With this design space in mind, we analyze existing UI-level dataflow languages
+ and produce semantics for a number of them, understanding their features
+ and shortcomings.
  These are presented as case studies in Chapters 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -813,24 +820,32 @@ reference "chap:LabVIEW"
 
 \end_inset
 
-.
- Informed by the design of those existing application-specific languages,
- we propose in Chapter 
+, as well as a review of additional languages in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "chap:A-Dataflow-Engine"
+reference "chap:Some-other-languages"
 
 \end_inset
 
- a semantics for an embeddable and reusable dataflow UI-level language.
- Finally, in Chapter 
+.
+ Informed by the design of those existing application-specific languages,
+ we revisit in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Design-alternatives-critiqued"
+
+\end_inset
+
+ our list of design alternatives, and present a discussion of the impacts
+ of various design choices.
+ Finally, we conclude the work in Chapter 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "chap:Conclusion"
 
 \end_inset
 
- we present the conclusion, in which we review our contributions.
+, in which we review our contributions.
 \end_layout
 
 \begin_layout Chapter
@@ -12456,6 +12471,13 @@ Through a combination of language and environment features, LabVIEW happens
 
 \begin_layout Chapter
 Some other languages
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Some-other-languages"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -12971,39 +12993,21 @@ key "vee1998"
 \end_layout
 
 \begin_layout Standard
-There are two kinds of abstractions: UserObjects and UserFunctions.
+Through the use of various kinds of pins, VEE gives a fine grained control
+ of (and responsibility for) the execution flow to the user.
+ The user needs to be aware that different connectors of a node have different
+ effects in the evaluation logic.
+ To an extent, this is similar to the situation in Pure Data, where hot
+ and cold inlets also have different triggering rules.
+\end_layout
+
+\begin_layout Standard
+There are two kinds of subprogram abstractions: UserObjects and UserFunctions.
  A UserObject is merely a collapsable subgraph.
  To reuse it, the object needs to be cloned, producing a new subgraph instance
  which can be edited separately from the original copy.
  A UserFunction is a reusable subgraph, for which all uses are references
  to the same instance.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-other EUP apps also have this confusion, and terminology varies.
- Abstractions, etc (find examples)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-compare hot and cold inlets in Pure Data to data execute pins in VEE
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -13067,22 +13071,35 @@ https://www.blender.org
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO organize and finish
-\end_layout
-
+Blender is an open source 3D graphics software that is used for professional
+ animation, video games, effects, modeling and art.
+ It has a large number of features, several of which are programmable.
+ Blender includes a dataflow language, called in its documentation simply
+ 
+\begin_inset Quotes eld
 \end_inset
 
+node language
+\begin_inset Quotes erd
+\end_inset
 
+, that is used in different parts of the application.
+ The documentation also mixes the presentation of the language, explaining
+ concepts such as sockets and properties, with the presentation of the UI,
+ explaining menus and keyboard shortcuts.
 \end_layout
 
 \begin_layout Standard
-The node language is used in different parts of Blender.
- The node editor is the interface for creating materials in the render engine,
+The node editor is used as the UI for creating materials in the render engine,
  for compositing and for texture editing.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Blender"
+
+\end_inset
+
+ shows a screenshot of the materials editor.
  Each of these activities have their own set of nodes available to them.
  A restricted form of the node language called the "Logic Editor" is also
  available for integrating 3D objects with game scripting code.
@@ -13092,20 +13109,43 @@ The node language is used in different parts of Blender.
 
 \begin_layout Standard
 Programs in the Blender node language are directed acyclic graphs.
-\end_layout
+ It has four data types: color, numeric, vector and shader.
+ Ports (called 
+\emph on
+sockets
+\emph default
+) have different colors according to their data types.
+ Nodes have 
+\emph on
+properties
+\emph default
+, which are additional input arguments that are "inlined" in the node (that
+ is, it is not necessary to create numeric nodes with constants and connect
+ them to a node to parameterize these arguments).
+ For example, in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Blender"
 
-\begin_layout Standard
-Four data types: color, numeric, vector and shader.
-\end_layout
+\end_inset
 
-\begin_layout Standard
-Ports (called sockets) have different colors according to their data types.
-\end_layout
-
-\begin_layout Standard
-Nodes have properties, which are additional input arguments that are "inlined"
- in the node (that is, it is not necessary to create numeric nodes with
- constants and connect them to a node to parameterize these arguments).
+ node 
+\family typewriter
+Mix
+\family default
+ has two color inputs (indicated by yellow sockets); 
+\family typewriter
+Color1
+\family default
+ is connected to the previous node 
+\family typewriter
+ColorRamp
+\family default
+, and 
+\family typewriter
+Color2
+\family default
+ is set to black internally via a property.
 \end_layout
 
 \begin_layout Standard
@@ -13113,49 +13153,30 @@ Node Groups are collection of nodes that can be reused within a file and
  throughout different files, and the documentation describes them as "similar
  to functions in programming".
  Recursion is not allowed.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO what happens when duplicating vs creating a new instance of a group
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Oddly, when made accessible to a different file (through the File → Append
- menu, which appends the content to one file no another), node groups are
- called "Node Trees".
-\end_layout
-
-\begin_layout Standard
-Node groups can have particular inputs and outputs from its internal nodes
+ Node groups can have particular inputs and outputs from its internal nodes
  that are made available to the outside, in a similar manner to how tunnels
  work in LabVIEW.
  These tunnels are accessible when the node group is collapsed both as sockets
  and as properties.
+ Oddly, when Node Groups made accessible to a different file (through the
+ 
+\family typewriter
+File 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ Append
+\family default
+ menu, which appends the content of one file to another), node groups are
+ called "Node Trees".
+ 
 \end_layout
 
 \begin_layout Standard
-The documentation warns the user not to include input and output nodes inside
- node groups.
-\end_layout
-
-\begin_layout Standard
-The documentation mixes the presentation of the language, explaining concepts
- such as sockets and properties, with the presentation of the UI, explaining
- menus and keyboard shortcuts.
-\end_layout
-
-\begin_layout Standard
-Blender is scriptable in Python.
- An example of the power of its scripting support is the Animation Nodes
+Blender is scriptable in Python, and the node editor is also available to
+ the Python scripting layer, so plug-ins can create additional node editors
+ for other activities.
+ An example of the power of this combination is the popular Animation Nodes
  add-on 
 \begin_inset Foot
 status open
@@ -13176,21 +13197,15 @@ https://github.com/JacquesLucke/animation_nodes
 
 \end_inset
 
-, which adds a whole new node system for controlling animations, allowing
+, which adds a new graph-based system for controlling animations, allowing
  users to specify visually tasks that previously required Python code.
-\end_layout
-
-\begin_layout Standard
-It is important to note, however, that Blender's scripting interface is
- not without its limitations.
+ The scripting interface, however, is not without its limitations.
  For instance, it allows manipulating a node tree in the material editor,
  but not creating new node types.
  The Cycles Render Engine supports creating new node types written in OSL
- (Open Shading Language).
-\end_layout
-
-\begin_layout Standard
-A user created a Boolean if-then-else node using the shader language.
+ (Open Shading Language), for implementing texture shaders.
+ A user then used this shader language to create the equivalent of a Boolean
+ if-then-else node, that was missing in the materials editor.
  Another user in the same forum thread where this node was announced mentioned
  this node was equivalent to the "Condition" node in competing product Maya.
 \begin_inset Foot
@@ -13221,16 +13236,238 @@ Discussion: Dataflow end-user programming, then and now
 \end_layout
 
 \begin_layout Standard
-Other applications considered were: Grasshopper (3D modeling); Nuke (video
- editing); Blueprints, (game scripting); Natron, (video compositing); vvvv
- (multimedia).
+Dataflow end-user programming has come a long way since the early days of
+ the paradigm.
+ Twenty-five years ago, most user-centric languages based on dataflow were
+ developed in a research context
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hils1992DFVPLSurvey"
+
+\end_inset
+
+.
+ Now, we were able to concentrate our research exclusively in production
+ languages that are in widespread use, and we were able to select representative
+ examples from a wider pool of options.
+ When looking at the world of contemporary dataflow end-user applications,
+ it is clear that the paradigm has established itself in certain fields:
+\end_layout
+
+\begin_layout Itemize
+Spreadsheets: Excel, LibreOffice, Google Sheets
+\end_layout
+
+\begin_layout Itemize
+Audio synthesis: Max/MSP, Pure Data, Reaktor, vvvv
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://vvvv.org/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, AudioMulch
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.audiomulch.com/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Video compositing: Nuke
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.thefoundry.co.uk/products/nuke/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, Natron
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://natron.fr/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+3D modeling: Maya
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.autodesk.com/products/maya/overview
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, Blender, Grasshopper
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.grasshopper3d.com/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Engineering: LabVIEW, VEE, Expecco
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.exept.de/en/products/expecco
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, DASYLab
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.mccdaq.com/DASYLab-index.aspx
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One might speculate the reasons for the model's success in particular areas.
+ In some cases, it seems that a trailblazing application paved the way for
+ the emergence of similar applications (VisiCalc for spreadsheets, LabVIEW
+ for engineering).
+ In other cases, visual languages seem to be a natural fit for professionals
+ of certain areas, as is the case with multimedia (video, 3D, music).
+ It is also worth pointing out that, looking at historical dataflow applications
+, their areas also tend to be similar: music, image processing, graphics.
+ 
+\end_layout
+
+\begin_layout Standard
+It is worth considering whether the paradigm could have a wider range of
+ application.
+ Given that spreadsheets are used by professionals of all sorts of fields,
+ it seems that the computational model is accessible to a wide range of
+ users.
+ In a certain sense, a spreadsheet is a general-purpose programming language
+ for numeric applications.
+ Domain-specific applications could explore the familiarity of this model
+ to provide functionality tailored to different areas in a programmable
+ environment.
 \end_layout
 
 \begin_layout Chapter
 Design alternatives critiqued
 \begin_inset CommandInset label
 LatexCommand label
-name "chap:A-Dataflow-Engine"
+name "chap:Design-alternatives-critiqued"
 
 \end_inset
 
@@ -17865,7 +18102,7 @@ expression node
 \begin_inset Quotes eld
 \end_inset
 
-formula note
+formula node
 \begin_inset Quotes erd
 \end_inset
 
@@ -18159,26 +18396,16 @@ Architectural patterns of programmable applications
 \end_layout
 
 \begin_layout Standard
-TODO EXPANDIR
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO Fill this in
-\end_layout
+The architecture of today's end-user programmable applications is typically
+ an extension of that of scriptable applications (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architectural-patterns"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-The architecture of today's end-user programmable applications is typically
- an extension of that of scriptable applications, adding an ad hoc end-user
- language accessible via the application's interface (Figure 
+(a)), adding an ad hoc end-user language accessible via the application's
+ interface (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Architectural-patterns"
@@ -18189,14 +18416,10 @@ reference "fig:Architectural-patterns"
  To move past ad hoc end-user languages and get us closer to the situation
  we have in the scripting world, it is necessary to take into account the
  fact that these languages need to be fully customized to their domain.
- An approach for this is to produce a DSL on top of a reusable component,
- as we advocated in Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "chap:A-Dataflow-Engine"
+\end_layout
 
-\end_inset
-
+\begin_layout Standard
+An approach for this is to produce a DSL on top of a reusable component
  (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -18205,6 +18428,19 @@ reference "fig:Architectural-patterns"
 \end_inset
 
 (c)).
+ For this, the implementation of dataflow languages needs to become reusable.
+ One possibility in this direction is the development of a dataflow engine,
+ exposing to the application developer building blocks based on well-understood
+ design alternatives, such as those discussed in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Design-alternatives-critiqued"
+
+\end_inset
+
+.
+ The development of the UI-level layer would become then an integration
+ process, similar to what currently happens with scripting languages.
 \end_layout
 
 \begin_layout Standard
@@ -18219,12 +18455,47 @@ key "deSouza2001SemEngPrinciples"
 
 ), so that the scripting layer contains functionality that is unrepresentable
  in the UI, or vice-versa.
- 
+ Note that this kind of discontinuity can happen between any two layers
+ of abstraction.
+ As a practical example, our previous work developing a translator of Lua
+ 5.0 to C based on the Lua/C API
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/hishamhm/luatoc
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ uncovered some shortcomings in said API.
+ What that work did was to attempt to perform a projection of the language
+ into its API, producing a definition of the semantics of Lua 5.0 programs
+ in terms of its Lua/C API, using pure C exclusively for representing control
+ flow.
+ The fact that the resulting translator had to produce strings of Lua code
+ for some operations meant that not all aspects of the language were readily
+ interoperable through the API.
+ The Lua/C API was subsequently amended in Lua 5.1, allowing for a full projectio
+n without string evaluation.
 \end_layout
 
 \begin_layout Standard
-Such a possibility exists when there are different paths towards the application
- core, which may be inconsistent (as in Figures 
+Making sure that the different layers of a programmable application project
+ correctly onto each other can be challenging, especially when the languages
+ at each level and their binding APIs evolve in parallel.
+ The possibility for API discontinuities are greater when there are different
+ paths towards the application core (as in Figures 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Architectural-patterns"
@@ -18267,6 +18538,10 @@ name "chap:Conclusion"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 End-user languages for UI interaction are today in the state where scripting
  languages were in the 1980s: ad hoc languages, one for each application,
  with their implementation often mixed with that of the application itself,
@@ -18305,7 +18580,7 @@ reference "fig:Architectural-patterns"
 (a)).
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 In this work, we aim to bring a similar evolution to end-user UI-level languages
  one step closer to reality, by means of two main contributions:
 \end_layout
@@ -18358,12 +18633,17 @@ languages.
 And...?
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Our discussion of the applications in Chapter XXX and their dataflow languages
  was be informed by the design aspects covered in the in-depth discussions
  from previous chapters, allowing us to review these applications more concisely.
  In fact, constructing the conceptual framework for discussing languages
  of this kind efficiently was one of the goals from this work.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -18436,6 +18716,10 @@ name "appendix:LabVIEW"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Bla
 \end_layout
 
 \end_body
