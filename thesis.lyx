@@ -3653,10 +3653,10 @@ Discussion: On the use of definitional interpreters
 \end_layout
 
 \begin_layout Standard
-Providing the definition of a language under discussion through the use
- of a definitional interpreter written in another language is a classic
- technique for describing semantics.
- In his classic 1972 paper, Reynolds 
+Providing the definition of a language through the use of a definitional
+ interpreter written in another language is a classic technique for describing
+ semantics.
+ In his 1972 paper, Reynolds 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Reynolds:1972:DIH:800194.805852"
@@ -3669,9 +3669,9 @@ key "Reynolds:1972:DIH:800194.805852"
 \end_layout
 
 \begin_layout Standard
-Writing an interpreter for language, at first glance, seems like a way to
- unavoidably consider its entire semantics, since all constructs need to
- be describe in the precise language of computer code.
+Writing an interpreter for a language, at first glance, seems like a way
+ to unavoidably consider its entire semantics, since all constructs need
+ to be described in the precise language of computer code.
  However, as observed by Reynolds, the primary concern when writing a definition
 al interpreter is being aware of which aspects of the language used to implement
  the interpreter (which Reynolds calls the 
@@ -3686,16 +3686,17 @@ defined
  language).
  Using a construct of the defining language to implement the same construct
  in the defined language gives us a working implementation, but fails to
- describe what the semantics of the construct are.
+ describe what the semantics of the construct is.
 \end_layout
 
 \begin_layout Standard
 In our interpreters, we made conscious decisions of which semantic aspects
- to leak and which not.
+ to explicitly implement and which ones not.
  Aspects which are not related to the dataflow evaluation logic are orthogonal
- to our discussion and not of particular interest, so were simply reused
- from our defining language Haskell: the addition of numbers, for example,
- is simply the addition as in Haskell, with the same overflow rules, etc.
+ to our discussion and not of particular interest, so they were simply reused
+ from the defining language, in our case, Haskell: the addition of numbers,
+ for example, is simply the addition as in Haskell, with the same overflow
+ rules, etc.
  Aspects which are crucial to the dataflow logic were carefully separated:
  Haskell's lazy evaluation semantics do not leak into our defined languages
  (interpreters are defunctionalized, so both eager and lazy evaluation are
@@ -3712,7 +3713,7 @@ e
  At the same time, we consider a description written in a programming language
  to be more in line with the interdisciplinary nature of this work, as opposed
  to one written in the notation of operational semantics used by the programming
- language theory community.
+ language community.
 \end_layout
 
 \begin_layout Standard
@@ -4189,7 +4190,8 @@ reference "fig:puredata"
 \family typewriter
 metro 500
 \family default
-] has inlets (with only the left one connected) and outlet; node [
+] has two inlets (with only the left one connected) and one outlet; node
+ [
 \family typewriter
 dac~ 1
 \family default
@@ -4214,7 +4216,7 @@ metro
 ]) and the remaining tokens are arguments to that function.
  In message boxes, multiple commands may be entered, separated by a semicolon.
  The first command is always a message to be sent through the outlet of
- the message box, in subsequent commands, the first token is the receiver
+ the message box; in subsequent commands, the first token is the receiver
  and the remaining tokens are messages.
  Values received in inlets are available for token substitution using numbered
  variables such as 
@@ -4230,8 +4232,9 @@ The system of messaging via named receivers allows the program to send data
  The relationship between a message and a receiver can be thought of as
  an implicit edge in the dataflow graph.
  Since the textual language of messages supports variable arguments fed
- via input ports, receiver destinations can change during execution: this
- makes the dataflow graph, in effect, mutable at runtime.
+ via input ports and the first argument of a command can be set to a variable,
+ receiver destinations can change during execution: this makes the dataflow
+ graph, in effect, mutable at runtime.
  This, however, is limited to discrete messages, and only the destination
  of a message can be changed at runtime, and not the identifier a receiver
  is 
@@ -4302,7 +4305,7 @@ line~
 \family typewriter
 pd
 \family default
-, which is Pure Data's internal receiver—here it is used to enable and disable
+, which is Pure Data's internal receiver—here it is used to enable or disable
  the audio engine.
  The third command sends the value 
 \family typewriter
@@ -4730,10 +4733,6 @@ reference "appendix:Pure-Data"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -4747,7 +4746,7 @@ reference "appendix:Pure-Data"
 
 \end_inset
 
-, the present a practical demonstration of the interpreter in use.
+, we present a practical demonstration of the interpreter in use.
  We run the patch depicted in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4769,7 +4768,7 @@ use
 
  mode: the graph cannot be modified, but atom boxes can receive new values
  and message boxes can be clicked, producing events.
- The interpreter simulates this interactive experience by receiving as inputs
+ The interpreter simulates this interactive experience by receiving as input
  a list of interaction events with timestamps.
 \end_layout
 
@@ -4796,7 +4795,7 @@ https://hisham.hm/thesis/
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Section
@@ -4915,8 +4914,8 @@ The design of end-user programmable applications is a field that spans both
  the worlds of end-user application design and of programming language design.
  These two areas are often distant from each other.
  The programming language design community is most often concerned with
- professionals, and most end-user programs made by application developers
- nowadays are not programmable.
+ professionals, and most software written by end-user application developers
+ nowadays is not programmable.
  These different groups naturally tend to be biased towards different aspects
  of design.
 \end_layout
@@ -5074,9 +5073,9 @@ reference "sub:Node-triggering"
 
 \end_inset
 
-, Pure Data specifies the right-to-left order in outlets are processed,
+, Pure Data specifies the right-to-left order in which outlets are processed,
  but the order in which messages are fired from various connections of a
- single outlet depend on the order the connections were made, making it
+ single outlet depends on the order the connections were made, making it
  possible to produce two visually identical graphs with different behavior.
  This is a major flaw in the language's syntax, and one that could be easily
  fixed by exposing in the syntax the ordered nature of the outgoing connections.
@@ -5092,8 +5091,8 @@ In Max/MSP, the commercial variant of Pure Data, it is not possible to produce
  two identical graphs with two behavior, but the solution chosen by its
  developers may be even worse.
  Max/MSP establishes that the order of message propagation follows that
- of the visual layout of a patch, that is, the coordinates on the canvas
- of nodes
+ of the visual layout of a patch, that is, the coordinates of nodes on the
+ canvas
 \begin_inset space ~
 \end_inset
 
@@ -7145,8 +7144,8 @@ s.
 
 \begin_layout Standard
 The collection of cells and formulas in a spreadsheet forms a dataflow graph,
- and evaluation of each cells follows a top-down evaluation of the abstract
- syntax tree of each formula.
+ and evaluation of each cell follows a top-down evaluation of the abstract
+ syntax tree of its formula.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7355,7 +7354,7 @@ array formula
 \family typewriter
 {=A1:B5+10}
 \family default
-; in Google Sheets, they use a function-style annotation, as in 
+; Google Sheets uses a function-style annotation, as in 
 \family typewriter
 =ARRAYFORMULA(A1:B5+10)
 \family default
@@ -8299,8 +8298,8 @@ scalar context
 .
  In Excel, an array context of evaluation can produce iterated calculation
  of scalar functions, like in the context of array formulas.
- This is not implemented in LibreOffice or Google Sheets, which both reserve
- iterated execution to array formulas.
+ This is not implemented in LibreOffice or Google Sheets.
+ In these two applications, iterated execution happens only in array formulas.
  Interestingly, Excel Online, which does not support array formulas, does
  implement iterated execution in array contexts of plain formulas.
  Table 
@@ -8385,7 +8384,7 @@ key "Tyszkiewicz:2010:SRD:1807167.1807191"
 
 .
  Still, they are usually disregarded when discussing the semantics of spreadshee
-ts, and do not feature on any of the works cited above.
+ts, and do not feature on any of the works cited in this chapter.
  The Excel documentation is vague when explaining their evaluation logic,
  resorting to examples 
 \begin_inset CommandInset citation
@@ -10409,6 +10408,18 @@ key "ISO29500_OfficeOpenXML"
 \end_inset
 
 , as well as our own additional tests that cover some unspecified behavior.
+ All examples and tests are available in 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://hisham.hm/thesis/
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -11427,8 +11438,8 @@ repeat-until
 
  construct.
  The frame of the loop encloses a subgraph and controls its iteration.
- The subgraph may produce one or more values that are sent out as the iteration
- completes.
+ The subgraph may produce one or more values that are sent out when the
+ iteration completes.
 \end_layout
 
 \begin_layout Standard
@@ -11503,13 +11514,13 @@ Wait
 \end_inset
 
 .
- The former monitors a millisecond counter and waits until it reaches the
- specified multiple of a given number, controlling the loop execution rate
- by holding back the loop step.
- This is designed for synchronizing loops, typically when performing device
- reads and outputs to indicators in the interface.
- Note that the given multiple may happen right after the loop starts, so
- the delay for the first iteration of the loop is indeterminate.
+ The former monitors a millisecond counter and waits until it reaches a
+ multiple of a given number, controlling the loop execution rate by holding
+ back the loop step.
+ This is designed for the synchronization of loops, typically when performing
+ device reads and outputs to indicators in the interface.
+ Note that the multiple may happen right after the loop starts, so the delay
+ for the first iteration of the loop is indeterminate.
  The latter function, 
 \begin_inset Quotes eld
 \end_inset
@@ -11652,7 +11663,7 @@ ms.
 l terminal on each iteration.
  The loop stops once Boolean B is set to true, and only then the iteration
  value is sent via the output tunnel to Indicator B.
- In Loop C, the interface displays Indicator C being updated once a second
+ In Loop C, the interface displays Indicator C being updated once a second,
  as long as Boolean C is false.
 \end_layout
 
@@ -11905,9 +11916,9 @@ case
 \begin_inset Quotes erd
 \end_inset
 
- structure is presented a frame that has a number of pages, each of them
+ structure is presented as a frame that has a number of pages, each of them
  holding a subgraph for each case.
- It accepts an enumeration value as inputs to select the active page.
+ It accepts an enumeration value as input to select the active page.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -11986,7 +11997,7 @@ sequence
 \end_inset
 
  structure is presented in the UI as film roll with a series of frames,
- each holding one subgraph to be executed one after the other.
+ each holding a subgraph to be executed one after the other.
  This is an escape from the pure dataflow model, and provides a way to force
  a particular control flow structure regardless of data dependencies.
  Figure 
@@ -12075,11 +12086,11 @@ Like previous work in the literature, we designed the model based on LabVIEW's
  We limited ourselves to the core logic of graph evaluation, the main control
  structures, and a few nodes that would allow us to run examples and model
  time-based execution.
- Additional features of LabVIEW that were not implemented include: support
- for multiple non-reentrant VIs; global variables (which are not really
+ Additional features of LabVIEW that were not implemented include support
+ for multiple non-reentrant VIs, global variables (which are not really
  global variables in the traditional sense but actually references to external
- VIs); object-oriented features; advanced event handling for controls and
- indicators; object references.
+ VIs); object-oriented features, advanced event handling for controls and
+ indicators, and object references.
  Still, we believe this work to be a more detailed model than the ones previousl
 y available in the literature.
  For instance, it models sequences and nodes with side-effects.
@@ -12103,6 +12114,13 @@ input{LvInterpreter_text.tex}
 
 \begin_layout Subsection
 Demonstration
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:LabVIEW-Demonstration"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -12136,10 +12154,6 @@ An animation frame produced by converting the output of the interpreter.
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -12228,6 +12242,27 @@ reference "fig:lv-animation"
 \end_inset
 
  shows a sample frame from one of the animations produced.
+ All materials are available at 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://hisham.hm/thesis/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -12249,13 +12284,12 @@ Discussion: Is LabVIEW end-user programming?
 
 \begin_layout Standard
 When we discuss end-user programming, what defines the concept is not a
- particular programming paradigm, set of constructs of UI style.
+ particular programming paradigm, set of constructs or UI style.
  End-user programming is about the fact that the person doing the programming
  is the one who will use the resulting program, and, as a secundary point,
  that they are not programmers by profession.
- That is indeed not always the case in LabVIEW, which is indeed used by
- professional programmers who build, compile and deploy programs for other
- end-users.
+ That is indeed not always the case in LabVIEW, which is used by professional
+ programmers who build, compile and deploy programs for other end-users.
 \end_layout
 
 \begin_layout Standard
@@ -12267,10 +12301,10 @@ However, two aspects warrant its presence in the discussion on end-user
  by this fact.
  One might even argue that the language is better suited to small-scale
  rapid end-user programming than to large-scale software development.
- Second, it a particularly interesting subject in the design space of end-user
- programming because it is developed as a programming environment for writing
- data acquisition programs rather than a programmable data acquisition applicati
-on.
+ Second, it is a particularly interesting subject in the design space of
+ end-user programming because it is developed as a programming environment
+ for writing data acquisition programs rather than a programmable data acquisiti
+on application.
  This has effects in the design of the resulting language.
  A good way to observe these effects is by contrasting LabVIEW and Pure
  Data.
@@ -12440,8 +12474,8 @@ This would lead us to conclude that Pure Data has a stronger focus on end-users,
 
 \begin_layout Standard
 Language features such as (auto-generated) feedback nodes make it easier
- to understand and debug cycle constructs; data coercion nodes (also auto-generc
-ated) make explicit any precision loss—a problem that also affects musicians
+ to understand and debug cycle constructs; data coercion nodes (also auto-genera
+ted) make explicit any precision loss—a problem that also affects musicians
  using Pure Data, where it is perceived as degraded audio quality.
  
 \end_layout
@@ -12450,7 +12484,7 @@ ated) make explicit any precision loss—a problem that also affects musicians
 Both Pure Data and LabVIEW feature multiple types, including numbers, strings
  and table objects holding aggregated data.
  LabVIEW has a richer set of types, and is statically typed; Pure Data has
- a simpler one, and is dynamically typed.
+ a simpler set and is dynamically typed.
  Both of them make a visual distinction among edge types in the graph: Pure
  Data displays audio connections as thicker lines and message connections
  as thinner lines; LabVIEW uses colors, thickness and stripe patterns to
@@ -12628,7 +12662,7 @@ https://www.native-instruments.com
 
 \end_inset
 
-Reaktor (Figure 
+Reaktor (depicted in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Reaktor"
@@ -12636,12 +12670,12 @@ reference "fig:Reaktor"
 \end_inset
 
 ) is a commercial application by Native Instruments for constructing synthesizer
-s, which can be used either stand-alone or as plugins for different music
+s, which can be used either stand-alone or as a plugin for different music
  applications.
- The interface has separate Edit and Play modes, and separate Panel Layouts
- with the input and output widgets for interaction, and a Structure View
- with the dataflow graph for editing.
- It supports abstracting sub-graphs into units.
+ Its interface has distinct Edit and Play modes.
+ It features separate Panel Layouts with the input and output widgets for
+ interaction and a Structure View with the dataflow graph for editing.
+ Reaktor supports abstracting sub-graphs into units.
  A program is presented as an 
 \begin_inset Quotes eld
 \end_inset
@@ -12652,7 +12686,12 @@ instrument
 
 , which acts as a synthesizer or an effects unit, often with a front-end
  interface that mimics equivalent hardware.
- Instruments are created using 
+\end_layout
+
+\begin_layout Standard
+Reaktor has two dataflow environments with distinct languages, called Primary
+ and Core.
+ Instruments are created using high-level operators called 
 \begin_inset Quotes eld
 \end_inset
 
@@ -12660,7 +12699,7 @@ modules
 \begin_inset Quotes erd
 \end_inset
 
-, that are high-level operators, combined into 
+ which are combined into 
 \begin_inset Quotes eld
 \end_inset
 
@@ -12668,7 +12707,7 @@ macros
 \begin_inset Quotes erd
 \end_inset
 
- in a dataflow language called the Primary mode.
+ using a dataflow language in Primary mode.
  The modules themselves are also written as graphs composed of 
 \begin_inset Quotes eld
 \end_inset
@@ -12738,9 +12777,9 @@ float
 \family typewriter
 int
 \family default
- (including low-level concerns such as undefined behavior in type conversions,
- denormals in IEEE 754 floating-point), arrays and custom structured types
- called 
+ (including low-level concerns such as undefined behavior in type conversions
+ and denormals in IEEE 754 floating-point), arrays and custom structured
+ types called 
 \begin_inset Quotes eld
 \end_inset
 
@@ -12757,8 +12796,8 @@ clusters
 \end_inset
 
 ).
- Memory storage in the style of shift registers represented as special wire
- types.
+ Memory storage in the style of shift registers are represented as special
+ wire types.
  While at first glance Core seems an extension of Primary, they are fundamentall
 y distinct languages.
  For instance, their semantics for event propagation are different.
@@ -12833,19 +12872,18 @@ VEE
 VEE (Visual Engineering Environment) is a tool for development of engineering
  test-and-measurement software, based around a visual programming language.
  It was originally released by Hewlett-Packard in 1991, and is currently
- marketed by Keysight Technologies.
- 
+ marketed by Keysight Technologies 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "vee93userguide"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Standard
-VEE supports integrating with other languages for scripting.
+VEE supports integration with other languages for scripting.
  MATLAB integration support is included.
  Additionally, VBA scripting and an Excel integration library are also supported
  on Windows.
@@ -12887,7 +12925,7 @@ name "fig:VEE-for-count"
 
 \end_inset
 
-Mix of data and control flow in VEE.
+Mix of data and control flows in VEE.
  
 \end_layout
 
@@ -12958,7 +12996,7 @@ reference "fig:VEE-for-count"
 
 \end_inset
 
- illustrates the mix of data and control flow in VEE.
+ illustrates the mix of data and control flows in VEE.
  Ports at the top and bottom of nodes are sequence pins; the green port
  is an execute pin; other pins at the left and right are data pins.
  This graph has two dataflow connections (black wires) and two control flow
@@ -13106,7 +13144,7 @@ reference "fig:Blender"
 \end_inset
 
  shows a screenshot of the materials editor.
- Each of these activities have their own set of nodes available to them.
+ Each of these activities has its own set of nodes available to it.
  A restricted form of the node language called the "Logic Editor" is also
  available for integrating 3D objects with game scripting code.
  The remainder of this section will focus on the more general Node Editors
@@ -13115,7 +13153,7 @@ reference "fig:Blender"
 
 \begin_layout Standard
 Programs in the Blender node language are directed acyclic graphs.
- It has four data types: color, numeric, vector and shader.
+ It has four data types: color, number, vector and shader.
  Ports (called 
 \emph on
 sockets
@@ -17061,7 +17099,7 @@ copying a subgraph produces a new reference to the same subgraph, which
 placement t
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -17429,7 +17467,7 @@ name "fig:subgraph-behavior"
 
 \end_inset
 
-
+Different alternatives for the behavior of subprograms
 \end_layout
 
 \end_inset
@@ -18568,7 +18606,18 @@ scriptable application
 \end_inset
 
  composed by a low-level core and a scripting language extended with bindings
- to this core has become a common architectural pattern.
+ to this core has become a common architectural pattern
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Ousterhout:1998:SHP:619027.620930"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -18590,8 +18639,8 @@ We aimed to bring a similar evolution to end-user UI-level languages one
 \end_layout
 
 \begin_layout Standard
-Our work, thus, made the following primary contributions, each one of them
- leading logically to the next:
+Our work, thus, made the following primary contributions, each one leading
+ logically to the next:
 \end_layout
 
 \begin_layout Description
@@ -18678,7 +18727,7 @@ languages.
  This map of the design space proved to be appropriate as a conceptual framework
  to compare languages of this kind efficiently.
  We applied this classification into a group of successful end-user applications
-, allowing us to discuss the effects of each of the design dimensions mapped
+, allowing us to discuss the effects of each of the mapped design dimensions
  based in actual practice.
  This allowed us to verify which design choices worked best and which ones
  caused problems.
@@ -18915,6 +18964,22 @@ status open
 
 
 \backslash
+chaptermark{Pure Data interpreter}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
 input{PdInterpreter_demo.tex}
 \end_layout
 
@@ -18935,7 +19000,78 @@ name "appendix:Spreadsheet"
 \end_layout
 
 \begin_layout Standard
-Bla
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+chaptermark{Spreadsheet interpreter}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We present here a demonstration of the spreadsheet interpreter in use.
+ This appendix is a Literate Haskell program including the complete source
+ code of the demonstration.
+\end_layout
+
+\begin_layout Standard
+This program imports the interpreter defined in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Spreadsheets"
+
+\end_inset
+
+ as a module, as well as some standard modules from the Haskell Platform.
+ We also use one additional module for tabular pretty-printing of the output:
+ 
+\family typewriter
+Text.PrettyPrint.Boxes
+\family default
+, available from Hackage, the Haskell community's package repository
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://hackage.haskell.org/package/boxes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{XlInterpreter_demo.tex}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -18950,7 +19086,103 @@ name "appendix:LabVIEW"
 \end_layout
 
 \begin_layout Standard
-Bla
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+chaptermark{LabVIEW interpreter}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We present here a demonstration of the interpreter modeling LabVIEW.
+ We produced several examples, which are available at 
+\begin_inset Formula $ $
+\end_inset
+
+
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://hisham.hm/thesis/
+\end_layout
+
+\end_inset
+
+, along with the resulting outputs of their execution.
+ Here, we present only one of them.
+ This is the test for the 
+\begin_inset Quotes eld
+\end_inset
+
+case
+\begin_inset Quotes erd
+\end_inset
+
+ structure, represented in LabVIEW this way:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename labview_appendix_example.png
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Through the process explained in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:LabVIEW-Demonstration"
+
+\end_inset
+
+, our interpreter produces a visualization of the execution.
+ This is a frame of the resulting animation, just before performing the
+ division:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename lv_graph_example.png
+	width 99col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The test program for this example is the following.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{LvInterpreter_demo.tex}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
