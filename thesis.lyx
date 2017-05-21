@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass extbook
 \begin_preamble
 
@@ -19,16 +21,16 @@
 \language_package default
 \inputencoding auto
 \fontencoding global
-\font_roman default
-\font_sans default
-\font_typewriter default
-\font_math auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -122,6 +124,11 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
@@ -239,7 +246,7 @@ height "0.5mm"
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="1" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <row>
@@ -258,6 +265,11 @@ width "50col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
@@ -295,6 +307,11 @@ width "40col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
@@ -557,9 +574,9 @@ UI-level languages
 \begin_layout Standard
 There is, therefore, a spectrum of possibilities on how deeply to integrate
  programmability into end-user applications.
- It can range from being an optional feature for advanced users, as is often
- the case with scripting, to being at the core of the application experience,
- as is the case with UI-level languages.
+ It can range from being an optional feature for advanced users, as it is
+ often the case with scripting, to being at the core of the application
+ experience, as is the case with UI-level languages.
 \end_layout
 
 \begin_layout Standard
@@ -886,7 +903,7 @@ on of existing ones, and there has to be linguistic support in the application
 \begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Roles-of-programming"
+name "subsec:Roles-of-programming"
 
 \end_inset
 
@@ -939,8 +956,8 @@ Examples of peripheral support for end-user programming are macro recorders
  Macro recording allows the user to automate sequences of steps, but offers
  little in the way of abstraction.
  Embedded scripting languages offer a programmable view to the application,
- by extending the application with the full power of a Turing-complete programmi
-ng language.
+ by extending the application with the full power of what is usually a Turing-co
+mplete programming language.
  Still, we categorize these features as peripheral to the user of the applicatio
 n, because most users can produce content in the application while ignoring
  its programmable aspects.
@@ -968,8 +985,9 @@ The LibreOffice Writer word processor and the Gimp image editor are examples
 \begin_layout Standard
 A prominent example of an application where end-user programming takes a
  central role is the spreadsheet.
- A spreadsheet has an open-ended design in which users can create new solutions
- for their domains, expressed as calculations in a formula language.
+ A spreadsheet is an application with an unusually open-ended design, in
+ which users can create new solutions for their domains, expressed as calculatio
+ns in a formula language.
  Programming is central in the sense that the programmable aspect of the
  application, the formula language, is unavoidable for any use beyond the
  trivial case of entering constants into cells: using the formula language
@@ -983,7 +1001,7 @@ The three-layer architecture in end-user programmable applications
 \begin_layout Standard
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:three-layer"
+name "subsec:three-layer"
 
 \end_inset
 
@@ -1036,7 +1054,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="6">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -1355,8 +1373,11 @@ key "MacLean:1990:USP:97243.97271"
 
 ), who started as an end-user but acquired an appreciation towards programming
  and is therefore more predisposed to dive into the possibilities offered
- by a programmable system; and finally, the professional, who had formal
- training in programming.
+ by a programmable system; and finally, the 
+\emph on
+software development professional
+\emph default
+, who had formal training in programming.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1712,7 +1733,7 @@ key "Johnston:2004:ADP:1013208.1013209"
 , of which the most prominent example in the industry is LabVIEW 
 \begin_inset CommandInset citation
 LatexCommand citep
-key "labview"
+key "LabVIEWgettingstarted"
 
 \end_inset
 
@@ -1755,7 +1776,7 @@ flow
 Static and dynamic dataflow models
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Static-and-dynamic"
+name "subsec:Static-and-dynamic"
 
 \end_inset
 
@@ -1903,7 +1924,7 @@ key "Dennis85Models"
 Data-driven and demand-driven dataflow
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Data-driven-and-demand-driven"
+name "subsec:Data-driven-and-demand-driven"
 
 \end_inset
 
@@ -2105,8 +2126,8 @@ ed systems
 \end_inset
 
 .
- The power of a multi-way constraint system depends on the power of the
- solver used to satisfy its systems of equations.
+ The power of a multi-way constraint system depends on the power and efficiency
+ of the solver used to satisfy its systems of equations.
  For example, Cassowary 
 \begin_inset CommandInset citation
 LatexCommand citep
@@ -2278,7 +2299,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="left" valignment="top">
 <row>
@@ -2655,7 +2676,7 @@ ng incorrect connections.
  discussed in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Static-and-dynamic"
+reference "subsec:Static-and-dynamic"
 
 \end_inset
 
@@ -2695,7 +2716,7 @@ execution mode
  Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Data-driven-and-demand-driven"
+reference "subsec:Data-driven-and-demand-driven"
 
 \end_inset
 
@@ -2799,7 +2820,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="left" valignment="top">
 <row>
@@ -3007,7 +3028,7 @@ Apart from the classification between data-driven and domain-driven dataflow,
  to definitions presented in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Static-and-dynamic"
+reference "subsec:Static-and-dynamic"
 
 \end_inset
 
@@ -3368,7 +3389,7 @@ loped program and using it doesn't mean that the language is at a lower
  layer according to the architecture discussed in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:three-layer"
+reference "subsec:three-layer"
 
 \end_inset
 
@@ -3384,7 +3405,7 @@ reference "sub:three-layer"
 Indirect connections
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Indirect-connections"
+name "subsec:Indirect-connections"
 
 \end_inset
 
@@ -4326,7 +4347,7 @@ toggle
 Node triggering
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Node-triggering"
+name "subsec:Node-triggering"
 
 \end_inset
 
@@ -4343,7 +4364,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="2" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="30col%">
 <column alignment="center" valignment="top" width="30col%">
 <column alignment="center" valignment="top" width="30col%">
@@ -4819,7 +4840,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="2" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="40col%">
 <column alignment="center" valignment="top" width="40col%">
 <row>
@@ -5069,7 +5090,7 @@ key "Wadler1996law,Tratt2005syntax"
 As we saw in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Node-triggering"
+reference "subsec:Node-triggering"
 
 \end_inset
 
@@ -5535,7 +5556,7 @@ status collapsed
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -5863,7 +5884,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="5">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -6330,7 +6351,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="5">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -6949,7 +6970,7 @@ status open
 \size small
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -7334,7 +7355,7 @@ TRUE
 \begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Array-formulas"
+name "subsec:Array-formulas"
 
 \end_inset
 
@@ -7419,7 +7440,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="6">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -8448,7 +8469,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="6">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top">
 <column alignment="left" valignment="top">
 <column alignment="center" valignment="top">
@@ -9336,6 +9357,11 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout LyX-Code
@@ -9630,6 +9656,11 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout LyX-Code
@@ -9920,6 +9951,11 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout LyX-Code
@@ -10218,7 +10254,7 @@ Enter.
  rules described in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Array-formulas"
+reference "subsec:Array-formulas"
 
 \end_inset
 
@@ -10474,7 +10510,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="6">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -11082,7 +11118,7 @@ It is possible to update control values from the block diagram using more
 Execution modes
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:LabVIEW-execution-modes"
+name "subsec:LabVIEW-execution-modes"
 
 \end_inset
 
@@ -12116,7 +12152,7 @@ input{LvInterpreter_text.tex}
 Demonstration
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:LabVIEW-Demonstration"
+name "subsec:LabVIEW-Demonstration"
 
 \end_inset
 
@@ -12314,7 +12350,7 @@ on application.
 LabVIEW and Pure Data compared
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:LabVIEW-and-PD"
+name "subsec:LabVIEW-and-PD"
 
 \end_inset
 
@@ -13630,12 +13666,17 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
 \begin_inset Tabular
 <lyxtabular version="3" rows="29" columns="7">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="right" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -16543,7 +16584,7 @@ Indirect and dynamic connections
 As discussed in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Indirect-connections"
+reference "subsec:Indirect-connections"
 
 \end_inset
 
@@ -17105,7 +17146,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="4">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top">
@@ -18111,7 +18152,7 @@ Reaktor and Blender are the only two languages to lack a textual sub-language.
  Reaktor evolved to the same three-layer structure described in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:three-layer"
+reference "subsec:three-layer"
 
 \end_inset
 
@@ -18123,7 +18164,7 @@ reference "sub:three-layer"
  in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:LabVIEW-and-PD"
+reference "subsec:LabVIEW-and-PD"
 
 \end_inset
 
@@ -18193,7 +18234,7 @@ status open
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <row>
@@ -18244,6 +18285,11 @@ width "40col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
@@ -18282,6 +18328,11 @@ width "40col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
@@ -18354,6 +18405,11 @@ width "40col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
@@ -18392,6 +18448,11 @@ width "40col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
@@ -18885,7 +18946,7 @@ architecture.
  central and peripheral end-user languages (Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Roles-of-programming"
+reference "subsec:Roles-of-programming"
 
 \end_inset
 
@@ -18894,7 +18955,7 @@ r architecture in successful end-user programmable applications (Section
  
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:three-layer"
+reference "subsec:three-layer"
 
 \end_inset
 
@@ -19129,6 +19190,10 @@ case
 \end_inset
 
  structure, represented in LabVIEW this way:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -19146,7 +19211,7 @@ case
 Through the process explained in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:LabVIEW-Demonstration"
+reference "subsec:LabVIEW-Demonstration"
 
 \end_inset
 
