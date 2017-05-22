@@ -3861,7 +3861,10 @@ In this section, terms in Pd jargon are presented in italics.
 
 , is represented as a graph of nodes (operations) and edges (the flow of
  data between them).
- The user creates nodes of different kinds in a canvas an 
+ The user creates nodes of different kinds in a canvas and connects them
+ via wires.
+ Some of these nodes are interactive, triggering the output of audio waves
+ or changing the parameters that control the shape of these waves.
 \end_layout
 
 \begin_layout Standard
@@ -5318,7 +5321,7 @@ key "ISO29500_OfficeOpenXML"
  Its semantics, however, remain vague.
  Unsurprisingly, as we will see below, these major competitors fail to implement
  full compatibility with Excel's formula language.
- Interestingly, even Excel Online
+ Interestingly, as we will see later in this chapter, even Excel Online
 \begin_inset Foot
 status open
 
@@ -12322,7 +12325,7 @@ Discussion: Is LabVIEW end-user programming?
 When we discuss end-user programming, what defines the concept is not a
  particular programming paradigm, set of constructs or UI style.
  End-user programming is about the fact that the person doing the programming
- is the one who will use the resulting program, and, as a secundary point,
+ is the one who will use the resulting program, and, as a secondary point,
  that they are not programmers by profession.
  That is indeed not always the case in LabVIEW, which is used by professional
  programmers who build, compile and deploy programs for other end-users.
@@ -16344,7 +16347,7 @@ lamp
 \begin_inset Quotes erd
 \end_inset
 
- output marked as always-on just to achieve this same effect 
+ output marked as always-on just to achieve this same effect
 \begin_inset Foot
 status collapsed
 
@@ -16366,6 +16369,8 @@ vent-Table-as-Copy-Buffer-in-REAKTOR-5
 \end_inset
 
 .
+ What should have been a transparent optimization ends up demanding additional
+ actions in the user workflow.
 \end_layout
 
 \begin_layout Subsection
@@ -16429,8 +16434,31 @@ N-to-1 inputs
 \end_layout
 
 \begin_layout Standard
-Pure Data is the only language in our study that supports N-to-1 inputs,
- that is, multiple wires connecting to a single input port in a node.
+Another decision in the design of the evaluation model for a dataflow language
+ is whether it will support multiple wires connecting to a single input
+ port in a node, or 
+\begin_inset Quotes eld
+\end_inset
+
+N-to-1 inputs
+\begin_inset Quotes erd
+\end_inset
+
+ for short, or if all input ports can only take at most one wire (
+\begin_inset Quotes eld
+\end_inset
+
+1-to-1 inputs
+\begin_inset Quotes erd
+\end_inset
+
+).
+ Supporting N-to-1 inputs involves determining how to handle the arrival
+ of multiple data tokens into a single port.
+\end_layout
+
+\begin_layout Standard
+Pure Data is the only language in our study that supports N-to-1 inputs.
  The way it handles these inputs is deeply linked to its dataflow evaluation
  model.
  For audio wires, which use a static and synchronous model, the incoming
@@ -18531,8 +18559,21 @@ reference "fig:Architectural-patterns"
 \end_layout
 
 \begin_layout Standard
-An approach for this is to produce a DSL on top of a reusable component
- (Figure 
+An approach that has been used successfully in the world of scripting is
+ to create a library of domain-specific components of top of a reusable
+ language such that this collection of components becomes effectively an
+ 
+\begin_inset Quotes eld
+\end_inset
+
+embedded DSL
+\begin_inset Quotes erd
+\end_inset
+
+ over the scripting language core.
+ A similar approach could be conceived for end-user programming languages,
+ allowing an application designer to produce a DSL on top of a reusable
+ component implementing the language evaluation core (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Architectural-patterns"
@@ -18540,7 +18581,8 @@ reference "fig:Architectural-patterns"
 \end_inset
 
 (c)).
- For this, the implementation of dataflow languages needs to become reusable.
+ For this to happen, the implementation of dataflow languages needs to become
+ reusable.
  One possibility in this direction is the development of a dataflow engine,
  exposing to the application developer building blocks based on well-understood
  design alternatives, such as those discussed in Chapter 
@@ -18692,7 +18734,8 @@ We aimed to bring a similar evolution to end-user UI-level languages one
  blocks at will.
  However, providing application writers with a toolkit of language building
  blocks could save them considerable development effort, but the resulting
- languages would still be ad hoc.
+ languages could still be subject to the same feature interaction problems
+ we discussed throughout this work.
  As we developed our research, we realized that we needed to step back and
  perform a deeper analysis of the design space instead.
  Not only it is important to know what the choices are, but it is fundamental
@@ -18919,7 +18962,8 @@ key "Barkati:2013:SPA:2543581.2543591,Burlet:2015:ESE:2820518.2820554,Mok1998RTL
 
 .
  None of these languages had any kind of specification, and this work provides
- the first realistic models of their core semantics.
+ the first realistic models of their core semantics, addressing their unique
+ features.
 \end_layout
 
 \begin_layout Description
@@ -18974,7 +19018,7 @@ reference "sec:Discussion:-An-architectural"
 All in all, this work provided a better understanding of the state of dataflow
  languages in the context of end-user programming, with a view towards the
  advancement of this field.
- We believe the the evolution of scripting languages hints at a possible
+ We believe that the evolution of scripting languages hints at a possible
  path for the evolution of UI-level languages.
  Scripting languages evolved from initially ad hoc shell and configuration
  languages, as these started to make use of the lessons learned by earlier
