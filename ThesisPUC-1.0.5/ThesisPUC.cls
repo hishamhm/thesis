@@ -1230,13 +1230,13 @@
   \singlespacing\normalfont%
   \vspace*{\stretch{1}}\par\indent%
   \hspace*{\stretch{2}}%
-  \begin{minipage}[c]{8.2cm}%
+  \begin{minipage}[c]{8.4cm}%
   \it \puc@epigraph%
   \end{minipage}%
   \hspace*{\stretch{1}}%
   \par%
   \begin{flushright}%
-  \textbf{\puc@epigraphauthor}, \textit{\puc@epigraphbook}.%
+  \textbf{\puc@epigraphauthor} \puc@epigraphbook%
   \end{flushright}%
   }
 
@@ -1318,7 +1318,7 @@
 
 
 \AtBeginDocument{%
-  \bibliographystyle{ThesisPUC}%
+  %\bibliographystyle{ThesisPUC}%
   \renewcommand{\key}[1]{#1. }
   \ifthenelse{\boolean{puc@localebr}}%
   {\special{ pdf: docinfo << /Author (\puc@author) /Title (\puc@title)
