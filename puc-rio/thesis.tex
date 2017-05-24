@@ -1,0 +1,251 @@
+%% -*- coding: utf-8; -*-
+
+\documentclass[
+  phd,
+  %% master
+  %% brazilian
+  american
+]{ThesisPUC}
+
+
+%%%
+%%% Additional Packages
+%%%
+
+  %% \usepackage[brazilian]{babel}      %% in ThesisPUC.cls
+  %% \usepackage[utf8]{inputenc}        %% .
+  %% \usepackage[T1]{fontenc}           %% .
+  %% \usepackage{lmodern}               %% .
+  %% \usepackage[pdftex]{graphicx}	%% .
+
+  \usepackage{tabularx}
+  \usepackage{multirow}
+  \usepackage{multicol}
+  \usepackage{colortbl}
+  \usepackage[%
+    dvipsnames,
+    svgnames,
+    x11names,
+    fixpdftex
+  ]{xcolor}
+  \usepackage{numprint}
+  \usepackage{textcomp}
+  \usepackage{booktabs}
+  \usepackage{amsmath}
+  \usepackage{enumitem}
+  \usepackage{amssymb}
+  \usepackage{textcomp}
+% \usepackage{etoolbox}
+
+% LyX comments --Hisham
+\usepackage{comment}
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{rotfloat}
+
+% Interpreter preambles --Hisham
+\input{PdInterpreter_preamble.tex}
+\input{XlInterpreter_preamble.tex}
+\input{LvInterpreter_preamble.tex}
+
+%% numprint 
+\npthousandsep{.}
+\npdecimalsign{,}
+
+%% ThesisPUC option
+%% \tablesmode{figtab} %% [nada, fig, tab ou figtab]
+
+% ============
+% Bibliography
+% ============
+
+\usepackage[numbers]{natbib}
+\bibliographystyle{alpha}
+  
+% Numerar o capítulo da bibliografia --Hugo
+% See http://tex.stackexchange.com/a/116785/45056
+\AtBeginDocument{%
+    \renewcommand{\bibsection}{\chapter{\bibname}}
+}
+
+
+%%%
+%%% Counters
+%%%
+
+%% uncomment and change for other depth values
+%% \setcounter{tocdepth}{3}
+%% \setcounter{lofdepth}{3}
+%% \setcounter{lotdepth}{3}
+%% \setcounter{secnumdepth}{3}
+
+
+%%%
+%%% New commands and other global definitions
+%%%
+
+% \input{defs}
+
+
+%%%
+%%% Misc.
+%%%
+
+\usecolour{true}
+
+
+%%%
+%%% Titulos
+%%%
+
+\author{Hisham Hashem Muhammad}
+\authorR{Hashem Muhammad, Hisham}
+
+\advisor{Roberto Ierusalimschy}{Prof.}
+\advisorR{Ierusalimschy, Roberto}
+
+%% \title{Desenvolvimento de um sistema de microscopia digital para
+%%  classificação automática de tipos de hematita em minério de ferro}
+
+\title{Semânticas de dataflow para aplicações programáveis por usuários finais}
+
+\titleuk{Dataflow Semantics for End-user Programmable Applications}
+
+\day{28}
+\month{April}
+\year{2017}
+
+\city{Rio de Janeiro}
+\CDD{004}
+\department{Informática}
+\program{Informática}
+\school{Centro Técnico Científico}
+\university{Pontifícia Universidade Católica do Rio de Janeiro}
+\uni{PUC--Rio}
+
+
+%%%
+%%% Jury
+%%%
+
+\jury{%
+  \jurymember{Renato Fontoura de Gusmão Cerqueira}{Prof.}
+    {IBM Research - Brazil}{}
+  \jurymember{Raquel Oliveira Prates}{Profª.}
+    {Departamento de Ciência da Computação}{UFMG}
+  \jurymember{Edward Hermann Haeusler}{Prof.}
+    {Departamento de Informática}{PUC-Rio}
+  \jurymember{Simone Diniz Junqueira Barbosa}{Profª.}
+    {Departamento de Informática}{PUC-Rio}
+  \schoolhead{Márcio da Silveira Carvalho}{Prof.}
+}
+
+
+%%%
+%%% Resume
+%%%
+
+\resume{%
+The author graduated in Computer Science from Universidade do Vale
+do Rio dos Sinos --- Unisinos in 2002, and obtained the degree of Mestre at
+Pontifícia Universidade Católica do Rio de Janeiro --- PUC-Rio in 2006.
+He obtained the degree of Doutor at PUC-Rio in 2017,
+where he worked in the field of programming languages.
+}
+
+
+%%%
+%%% Acknowledgment
+%%%
+
+\acknowledgment{%
+\input{ack.tex}
+}
+
+
+%%%
+%%% Catalog prekeywords
+%%%
+
+\catalogprekeywords{%
+  \catalogprekey{Engenharia Química}%
+  \catalogprekey{Engenharia de Materiais}%
+}
+
+
+%%%
+%%% Keywords
+%%%
+
+\keywords{%
+  \key{Linguages de Programação;}
+  \key{Semântica;}
+  \key{Dataflow;}
+  \key{Programação por Usuários Finais.}
+}
+
+\keywordsuk{%
+  \key{Programming Languages;}%
+  \key{Semantics;}%
+  \key{Dataflow;}%
+  \key{End-User Programming.}%
+}
+
+
+%%%
+%%% Abstract
+%%%
+
+\abstract{%
+\input{resumo.tex}
+}
+
+\abstractuk{%
+\input{abstract.tex}
+}
+
+
+%%%
+%%% Dedication
+%%%
+
+\dedication{%
+  To my mother and father,\\
+who never used computers.
+}
+
+%%%
+%%% Epigraph
+%%%
+
+\epigraph{%
+  Every generation has to fight the same battles,\\
+  for there is no final victory\\
+  and there is no final defeat.
+}
+\epigraphauthor{Tony Benn}
+\epigraphbook{(1925 -- 2014)}
+
+%%%
+%%% 
+%%%
+
+\begin{document}
+
+  % \input{abrevs}
+  \input{chapter-1}
+  \input{chapter-2}
+  \input{chapter-3}
+  \input{chapter-4}
+  \input{chapter-5}
+  \input{chapter-6}
+  \input{chapter-7}
+  \input{chapter-8}
+  \input{chapter-9}
+  %% ...
+  \arial
+  \bibliography{thesis}
+  \normalfont
+  \input{appendix}
+
+\end{document}

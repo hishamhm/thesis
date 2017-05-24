@@ -1,0 +1,24 @@
+#!/usr/bin/env lua
+
+local input = arg[1]
+local chap_num = tonumber(arg[2])
+
+local chap = 0
+local state = "looking"
+for line in io.lines(input) do
+   if state == "looking" then
+      if line:match("\\chapter{") then
+         chap = chap + 1
+         if chap == chap_num then
+            print(line)
+            state = "writing"
+         end
+      end
+   elseif state == "writing" then
+      if line:match("\\chapter{") then
+         break
+      end
+      print(line)
+   end
+end
+

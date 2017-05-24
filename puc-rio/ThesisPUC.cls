@@ -1,0 +1,1 @@
+../ThesisPUC-1.0.5/ThesisPUC.cls
