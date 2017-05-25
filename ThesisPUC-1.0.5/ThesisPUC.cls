@@ -57,7 +57,7 @@
 \RequirePackage{nth}
 
 % hyphenation
-\RequirePackage[brazilian, american]{babel}
+\RequirePackage[american,brazilian]{babel}
 
 % PhD thesis or MsC dissertation
 \newboolean{puc@phd}
@@ -1125,7 +1125,7 @@
   \par%
   \noindent \large \arial \textbf{Palavras-chave} \normalfont \normalsize%
   \par%
-  \renewcommand{\key}[1]{##1 \hspace{3mm}}%
+  \renewcommand{\key}[1]{##1}%
   \indent \puc@keywords%
   \vspace*{\stretch{4}}%
   \par%
@@ -1170,7 +1170,7 @@
   \par%
   \noindent \large \arial \textbf{Keywords} \normalfont \normalsize%
   \par%
-  \renewcommand{\key}[1]{##1 \hspace{3mm}}%
+  \renewcommand{\key}[1]{##1}%
   \indent \puc@keywordsuk%
   \vspace*{\stretch{4}}%
   \par%

@@ -334,16 +334,16 @@ during execution.
 \>[7]{}\Varid{acc}\;(\Varid{events},\Varid{states}\mathord{@}(\Varid{s}\mathbin{:}\Varid{ss}))\;\Varid{step}\mathrel{=}{}\<[E]%
 \\
 \>[7]{}\hsindent{3}{}\<[10]%
-\>[10]{}(\Varid{sort}\;(events_{next}\plus \Varid{absTime}\;(\Varid{sSched}\;\Varid{s'})\;\Varid{step}),\Varid{s'}\mathbin{:}\Varid{states}){}\<[E]%
+\>[10]{}(\Varid{sort}\;(evs_{next}\plus \Varid{absTime}\;(\Varid{sSched}\;\Varid{s'})\;\Varid{step}),\Varid{s'}\mathbin{:}\Varid{states}){}\<[E]%
 \\
 \>[7]{}\hsindent{3}{}\<[10]%
 \>[10]{}\mathbf{where}{}\<[E]%
 \\
 \>[10]{}\hsindent{3}{}\<[13]%
-\>[13]{}(events_{curr},events_{next})\mathrel{=}\Varid{span}\;(\lambda (\Conid{PdEvent}\;\Varid{ts}\;\anonymous \;\anonymous )\to \Varid{ts}\equiv \Varid{step})\;\Varid{events}{}\<[E]%
+\>[13]{}(evs_{curr},evs_{next})\mathrel{=}\Varid{span}\;(\lambda (\Conid{PdEvent}\;\Varid{ts}\;\anonymous \;\anonymous )\to \Varid{ts}\equiv \Varid{step})\;\Varid{events}{}\<[E]%
 \\
 \>[10]{}\hsindent{3}{}\<[13]%
-\>[13]{}\Varid{s'}\mathrel{=}\Varid{runStep}\;\Varid{p}\;(\Varid{s}\;\{\mskip1.5mu \Varid{sSched}\mathrel{=}[\mskip1.5mu \mskip1.5mu]\mskip1.5mu\})\;events_{curr}{}\<[E]%
+\>[13]{}\Varid{s'}\mathrel{=}\Varid{runStep}\;\Varid{p}\;(\Varid{s}\;\{\mskip1.5mu \Varid{sSched}\mathrel{=}[\mskip1.5mu \mskip1.5mu]\mskip1.5mu\})\;evs_{curr}{}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
@@ -674,7 +674,7 @@ given name.
 \>[7]{}\Conid{PdReceiverErr}\to {}\<[E]%
 \\
 \>[7]{}\hsindent{3}{}\<[10]%
-\>[10]{}\Varid{printOut}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 \$1:~symbol~needed~as~message~destination\char34}\mskip1.5mu]\;\Varid{s'}{}\<[E]%
+\>[10]{}\Varid{printOut}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 \$1:~symbol~needed~as~msg~destination\char34}\mskip1.5mu]\;\Varid{s'}{}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
@@ -831,6 +831,7 @@ buffer is propagated to the inlets of the nodes to which they are connected.
 \column{10}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{13}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{31}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{runDspTree}\mathbin{::}\Conid{PdPatch}\to \Conid{PdState}\to \Conid{PdState}{}\<[E]%
@@ -844,7 +845,10 @@ buffer is propagated to the inlets of the nodes to which they are connected.
 \>[4]{}\mathbf{where}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
-\>[7]{}\Varid{nss'}\mathrel{=}\Varid{foldl'}\;\Varid{handle}\;(\Varid{zeroDspInlets}\;(\Varid{sNStates}\;\Varid{s})\;(\Varid{pDspSort}\;\Varid{p}))\;(\Varid{pDspSort}\;\Varid{p}){}\<[E]%
+\>[7]{}\Varid{dspSort}\mathrel{=}\Varid{pDspSort}\;\Varid{p}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{nss'}\mathrel{=}\Varid{foldl'}\;\Varid{handle}\;(\Varid{zeroDspInlets}\;(\Varid{sNStates}\;\Varid{s})\;\Varid{dspSort})\;\Varid{dspSort}{}\<[E]%
 \\[\blanklineskip]%
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{handle}\mathbin{::}(\Conid{Seq}\;\Conid{PdNodeState})\to \Conid{Int}\to (\Conid{Seq}\;\Conid{PdNodeState}){}\<[E]%
@@ -871,7 +875,10 @@ buffer is propagated to the inlets of the nodes to which they are connected.
 \>[13]{}\Varid{nss''}\mathrel{=}\Varid{update}\;i_{N}\;(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{mem'})\;\Varid{nss}{}\<[E]%
 \\
 \>[10]{}\hsindent{3}{}\<[13]%
-\>[13]{}\Varid{propagate}\mathbin{::}[\mskip1.5mu [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\mskip1.5mu]\to (\Conid{Seq}\;\Conid{PdNodeState})\to (\cdot \rhd \cdot )\to (\Conid{Seq}\;\Conid{PdNodeState}){}\<[E]%
+\>[13]{}\Varid{propagate}\mathbin{::}{}\<[27]%
+\>[27]{}[\mskip1.5mu [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\mskip1.5mu]\to (\Conid{Seq}\;\Conid{PdNodeState})\to (\cdot \rhd \cdot ){}\<[E]%
+\\
+\>[27]{}\to (\Conid{Seq}\;\Conid{PdNodeState}){}\<[E]%
 \\
 \>[10]{}\hsindent{3}{}\<[13]%
 \>[13]{}\Varid{propagate}\;\Varid{outputs}\;\Varid{nss}\;((\Varid{src},\Varid{outl})\rhd (\Varid{dst},\Varid{inl})){}\<[E]%
@@ -968,8 +975,12 @@ values are internally floats between -1.0 and 1.0).
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{addToInlet}\mathbin{::}(\Conid{Int},\Conid{Int})\to [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\to (\Conid{Seq}\;\Conid{PdNodeState})\to (\Conid{Seq}\;\Conid{PdNodeState}){}\<[E]%
+\>[B]{}\Varid{addToInlet}\mathbin{::}{}\<[16]%
+\>[16]{}(\Conid{Int},\Conid{Int})\to [\mskip1.5mu \Conid{PdAtom}\mskip1.5mu]\to (\Conid{Seq}\;\Conid{PdNodeState}){}\<[E]%
+\\
+\>[16]{}\to (\Conid{Seq}\;\Conid{PdNodeState}){}\<[E]%
 \\
 \>[B]{}\Varid{addToInlet}\;(\Varid{dst},\Varid{inl})\;\Varid{atoms}\;\Varid{nss}\mathrel{=}\Varid{update}\;\Varid{dst}\;\Varid{ns'}\;\Varid{nss}{}\<[E]%
 \\
@@ -1051,6 +1062,7 @@ functions that create the initial state.
 \end{hscode}\resethooks
 
 \subsection{Operations}
+\label{msgs}
 
 The graphical language of Pure Data is graph-based and contains only nodes and
 edges. The contents of nodes (object boxes, message boxes and atom boxes) are
@@ -1139,7 +1151,7 @@ value. When given a \texttt{bang}, they just propagate the value.
 \ColumnHook
 \end{hscode}\resethooks
 
-\subsubsection{An object with side-effects: \texttt{print}}
+\subsubsection{An object with side-effects: \texttt{print}\label{pdinterpreterprint}}
 
 The \texttt{print} object accepts data through its inlet and prints it to
 the log console. It demonstrates the use of the log console as a global
@@ -1167,6 +1179,7 @@ side-effect.
 \end{hscode}\resethooks
 
 \subsubsection{An object with hot and cold inlets: \texttt{+}}
+\label{pdinterpreterplus}
 
 In Pure Data, the first inlet of a node is the ``hot'' inlet; when data is
 received through it, the action of the node is performed. When data arrives in
@@ -1251,6 +1264,7 @@ the most recently received values in the inlet buffers are used for the sum inst
 \end{hscode}\resethooks
 
 \subsubsection{Objects producing timed events: \text{\tt delay} and \text{\tt metro}}
+\label{pdinterpreterdelaymetro}
 
 The \texttt{delay} object demonstrates how objects generate future events.
 We handle four cases: receiving a \texttt{bang} message schedules a
@@ -1260,8 +1274,12 @@ node's outlets.
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{sendMsg}\;(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 delay\char34},\Conid{PdFloat}\;\Varid{time}\mskip1.5mu]\;\Varid{inl}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\;\mathrm{0}\;\Varid{ns}\mathrel{=}{}\<[E]%
+\>[B]{}\Varid{sendMsg}\;(\Conid{PdObj}\;{}\<[17]%
+\>[17]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 delay\char34},\Conid{PdFloat}\;\Varid{time}\mskip1.5mu]\;\Varid{inl}\;\anonymous )\;{}\<[E]%
+\\
+\>[17]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\;\mathrm{0}\;\Varid{ns}\mathrel{=}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}(\Varid{ns},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu \Conid{PdEvent}\;(\Varid{floor}\;\Varid{time})\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 tick\char34}\mskip1.5mu]\mskip1.5mu]){}\<[E]%
@@ -1288,6 +1306,7 @@ internally-scheduled \texttt{tick} when the metronome is either on or off.
 \column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{10}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{18}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{sendMsg}\;{}\<[10]%
 \>[10]{}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 metro\char34}\mathbin{:}\Varid{xs})\;\Varid{inl}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
@@ -1311,7 +1330,10 @@ internally-scheduled \texttt{tick} when the metronome is either on or off.
 \>[4]{}\mathbf{in}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
-\>[7]{}(\Varid{ns'},[\mskip1.5mu \mskip1.5mu],[\mskip1.5mu [\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\mskip1.5mu],[\mskip1.5mu \Conid{PdEvent}\;(\Varid{floor}\;\Varid{time})\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 tick\char34}\mskip1.5mu]\mskip1.5mu]){}\<[E]%
+\>[7]{}(\Varid{ns'},[\mskip1.5mu \mskip1.5mu],{}\<[18]%
+\>[18]{}[\mskip1.5mu [\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 bang\char34}\mskip1.5mu]\mskip1.5mu],{}\<[E]%
+\\
+\>[18]{}[\mskip1.5mu \Conid{PdEvent}\;(\Varid{floor}\;\Varid{time})\;\mathrm{0}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 tick\char34}\mskip1.5mu]\mskip1.5mu]){}\<[E]%
 \\[\blanklineskip]%
 \>[B]{}\Varid{sendMsg}\;{}\<[10]%
 \>[10]{}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 metro\char34}\mathbin{:}\Varid{xs})\;\Varid{inl}\;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 stop\char34}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
@@ -1358,7 +1380,10 @@ type in function \ensuremath{\Varid{performDsp}}, in Section~\ref{oscdsp}.
 \column{14}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{sendMsg}\;{}\<[10]%
-\>[10]{}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 osc\char126 \char34}\mathbin{:}\anonymous )\;\anonymous \;\anonymous )\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{freq}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
+\>[10]{}(\Conid{PdObj}\;(\Conid{PdSymbol}\;\text{\tt \char34 osc\char126 \char34}\mathbin{:}\anonymous )\;\anonymous \;\anonymous )\;{}\<[E]%
+\\
+\>[10]{}\hsindent{4}{}\<[14]%
+\>[14]{}[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 float\char34},\Conid{PdFloat}\;\Varid{freq}\mskip1.5mu]\;\mathrm{0}\;{}\<[E]%
 \\
 \>[10]{}\hsindent{4}{}\<[14]%
 \>[14]{}(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \anonymous ,\Varid{position}\mskip1.5mu])\mathrel{=}{}\<[E]%
@@ -1379,6 +1404,7 @@ from the current value to the new target.
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{14}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{sendMsg}\;{}\<[10]%
@@ -1403,7 +1429,12 @@ from the current value to the new target.
 \>[7]{}\Varid{mem'}\mathrel{=}{}\<[E]%
 \\
 \>[7]{}\hsindent{3}{}\<[10]%
-\>[10]{}[\mskip1.5mu \Conid{PdFloat}\;\Varid{current},\Conid{PdFloat}\;\Varid{amp},\Conid{PdFloat}\;((\Varid{amp}\mathbin{-}\Varid{current})\mathbin{/}(\Varid{time}\mathbin{*}\mathrm{32}))\mskip1.5mu]{}\<[E]%
+\>[10]{}[\mskip1.5mu {}\<[13]%
+\>[13]{}\Conid{PdFloat}\;\Varid{current},{}\<[E]%
+\\
+\>[13]{}\Conid{PdFloat}\;\Varid{amp},{}\<[E]%
+\\
+\>[13]{}\Conid{PdFloat}\;((\Varid{amp}\mathbin{-}\Varid{current})\mathbin{/}(\Varid{time}\mathbin{*}\mathrm{32}))\mskip1.5mu]{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\mathbf{in}{}\<[E]%
@@ -1512,10 +1543,22 @@ through the node's outlet.
 \column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{13}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{performDsp}\;\Varid{obj}\mathord{@}(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 osc\char126 \char34},\Conid{PdFloat}\;\Varid{freq}\mskip1.5mu]\;\anonymous \;\anonymous )\;(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \mskip1.5mu])\mathrel{=}{}\<[E]%
+\>[B]{}\Varid{performDsp}\;{}\<[13]%
+\>[13]{}\Varid{obj}\mathord{@}(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 osc\char126 \char34},\Conid{PdFloat}\;\Varid{freq}\mskip1.5mu]\;\anonymous \;\anonymous ){}\<[E]%
+\\
+\>[13]{}(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \mskip1.5mu])\mathrel{=}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
-\>[4]{}\Varid{performDsp}\;\Varid{obj}\;(\Conid{PdNodeState}\;\Varid{ins}\;[\mskip1.5mu \Conid{PdFloat}\;((\mathrm{2}\mathbin{*}\Varid{pi})\mathbin{/}(\mathrm{32000}\mathbin{/}\Varid{freq})),\Conid{PdFloat}\;\mathrm{0}\mskip1.5mu]){}\<[E]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{values}\mathrel{=}[\mskip1.5mu \Conid{PdFloat}\;((\mathrm{2}\mathbin{*}\Varid{pi})\mathbin{/}(\mathrm{32000}\mathbin{/}\Varid{freq})),\Conid{PdFloat}\;\mathrm{0}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{performDsp}\;\Varid{obj}\;(\Conid{PdNodeState}\;\Varid{ins}\;\Varid{values}){}\<[E]%
 \\[\blanklineskip]%
 \>[B]{}\Varid{performDsp}\;{}\<[13]%
 \>[13]{}(\Conid{PdObj}\;[\mskip1.5mu \Conid{PdSymbol}\;\text{\tt \char34 osc\char126 \char34},\anonymous \mskip1.5mu]\;\anonymous \;\anonymous )\;{}\<[E]%

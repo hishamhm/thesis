@@ -80,7 +80,7 @@ of addresses, representing row and column, and each of which may be absolute
 \ColumnHook
 \end{hscode}\resethooks
 
-Cells contain formulas. As explained in Section \ref{sub:Array-formulas},
+Cells contain formulas. As explained in Section \ref{subsec:Array-formulas},
 formulas can be evaluated in a special mode called ``array formula''. The
 indication if the formula will be evaluated as an array formula is a property
 of the cell, not the formula.
@@ -642,8 +642,12 @@ way.
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{calcCell}\mathbin{::}\Conid{Set}\;\llparenthesis \cdot , \cdot \rrparenthesis \to \Conid{XlCells}\to \Conid{XlValues}\to \llparenthesis \cdot , \cdot \rrparenthesis \to \Conid{XlCell}\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
+\>[B]{}\Varid{calcCell}\mathbin{::}{}\<[14]%
+\>[14]{}\Conid{Set}\;\llparenthesis \cdot , \cdot \rrparenthesis \to \Conid{XlCells}\to \Conid{XlValues}\to \llparenthesis \cdot , \cdot \rrparenthesis \to \Conid{XlCell}{}\<[E]%
+\\
+\>[14]{}\to (\Conid{XlValue},\Conid{XlValues}){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
@@ -657,7 +661,7 @@ and some evaluate arguments in an array context. This gives us four evaluation
 rules in total.
 
 This is the core of the incompatibility between spreadsheet formula languages.
-As our examples in Section~\ref{sub:Array-formulas} demonstrate, each
+As our examples in Section~\ref{subsec:Array-formulas} demonstrate, each
 application uses a different set of rules as to when to switch to array
 evaluation, and to what to do in each evaluation mode.
 
@@ -1236,6 +1240,7 @@ an updated map of values.
 \column{16}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{19}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{30}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{evalFormula}\;\Varid{ev}\;\Varid{vs}\;(\Conid{XlRef}\;\Varid{ref'})\mathrel{=}{}\<[E]%
 \\
@@ -1245,11 +1250,17 @@ an updated map of values.
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{ref}\mathrel{=}\Varid{toAbs}\;(\Varid{ePos}\;\Varid{ev})\;\Varid{ref'}{}\<[E]%
 \\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{visiting}\mathrel{=}\Varid{eVisiting}\;\Varid{ev}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{cells}\mathrel{=}\Varid{eCells}\;\Varid{ev}{}\<[E]%
+\\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\mathbf{in}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
-\>[7]{}\mathbf{if}\;\Varid{ref}\in(\Varid{eVisiting}\;\Varid{ev}){}\<[E]%
+\>[7]{}\mathbf{if}\;\Varid{ref}\in\Varid{visiting}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\mathbf{then}\;(\Conid{XlError}\;\text{\tt \char34 \#LOOP!\char34},\Varid{vs}){}\<[E]%
@@ -1269,7 +1280,7 @@ an updated map of values.
 \>[19]{}\to {}\<[E]%
 \\
 \>[10]{}\hsindent{3}{}\<[13]%
-\>[13]{}\mathbf{case}\;\Varid{\Conid{Map}.lookup}\;\Varid{ref}\;(\Varid{eCells}\;\Varid{ev})\;\mathbf{of}{}\<[E]%
+\>[13]{}\mathbf{case}\;\Varid{\Conid{Map}.lookup}\;\Varid{ref}\;\Varid{cells}\;\mathbf{of}{}\<[E]%
 \\
 \>[10]{}\hsindent{3}{}\<[13]%
 \>[13]{}\Conid{Nothing}{}\<[24]%
@@ -1286,10 +1297,12 @@ an updated map of values.
 \>[16]{}\mathbf{where}{}\<[E]%
 \\
 \>[16]{}\hsindent{3}{}\<[19]%
-\>[19]{}(\Varid{v'},\Varid{vs'})\mathrel{=}\Varid{calcCell}\;(\Varid{\Conid{Set}.insert}\;\Varid{ref}\;(\Varid{eVisiting}\;\Varid{ev}))\;(\Varid{eCells}\;\Varid{ev})\;\Varid{vs}\;\Varid{ref}\;\Varid{cell}{}\<[E]%
+\>[19]{}(\Varid{v'},\Varid{vs'}){}\<[30]%
+\>[30]{}\mathrel{=}\Varid{calcCell}\;(\Varid{\Conid{Set}.insert}\;\Varid{ref}\;\Varid{visiting})\;\Varid{cells}\;\Varid{vs}\;\Varid{ref}\;\Varid{cell}{}\<[E]%
 \\
 \>[16]{}\hsindent{3}{}\<[19]%
-\>[19]{}\Varid{vs''}\mathrel{=}\Varid{insert}\;\Varid{ref}\;\Varid{v'}\;\Varid{vs'}{}\<[E]%
+\>[19]{}\Varid{vs''}{}\<[30]%
+\>[30]{}\mathrel{=}\Varid{insert}\;\Varid{ref}\;\Varid{v'}\;\Varid{vs'}{}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 

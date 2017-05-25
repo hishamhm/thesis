@@ -1,5 +1,7 @@
 %% -*- coding: utf-8; -*-
 
+\PassOptionsToPackage{hyphens}{url}
+
 \documentclass[
   phd,
   %% master
@@ -7,12 +9,14 @@
   american
 ]{ThesisPUC}
 
+\usepackage{helvet}
+\renewcommand{\autolabel}[1]{#1}
+%\renewcommand{\arial}{\fontfamily{helvetica}}
 
 %%%
 %%% Additional Packages
 %%%
 
-  %% \usepackage[brazilian]{babel}      %% in ThesisPUC.cls
   %% \usepackage[utf8]{inputenc}        %% .
   %% \usepackage[T1]{fontenc}           %% .
   %% \usepackage{lmodern}               %% .
@@ -43,6 +47,17 @@
 \usepackage{rotating}
 \usepackage{rotfloat}
 
+\usepackage{babel}
+\usepackage{array}
+\usepackage{verbatim}
+\usepackage{rotating}
+\usepackage{rotfloat}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%\usepackage[numbers]{natbib}
+
 % Interpreter preambles --Hisham
 \input{PdInterpreter_preamble.tex}
 \input{XlInterpreter_preamble.tex}
@@ -59,7 +74,7 @@
 % Bibliography
 % ============
 
-\usepackage[numbers]{natbib}
+\usepackage{natbib}
 \bibliographystyle{alpha}
   
 % Numerar o capítulo da bibliografia --Hugo
@@ -74,11 +89,10 @@
 %%%
 
 %% uncomment and change for other depth values
-%% \setcounter{tocdepth}{3}
-%% \setcounter{lofdepth}{3}
-%% \setcounter{lotdepth}{3}
-%% \setcounter{secnumdepth}{3}
-
+\setcounter{tocdepth}{4}
+\setcounter{lofdepth}{4}
+\setcounter{lotdepth}{4}
+\setcounter{secnumdepth}{4}
 
 %%%
 %%% New commands and other global definitions
@@ -168,8 +182,7 @@ where he worked in the field of programming languages.
 %%%
 
 \catalogprekeywords{%
-  \catalogprekey{Engenharia Química}%
-  \catalogprekey{Engenharia de Materiais}%
+  \catalogprekey{Informática}%
 }
 
 
@@ -178,17 +191,17 @@ where he worked in the field of programming languages.
 %%%
 
 \keywords{%
-  \key{Linguages de Programação;}
-  \key{Semântica;}
-  \key{Dataflow;}
-  \key{Programação por Usuários Finais.}
+  \key{Linguages de Programação};
+  \key{Semântica};
+  \key{Dataflow};
+  \key{Programação por Usuários Finais}.
 }
 
 \keywordsuk{%
-  \key{Programming Languages;}%
-  \key{Semantics;}%
-  \key{Dataflow;}%
-  \key{End-User Programming.}%
+  \key{Programming Languages};
+  \key{Semantics};
+  \key{Dataflow};
+  \key{End-User Programming}.
 }
 
 

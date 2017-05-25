@@ -1,0 +1,47 @@
+\appendix
+
+\chapter{Demonstration of the interpreter modeling Pure Data\label{appendix:Pure-Data}}
+
+\chaptermark{Pure Data interpreter}
+
+\input{PdInterpreter_demo.tex}
+
+\chapter{Demonstration of the spreadsheet interpreter\label{appendix:Spreadsheet}}
+
+\chaptermark{Spreadsheet interpreter}
+
+We present here a demonstration of the spreadsheet interpreter in
+use. This appendix is a Literate Haskell program including the complete
+source code of the demonstration.
+
+This program imports the interpreter defined in Chapter \ref{chap:Spreadsheets}
+as a module, as well as some standard modules from the Haskell Platform.
+We also use one additional module for tabular pretty-printing of the
+output: \texttt{Text.PrettyPrint.Boxes}, available from Hackage, the
+Haskell community's package repository\footnote{\url{https://hackage.haskell.org/package/boxes}}.
+
+\input{XlInterpreter_demo.tex}
+
+\chapter{Demonstration of the interpreter modeling LabVIEW\label{appendix:LabVIEW}}
+
+\chaptermark{LabVIEW interpreter}
+
+We present here a demonstration of the interpreter modeling LabVIEW.
+We produced several examples, which are available at $ $\url{https://hisham.hm/thesis/},
+along with the resulting outputs of their execution. Here, we present
+only one of them. This is the test for the ``case'' structure, represented
+in LabVIEW this way:
+
+\begin{center}
+\includegraphics[scale=0.75]{labview_appendix_example}
+\par\end{center}
+
+Through the process explained in Section \ref{subsec:LabVIEW-Demonstration},
+our interpreter produces a visualization of the execution. This is
+a frame of the resulting animation, just before performing the division:
+
+\includegraphics[width=0.99\columnwidth]{lv_graph_example}
+
+The test program for this example is the following.
+
+\input{LvInterpreter_demo.tex}

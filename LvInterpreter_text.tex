@@ -188,7 +188,7 @@ immediately fires its value.
 
 A feedback node holds the value it receives through its input port and fires
 it the next time the program is executed, when running in continuous mode
-as explained in Section~\ref{sub:LabVIEW-execution-modes}.
+as explained in Section~\ref{subsec:LabVIEW-execution-modes}.
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -364,8 +364,8 @@ object.
 \column{20}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{32}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\mathbf{data}\;\hyperlink{LvState}{LvState}\mathrel{=}{}\<[17]%
-\>[17]{}\hyperlink{LvState}{LvState}\;\{\mskip1.5mu {}\<[E]%
+\>[B]{}\mathbf{data}\;\Conid{LvState}\mathrel{=}{}\<[17]%
+\>[17]{}\Conid{LvState}\;\{\mskip1.5mu {}\<[E]%
 \\
 \>[17]{}\hsindent{3}{}\<[20]%
 \>[20]{}\Varid{sTs}{}\<[32]%
@@ -454,7 +454,7 @@ running.
 For subgraph structures, such as loops, the continuation of its execution is
 the state of the sub-VI. Note that, this way, the interpreter models a
 hierarchical tree of scheduler queues, as each structure node keeps an
-\ensuremath{\hyperlink{LvState}{LvState}} with its own \ensuremath{\Varid{sSched}} queue. This way, multiple subgraphs can run
+\ensuremath{\Conid{LvState}} with its own \ensuremath{\Varid{sSched}} queue. This way, multiple subgraphs can run
 concurrently.
 
 \begin{hscode}\SaveRestoreHook
@@ -485,7 +485,7 @@ concurrently.
 \>[17]{}\mskip1.5mu\}{}\<[E]%
 \\
 \>[14]{}\mid {}\<[14E]%
-\>[17]{}\Conid{LvKState}\;\hyperlink{LvState}{LvState}{}\<[E]%
+\>[17]{}\Conid{LvKState}\;\Conid{LvState}{}\<[E]%
 \\[\blanklineskip]%
 \>[B]{}\mathbf{instance}\;\Conid{Show}\;\Conid{LvCont}\;\mathbf{where}{}\<[E]%
 \\
@@ -542,7 +542,7 @@ updated.
 \ColumnHook
 \end{hscode}\resethooks
 
-Note that \ensuremath{\Conid{LvWorld}} is a subset of our \ensuremath{\hyperlink{LvState}{LvState}} object, which represents the
+Note that \ensuremath{\Conid{LvWorld}} is a subset of our \ensuremath{\Conid{LvState}} object, which represents the
 memory of the VI being executed. In this sense, this is the part of the
 outside world that is visible to the function.
 
@@ -554,7 +554,7 @@ reaching indicators, which provide feedback to the user via their
 representations in the front panel.
 
 This interpreter models a single-shot execution (as discussed in
-Section~\ref{sub:LabVIEW-execution-modes}). Continuous execution is
+Section~\ref{subsec:LabVIEW-execution-modes}). Continuous execution is
 semantically equivalent as enclosing the entire VI in a while-loop.
 
 \subsubsection{Main loop}
@@ -613,22 +613,22 @@ elements to be executed.
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{23}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{33}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{37}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{39}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{41}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{42}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{52}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{53}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{58}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{initialState}\mathbin{::}\Conid{Int}\to \Conid{Int}\to \Conid{LvVI}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\>[B]{}\Varid{initialState}\mathbin{::}\Conid{Int}\to \Conid{Int}\to \Conid{LvVI}\to \Conid{LvState}{}\<[E]%
 \\
 \>[B]{}\Varid{initialState}\;\Varid{ts}\;\Varid{prng}\;\Varid{vi}\mathrel{=}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
-\>[4]{}\hyperlink{LvState}{LvState}\;\{\mskip1.5mu {}\<[E]%
+\>[4]{}\Conid{LvState}\;\{\mskip1.5mu {}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{sTs}{}\<[19]%
@@ -667,25 +667,28 @@ elements to be executed.
 \>[7]{}\Varid{makeNState}\mathbin{::}(\Conid{Int},(\Conid{String},\Conid{LvNode}))\to \Conid{LvNodeState}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
-\>[7]{}\Varid{makeNState}\;(\Varid{i},(\Varid{name},\Varid{node}))\mathrel{=}{}\<[39]%
-\>[39]{}\Conid{LvNodeState}\;\{\mskip1.5mu {}\<[E]%
+\>[7]{}\Varid{makeNState}\;(\Varid{i},(\Varid{name},\Varid{node}))\mathrel{=}{}\<[E]%
 \\
-\>[39]{}\hsindent{3}{}\<[42]%
-\>[42]{}\Varid{nsInputs}{}\<[52]%
-\>[52]{}\mathrel{=}\Varid{emptyInputs}\mathbin{\$}\Varid{nrInputs}\;\Varid{i}\;\Varid{node},{}\<[E]%
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Conid{LvNodeState}\;\{\mskip1.5mu {}\<[E]%
 \\
-\>[39]{}\hsindent{3}{}\<[42]%
-\>[42]{}\Varid{nsCont}{}\<[52]%
-\>[52]{}\mathrel{=}\Conid{Nothing}{}\<[E]%
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{nsInputs}{}\<[23]%
+\>[23]{}\mathrel{=}\Varid{emptyInputs}\mathbin{\$}\Varid{nrInputs}\;\Varid{i}\;\Varid{node},{}\<[E]%
 \\
-\>[39]{}\mskip1.5mu\}{}\<[E]%
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{nsCont}{}\<[23]%
+\>[23]{}\mathrel{=}\Conid{Nothing}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mskip1.5mu\}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{nrInputs}\mathbin{::}\Conid{Int}\to \Conid{LvNode}\to \Conid{Int}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{nrInputs}\;\Varid{i}\;(\Conid{LvFunction}\;\anonymous ){}\<[41]%
-\>[41]{}\mathrel{=}\Varid{nrConnectedInputs}\;\Varid{i}\;\Varid{vi}{}\<[E]%
+\>[41]{}\mathrel{=}\Varid{nrWiredInputs}\;\Varid{i}\;\Varid{vi}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{nrInputs}\;\anonymous \;(\Conid{LvConstant}\;\anonymous ){}\<[41]%
@@ -787,19 +790,19 @@ particular order.
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{isBootNode}\;\Varid{i}\;(\anonymous ,\Conid{LvFunction}\;\anonymous ){}\<[51]%
-\>[51]{}\mid \Varid{nrConnectedInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
+\>[51]{}\mid \Varid{nrWiredInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{isBootNode}\;\Varid{i}\;(\anonymous ,\Conid{LvStructure}\;\Conid{LvWhile}\;\anonymous ){}\<[51]%
-\>[51]{}\mid \Varid{nrConnectedInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
+\>[51]{}\mid \Varid{nrWiredInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{isBootNode}\;\Varid{i}\;(\anonymous ,\Conid{LvStructure}\;\Conid{LvSubVI}\;\anonymous ){}\<[51]%
-\>[51]{}\mid \Varid{nrConnectedInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
+\>[51]{}\mid \Varid{nrWiredInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{isBootNode}\;\Varid{i}\;(\anonymous ,\Conid{LvStructure}\;\Conid{LvSequence}\;\anonymous ){}\<[51]%
-\>[51]{}\mid \Varid{nrConnectedInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
+\>[51]{}\mid \Varid{nrWiredInputs}\;\Varid{i}\;\Varid{vi}\equiv \mathrm{0}\mathrel{=}\Conid{True}{}\<[E]%
 \\
 \>[4]{}\hsindent{3}{}\<[7]%
 \>[7]{}\Varid{isBootNode}\;\anonymous \;\anonymous \mathrel{=}\Conid{False}{}\<[E]%
@@ -818,9 +821,9 @@ of wires.
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{nrConnectedInputs}\mathbin{::}\Conid{Int}\to \Conid{LvVI}\to \Conid{Int}{}\<[E]%
+\>[B]{}\Varid{nrWiredInputs}\mathbin{::}\Conid{Int}\to \Conid{LvVI}\to \Conid{Int}{}\<[E]%
 \\
-\>[B]{}\Varid{nrConnectedInputs}\;\Varid{idx}\;\Varid{vi}\mathrel{=}{}\<[E]%
+\>[B]{}\Varid{nrWiredInputs}\;\Varid{idx}\;\Varid{vi}\mathrel{=}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\mathrm{1}\mathbin{+}\Varid{foldl'}\;\Varid{maxInput}\;(\mathbin{-}\mathrm{1})\;(\Varid{vWires}\;\Varid{vi}){}\<[E]%
@@ -854,7 +857,7 @@ is a simulation of a system clock, to be used by timer operations.
 \column{16}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{21}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{run}\mathbin{::}\hyperlink{LvState}{LvState}\to \Conid{LvVI}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\>[B]{}\Varid{run}\mathbin{::}\Conid{LvState}\to \Conid{LvVI}\to \Conid{LvState}{}\<[E]%
 \\[\blanklineskip]%
 \>[B]{}\Varid{run}\;\Varid{s}\;\Varid{vi}{}\<[E]%
 \\
@@ -883,7 +886,7 @@ element:
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{runEvent}\mathbin{::}\llparenthesis \cdot , \cdot \rrparenthesis \to \hyperlink{LvState}{LvState}\to \Conid{LvVI}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\>[B]{}\Varid{runEvent}\mathbin{::}\llparenthesis \cdot , \cdot \rrparenthesis \to \Conid{LvState}\to \Conid{LvVI}\to \Conid{LvState}{}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
@@ -1013,7 +1016,7 @@ scheduler queue, and replaces the node state for the node at the given index.
 \column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{17}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{updateNode}\mathbin{::}\Conid{Int}\to \hyperlink{LvState}{LvState}\to \Conid{LvNodeState}\to [\mskip1.5mu \llparenthesis \cdot , \cdot \rrparenthesis \mskip1.5mu]\to \hyperlink{LvState}{LvState}{}\<[E]%
+\>[B]{}\Varid{updateNode}\mathbin{::}\Conid{Int}\to \Conid{LvState}\to \Conid{LvNodeState}\to [\mskip1.5mu \llparenthesis \cdot , \cdot \rrparenthesis \mskip1.5mu]\to \Conid{LvState}{}\<[E]%
 \\
 \>[B]{}\Varid{updateNode}\;\Varid{idx}\;\Varid{s}\;\Varid{ns}\;\Varid{sched}\mathrel{=}{}\<[E]%
 \\
@@ -1051,7 +1054,7 @@ nodes.
 \column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{10}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{fire}\mathbin{::}\Conid{LvVI}\to \Conid{LvValue}\to \llparenthesis \cdot , \cdot , \cdot \rrparenthesis \to \hyperlink{LvState}{LvState}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\>[B]{}\Varid{fire}\mathbin{::}\Conid{LvVI}\to \Conid{LvValue}\to \llparenthesis \cdot , \cdot , \cdot \rrparenthesis \to \Conid{LvState}\to \Conid{LvState}{}\<[E]%
 \\
 \>[B]{}\Varid{fire}\;\Varid{vi}\;\Varid{value}\;\Varid{addr}\;\Varid{s}\mathrel{=}{}\<[E]%
 \\
@@ -1089,7 +1092,7 @@ indicators.
 \column{41}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{45}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{propagate}\mathbin{::}\Conid{LvValue}\to \Conid{LvVI}\to \llparenthesis \cdot , \cdot , \cdot \rrparenthesis \to \hyperlink{LvState}{LvState}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\>[B]{}\Varid{propagate}\mathbin{::}\Conid{LvValue}\to \Conid{LvVI}\to \llparenthesis \cdot , \cdot , \cdot \rrparenthesis \to \Conid{LvState}\to \Conid{LvState}{}\<[E]%
 \\
 \>[B]{}\Varid{propagate}\;\Varid{value}\;\Varid{vi}\;\llparenthesis \Conid{LvI}, \Varid{dnode}, \anonymous \rrparenthesis \;\Varid{s}\mathrel{=}{}\<[E]%
 \\
@@ -1362,9 +1365,9 @@ output ports.
 \column{13}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{runNode}\mathbin{::}{}\<[13]%
-\>[13]{}\Conid{LvNode}\to \hyperlink{LvState}{LvState}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to \Conid{Int}{}\<[E]%
+\>[13]{}\Conid{LvNode}\to \Conid{LvState}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to \Conid{Int}{}\<[E]%
 \\
-\>[13]{}\to (\hyperlink{LvState}{LvState},[\mskip1.5mu (\Conid{Int},\Conid{LvValue})\mskip1.5mu]){}\<[E]%
+\>[13]{}\to (\Conid{LvState},[\mskip1.5mu (\Conid{Int},\Conid{LvValue})\mskip1.5mu]){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
@@ -1501,7 +1504,7 @@ The interpreter supports five kinds of control structures: for-loop,
 while-loop, sequence, case and sub-VI. They are all implemented similarly, by
 running a subgraph (itself represented as an instance of \ensuremath{\Conid{LvVI}}, like the main
 graph), and storing a state object for this subgraph as a continuation object
-of the node state for the enclosing graph (represented as \ensuremath{\hyperlink{LvState}{LvState}}, like the
+of the node state for the enclosing graph (represented as \ensuremath{\Conid{LvState}}, like the
 main state). Running this subgraph may take several evaluation steps, so the
 enclosing graph will continuously queue it for execution until it decides it
 should finish running. Each time the scheduler of the enclosing graph triggers
@@ -1777,11 +1780,11 @@ pairs to fire through output ports.
 \>[B]{}\Varid{runStructure}\mathbin{::}{}\<[18]%
 \>[18]{}\Conid{LvVI}{}\<[E]%
 \\
-\>[18]{}\to (\hyperlink{LvState}{LvState}\to \Conid{Bool}){}\<[E]%
+\>[18]{}\to (\Conid{LvState}\to \Conid{Bool}){}\<[E]%
 \\
-\>[18]{}\to \hyperlink{LvState}{LvState}\to \Conid{Int}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]{}\<[E]%
+\>[18]{}\to \Conid{LvState}\to \Conid{Int}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]{}\<[E]%
 \\
-\>[18]{}\to (\hyperlink{LvState}{LvState},[\mskip1.5mu (\Conid{Int},\Conid{LvValue})\mskip1.5mu]){}\<[E]%
+\>[18]{}\to (\Conid{LvState},[\mskip1.5mu (\Conid{Int},\Conid{LvValue})\mskip1.5mu]){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
@@ -1954,7 +1957,7 @@ the shift register logic, copying values from indicators marked as
 \column{18}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{25}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{initCounter}\mathbin{::}\hyperlink{LvState}{LvState}\to \Conid{Int}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]{}\<[E]%
+\>[B]{}\Varid{initCounter}\mathbin{::}\Conid{LvState}\to \Conid{Int}\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]\to [\mskip1.5mu \Conid{Maybe}\;\Conid{LvValue}\mskip1.5mu]{}\<[E]%
 \\
 \>[B]{}\Varid{initCounter}\;\Varid{s}\;\Varid{idx}\;\Varid{inputs}\mathrel{=}{}\<[E]%
 \\
@@ -1969,7 +1972,7 @@ the shift register logic, copying values from indicators marked as
 \>[4]{}\anonymous {}\<[13]%
 \>[13]{}\to \Varid{inputs}{}\<[E]%
 \\[\blanklineskip]%
-\>[B]{}\Varid{nextStep}\mathbin{::}\Conid{LvVI}\to \hyperlink{LvState}{LvState}\to \Conid{Int}\to \hyperlink{LvState}{LvState}{}\<[E]%
+\>[B]{}\Varid{nextStep}\mathbin{::}\Conid{LvVI}\to \Conid{LvState}\to \Conid{Int}\to \Conid{LvState}{}\<[E]%
 \\
 \>[B]{}\Varid{nextStep}\;\Varid{vi}\;\Varid{s}\;\Varid{i'}\mathrel{=}{}\<[E]%
 \\
