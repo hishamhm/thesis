@@ -27,8 +27,8 @@ This implementation uses only standard modules included in the Haskell Platform:
 
 \subsection{Representation of programs}
 
-A program in LabVIEW (called a VI, or Virtual Instrument) is a graph
-connecting different kinds of objects. In LabVIEW terminology, these objects
+As mentioned in Section~\ref{labview-overview}, a program in LabVIEW is called a VI.
+It is a graph connecting different kinds of objects. In LabVIEW terminology, these objects
 are called \emph{controls}, which are input-only, \emph{indicators}, which are
 output-only, and \emph{nodes}, which are all other operations. Throughout the
 implementation, we will use this nomenclature; in particular the name ``node''
@@ -347,6 +347,8 @@ destination tuple, it denotes the input port.
 
 \subsection{Representation of state}
 
+Now that the static representation of program code is defined, we move on
+to defining the dynamic representation of program state during execution.
 The representation of a state in our interpreter is a record containing the
 following values: the timestamp, a scheduler queue listing the next elements
 that need to be processed, and three sequences that store the internal states
@@ -2024,10 +2026,11 @@ the shift register logic, copying values from indicators marked as
 \subsection{Operations}
 
 The final section of the interpreter is the implementation of the various
-operations available in the language as function nodes. These operations
+operations available in the language as function nodes, forming its
+``standard library''. These operations
 are implemented as cases for function \ensuremath{\Varid{applyFunction}}, which takes a
 string with the name of the function, an instance of the outside world,
-the list of input values, and produces a return, which may be a list of
+the list of input values, and produces a return value, which may be a list of
 results or a continuation, along with the updated state of the world.
 
 \begin{hscode}\SaveRestoreHook

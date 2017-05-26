@@ -38,9 +38,9 @@ Then, we construct the patch that corresponds to the following graph:
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{6}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{15}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{26}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{35}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{40}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -62,11 +62,11 @@ Then, we construct the patch that corresponds to the following graph:
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\Conid{PdMsgBox}\;{}\<[15]%
-\>[15]{}[\mskip1.5mu \Conid{PdCmd}\;\Conid{PdToOutlet}\;(\Varid{map}\;(\Conid{PdTAtom}\mathbin{\circ}\Conid{PdFloat})\;[\mskip1.5mu \mathrm{0.5},\mathrm{1000}\mskip1.5mu])\mskip1.5mu],\mbox{\onelinecomment  2}{}\<[E]%
+\>[15]{}[\mskip1.5mu \Conid{PdCmd}\;\Conid{PdToOutlet}\;(\Varid{floatList}\;[\mskip1.5mu \mathrm{0.5},\mathrm{1000}\mskip1.5mu])\mskip1.5mu],\mbox{\onelinecomment  2}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\Conid{PdMsgBox}\;{}\<[15]%
-\>[15]{}[\mskip1.5mu \Conid{PdCmd}\;\Conid{PdToOutlet}\;(\Varid{map}\;(\Conid{PdTAtom}\mathbin{\circ}\Conid{PdFloat})\;[\mskip1.5mu \mathrm{0},\mathrm{100}\mskip1.5mu])\mskip1.5mu],\mbox{\onelinecomment  3}{}\<[E]%
+\>[15]{}[\mskip1.5mu \Conid{PdCmd}\;\Conid{PdToOutlet}\;(\Varid{floatList}\;[\mskip1.5mu \mathrm{0},\mathrm{100}\mskip1.5mu])\mskip1.5mu],\mbox{\onelinecomment  3}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\Conid{PdObj}\;{}\<[15]%
@@ -114,17 +114,17 @@ Then, we construct the patch that corresponds to the following graph:
 \\[\blanklineskip]%
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\Conid{PdMsgBox}\;{}\<[15]%
-\>[15]{}[\mskip1.5mu \Conid{PdCmd}\;\Conid{PdToOutlet}\;{}\<[E]%
+\>[15]{}[\mskip1.5mu \Conid{PdCmd}\;\Conid{PdToOutlet}{}\<[E]%
 \\
-\>[15]{}\hsindent{6}{}\<[21]%
-\>[21]{}[\mskip1.5mu \Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 list\char34}),\Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 bang\char34})\mskip1.5mu]\mskip1.5mu],\mbox{\onelinecomment  15}{}\<[E]%
+\>[4]{}\hsindent{2}{}\<[6]%
+\>[6]{}[\mskip1.5mu \Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 list\char34}),\Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 bang\char34})\mskip1.5mu]\mskip1.5mu],\mbox{\onelinecomment  15}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\Conid{PdMsgBox}\;{}\<[15]%
-\>[15]{}[\mskip1.5mu \Conid{PdCmd}\;\Conid{PdToOutlet}\;{}\<[E]%
+\>[15]{}[\mskip1.5mu \Conid{PdCmd}\;\Conid{PdToOutlet}{}\<[E]%
 \\
-\>[15]{}\hsindent{6}{}\<[21]%
-\>[21]{}[\mskip1.5mu \Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 list\char34}),\Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 stop\char34})\mskip1.5mu]\mskip1.5mu],\mbox{\onelinecomment  16}{}\<[E]%
+\>[4]{}\hsindent{2}{}\<[6]%
+\>[6]{}[\mskip1.5mu \Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 list\char34}),\Conid{PdTAtom}\;(\Conid{PdSymbol}\;\text{\tt \char34 stop\char34})\mskip1.5mu]\mskip1.5mu],\mbox{\onelinecomment  16}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{}\Conid{PdMsgBox}\;{}\<[15]%
@@ -198,6 +198,12 @@ Then, we construct the patch that corresponds to the following graph:
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
 \>[4]{})[\mskip1.5mu \mathrm{1},\mathrm{4},\mathrm{5},\mathrm{12},\mathrm{13},\mathrm{14},\mathrm{6}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{floatList}\mathrel{=}\Varid{map}\;(\Conid{PdTAtom}\mathbin{\circ}\Conid{PdFloat}){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
@@ -299,9 +305,9 @@ This is the sequence of input events that corresponds to playing the tune:
 \end{hscode}\resethooks
 
 In Pure Data, the sound card is represented by the \texttt{dac\textasciitilde{}} object. Our
-interpreter does nat handle actual audio output natively, but we can extract
+interpreter does not handle actual audio output natively, but we can extract
 the inlet data from that node from the list of states, and convert it to an
-audio \texttt{wav} file format, that is then sent to standard output.
+audio \texttt{wav} file format, which is then sent to standard output.
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%

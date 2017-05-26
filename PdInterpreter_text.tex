@@ -289,8 +289,8 @@ entered by the user in an atom box).
 
 The execution mode of Pure Data is data-driven. The user triggers events via
 its interface, and those events cause a cascading series of firings. The user
-may trigger events by clicking nodes, entering numbers (or using MIDI devices,
-which are equivalent to entering numbers).
+may trigger events by clicking nodes or entering numbers (possibly using
+MIDI devices, which are functionally equivalent to entering numbers).
 
 \subsubsection{Main loop}
 
@@ -464,7 +464,7 @@ a new state.
 
 Depending on the type of node, we perform different actions. For message
 boxes, we feed the incoming atoms into the inlet, and then we fold over its
-triggering its commands, like when they are clicked by the user. As we will
+commands triggering them, like when they are clicked by the user. As we will
 see below in the definition of \ensuremath{\Varid{runCommand}}, this may fire further nodes
 either directly or indirectly.
 
@@ -681,7 +681,7 @@ given name.
 The process of $\$$-expansion is a simple substitution, where the receiver
 must be a string. Invalid indices are converted to zero. (In Pure Data, they
 also produce an error message to the log window, but here we omit this for
-brevity.) We also handle here a few syntactic shortcuts: a messages with a
+brevity.) We also handle here a few syntactic shortcuts: a message with a
 sole number like \texttt{1.0} expands to \texttt{float 1.0}; lists starting
 with a number get the prefix \texttt{list}.
 
@@ -822,7 +822,7 @@ it is given as an input (in the \ensuremath{\Varid{dspSort}} field of \ensuremat
 
 As the list of nodes is traversed, each object is triggered (applying the
 \ensuremath{\Varid{performDsp}} function) and then the new computed value of its audio
-buffer is propagated to the inlets of the nodes to which they are connected. 
+buffer is propagated to the inlets of the nodes to which it is connected. 
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -1105,7 +1105,7 @@ the parsed representation of its textual definition).
 \end{hscode}\resethooks
 
 Unlike the \ensuremath{\Varid{runCommand}} function used in the firing of message boxes,
-which causes global effects to the graph evaluation (via indirect connections)
+which causes global effects on the graph evaluation (via indirect connections)
 and therefore needs access to the whole state, \ensuremath{\Varid{sendMsg}} accesses
 only the node's private state, producing a triple containing the new private
 node state, any text produced for the output log, a list of messages to
@@ -1291,7 +1291,7 @@ node's outlets.
 \ColumnHook
 \end{hscode}\resethooks
 
-The \texttt{metro} node, on its turn, expands on the \texttt{delay}
+The \texttt{metro} node, in its turn, expands on the \texttt{delay}
 functionality, implementing a metronome: it sends a series of \texttt{bang}
 messages at regular time intervals. It also has a second inlet which allows
 updating the interval.

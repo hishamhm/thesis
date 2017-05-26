@@ -1,0 +1,509 @@
+%BEGIN LYX DEMO
+
+Again, the implementation uses only standard modules included in the Haskell Platform.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{import}\;\Conid{LvInterpreter}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Sequence}\;(\Varid{fromList},\Varid{elemIndexL}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.List}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Maybe}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.\Conid{List}.Split}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{main}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{do}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{print}\;\Varid{vi}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{runVI}\;\Varid{vi}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}\;\Varid{vi}\mathrel{=}\Varid{testingCase}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\section{Program construction}
+
+To ease the writing of tests, we construct \ensuremath{\Conid{LvVI}} objects using a convenience
+function which converts the definition of wires from textual names to the
+numeric indices expected by the interpreter.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{8}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{11}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{12}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{20}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{33}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{34}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{42}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{45}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{64}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{69}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{78}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{data}\;\Conid{LvStringWire}\mathrel{=}\Conid{LvStringWire}\;\Conid{String}\;\Conid{String}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{deriving}\;\Conid{Show}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{wire}\mathbin{::}\Conid{String}\to \Conid{String}\to \Conid{LvStringWire}{}\<[E]%
+\\
+\>[B]{}\Varid{wire}\;\Varid{a}\;\Varid{b}\mathrel{=}\Conid{LvStringWire}\;\Varid{a}\;\Varid{b}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{makeVI}\mathbin{::}{}\<[12]%
+\>[12]{}[\mskip1.5mu (\Conid{String},\Conid{LvControl})\mskip1.5mu]\to [\mskip1.5mu (\Conid{String},\Conid{LvIndicator})\mskip1.5mu]{}\<[E]%
+\\
+\>[12]{}\to [\mskip1.5mu (\Conid{String},\Conid{LvNode})\mskip1.5mu]\to [\mskip1.5mu \Conid{LvStringWire}\mskip1.5mu]\to \Conid{LvVI}{}\<[E]%
+\\
+\>[B]{}\Varid{makeVI}\;\Varid{ctrls}\;\Varid{indics}\;\Varid{nodes}\;\Varid{stringWires}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Conid{LvVI}\;\{\mskip1.5mu {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{vCtrls}\mathrel{=}\Varid{ctrls},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{vIndics}\mathrel{=}\Varid{indics},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{vNodes}\mathrel{=}\Varid{nodes},{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{vWires}\mathrel{=}\Varid{map}\;\Varid{convert}\;\Varid{stringWires}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mskip1.5mu\}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{convert}\mathbin{::}\Conid{LvStringWire}\to \Conid{LvWire}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{convert}\;(\Conid{LvStringWire}\;\Varid{src}\;\Varid{dst})\mathrel{=}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{let}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}(type_{src},{}\<[24]%
+\>[24]{}\Varid{srcElem},{}\<[34]%
+\>[34]{}port_{src}'){}\<[45]%
+\>[45]{}\mathrel{=}\Varid{findElem}\;\Varid{ctrls}\;{}\<[64]%
+\>[64]{}\Conid{LvC}\;{}\<[69]%
+\>[69]{}\Varid{vIndics}\;{}\<[78]%
+\>[78]{}\Varid{src}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}(type_{dst},{}\<[24]%
+\>[24]{}\Varid{dstElem},{}\<[34]%
+\>[34]{}port_{dst}'){}\<[45]%
+\>[45]{}\mathrel{=}\Varid{findElem}\;\Varid{indics}\;{}\<[64]%
+\>[64]{}\Conid{LvI}\;{}\<[69]%
+\>[69]{}\Varid{vCtrls}\;{}\<[78]%
+\>[78]{}\Varid{dst}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{in}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Conid{LvWire}\;\llparenthesis type_{src}, \Varid{srcElem}, port_{src}'\rrparenthesis \;{}\<[E]%
+\\
+\>[13]{}\hsindent{7}{}\<[20]%
+\>[20]{}\llparenthesis type_{dst}, \Varid{dstElem}, port_{dst}'\rrparenthesis {}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{findIndex}\mathbin{::}[\mskip1.5mu (\Conid{String},\Varid{a})\mskip1.5mu]\to \Conid{String}\to \Conid{Maybe}\;\Conid{Int}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{findIndex}\;\Varid{es}\;\Varid{name}\mathrel{=}\Varid{elemIndex}\;\Varid{name}\mathbin{\$}\Varid{map}\;\Varid{fst}\;\Varid{es}{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{must}\mathbin{::}(\Conid{String}\to \Conid{Maybe}\;\Varid{a})\to \Conid{String}\to \Varid{a}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{must}\;\Varid{fn}\;\Varid{name}\mathrel{=}\Varid{fromMaybe}\;{}\<[33]%
+\>[33]{}(\Varid{error}\;(\text{\tt \char34 No~such~entry~\char34}\plus \Varid{name}))\;{}\<[E]%
+\\
+\>[33]{}(\Varid{fn}\;\Varid{name}){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{findElem}\mathbin{::}{}\<[20]%
+\>[20]{}[\mskip1.5mu (\Conid{String},\Varid{a})\mskip1.5mu]\to \Conid{LvElemType}\to (\Conid{LvVI}\to [\mskip1.5mu (\Conid{String},\Varid{b})\mskip1.5mu]){}\<[E]%
+\\
+\>[20]{}\to \Conid{String}\to (\Conid{LvElemType},\Conid{Int},\Conid{Int}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{findElem}\;\Varid{entries}\;\Varid{etype}\;\Varid{elems}\;\Varid{name}{}\<[E]%
+\\
+\>[7]{}\hsindent{1}{}\<[8]%
+\>[8]{}\mid \Varid{isJust}\mathbin{\$}\Varid{find}\;(\equiv \text{\tt ':'})\;\Varid{name}\mathrel{=}{}\<[E]%
+\\
+\>[8]{}\hsindent{5}{}\<[13]%
+\>[13]{}\mathbf{let}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}[\mskip1.5mu \Varid{elemName},\Varid{portName}\mskip1.5mu]\mathrel{=}\Varid{splitOn}\;\text{\tt \char34 :\char34}\;\Varid{name}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\Varid{elem}\mathrel{=}(\Varid{must}\mathbin{\circ}\Varid{flip}\;\Varid{lookup})\;\Varid{nodes}\;\Varid{elemName}{}\<[E]%
+\\
+\>[8]{}\hsindent{5}{}\<[13]%
+\>[13]{}\mathbf{in}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}(\Conid{LvN},(\Varid{must}\mathbin{\circ}\Varid{findIndex})\;\Varid{nodes}\;\Varid{elemName},\Varid{findPort}\;\Varid{elem}\;\Varid{portName}){}\<[E]%
+\\
+\>[7]{}\hsindent{1}{}\<[8]%
+\>[8]{}\mid \Varid{otherwise}\mathrel{=}{}\<[E]%
+\\
+\>[8]{}\hsindent{3}{}\<[11]%
+\>[11]{}\mathbf{case}\;\Varid{findIndex}\;\Varid{entries}\;\Varid{name}\;\mathbf{of}{}\<[E]%
+\\
+\>[8]{}\hsindent{3}{}\<[11]%
+\>[11]{}\Conid{Just}\;\Varid{i}\to (\Varid{etype},\Varid{i},\mathrm{0}){}\<[E]%
+\\
+\>[8]{}\hsindent{3}{}\<[11]%
+\>[11]{}\Conid{Nothing}\to \Varid{findElem}\;\Varid{entries}\;\Varid{etype}\;\Varid{elems}\;(\Varid{name}\plus \text{\tt \char34 :0\char34}){}\<[E]%
+\\
+\>[8]{}\hsindent{2}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{findPort}\;(\Conid{LvStructure}\;\anonymous \;\Varid{sv}){}\<[42]%
+\>[42]{}\mathrel{=}\Varid{must}\mathbin{\$}\Varid{findIndex}\;(\Varid{elems}\;\Varid{sv}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{findPort}\;(\Conid{LvCase}\;\Varid{svs}){}\<[42]%
+\>[42]{}\mathrel{=}\Varid{must}\mathbin{\$}\Varid{findIndex}\;(\Varid{elems}\;(\Varid{head}\;\Varid{svs})){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{findPort}\;(\Conid{LvFunction}\;\anonymous ){}\<[42]%
+\>[42]{}\mathrel{=}\lambda \Varid{s}\to \mathbf{if}\;\Varid{null}\;\Varid{s}\;\mathbf{then}\;\mathrm{0}\;\mathbf{else}\;\Varid{read}\;\Varid{s}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{findPort}\;\anonymous {}\<[42]%
+\>[42]{}\mathrel{=}\lambda \Varid{s}\to \mathrm{0}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\section{Demonstration of the VI}
+
+This is the example displayed in Figure \ref{fig:LabVIEW-windows}.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{25}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{32}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{34}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{testingCase}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{makeVI}\;{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}[\mskip1.5mu \mbox{\onelinecomment  controls}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}[\mskip1.5mu \mbox{\onelinecomment  indicators}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\text{\tt \char34 result\char34},\Conid{LvIndicator}\;(\Conid{LvArr}\;[\mskip1.5mu \mskip1.5mu])){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}[\mskip1.5mu \mbox{\onelinecomment  nodes}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\text{\tt \char34 3\char34},\Conid{LvConstant}\;(\Conid{LvI32}\;\mathrm{3})),{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}(\text{\tt \char34 for\char34},\Conid{LvStructure}\;\Conid{LvFor}\;(\Varid{makeVI}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}[\mskip1.5mu \mbox{\onelinecomment  controls}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}(\text{\tt \char34 i\char34},\Conid{LvAutoControl}),{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}(\text{\tt \char34 N\char34},\Conid{LvTunControl}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mskip1.5mu]{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}[\mskip1.5mu \mbox{\onelinecomment  indicators}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}(\text{\tt \char34 out\char34},\Conid{LvTunIndicator}\;\Conid{LvAutoIndexing}){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mskip1.5mu]{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}[\mskip1.5mu \mbox{\onelinecomment  nodes}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}(\text{\tt \char34 case\char34},\Conid{LvCase}\;[\mskip1.5mu {}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}(\Varid{makeVI}\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  controls}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 case\char34},\Conid{LvControl}\;(\Conid{LvI32}\;\mathrm{0})),{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 in\char34},{}\<[34]%
+\>[34]{}\Conid{LvControl}\;(\Conid{LvI32}\;\mathrm{0})){}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  indicators}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 out\char34},\Conid{LvIndicator}\;(\Conid{LvI32}\;\mathrm{0})){}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  nodes}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 +\char34},\Conid{LvFunction}\;\text{\tt \char34 +\char34}),{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 10\char34},\Conid{LvConstant}\;(\Conid{LvI32}\;\mathrm{10})){}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  wires}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 in\char34}\;\text{\tt \char34 +:0\char34},{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 10\char34}\;\text{\tt \char34 +:1\char34},{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 +\char34}\;\text{\tt \char34 out\char34}{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}),{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}(\Varid{makeVI}\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  controls}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 case\char34},\Conid{LvControl}\;(\Conid{LvI32}\;\mathrm{0})),{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 in\char34},{}\<[34]%
+\>[34]{}\Conid{LvControl}\;(\Conid{LvI32}\;\mathrm{0})){}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  indicators}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 out\char34},\Conid{LvIndicator}\;(\Conid{LvI32}\;\mathrm{0})){}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  nodes}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 -\char34},\Conid{LvFunction}\;\text{\tt \char34 -\char34}),{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 10\char34},\Conid{LvConstant}\;(\Conid{LvI32}\;\mathrm{10})){}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  wires}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 in\char34}\;\text{\tt \char34 -:0\char34},{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 10\char34}\;\text{\tt \char34 -:1\char34},{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 -\char34}\;\text{\tt \char34 out\char34}{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}),{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}(\Varid{makeVI}\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu {}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 case\char34},\Conid{LvControl}\;(\Conid{LvI32}\;\mathrm{0})),{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 in\char34},{}\<[34]%
+\>[34]{}\Conid{LvControl}\;(\Conid{LvI32}\;\mathrm{0})){}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  indicators}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 out\char34},\Conid{LvIndicator}\;(\Conid{LvI32}\;\mathrm{0})){}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  nodes}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 *\char34},\Conid{LvFunction}\;\text{\tt \char34 *\char34}),{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 /\char34},\Conid{LvFunction}\;\text{\tt \char34 /\char34}),{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 10\char34},\Conid{LvConstant}\;(\Conid{LvI32}\;\mathrm{10})),{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}(\text{\tt \char34 2\char34},\Conid{LvConstant}\;(\Conid{LvI32}\;\mathrm{2})){}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}[\mskip1.5mu \mbox{\onelinecomment  wires}{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 in\char34}\;\text{\tt \char34 *:0\char34},{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 10\char34}\;\text{\tt \char34 *:1\char34},{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 *\char34}\;\text{\tt \char34 /:0\char34},{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 2\char34}\;\text{\tt \char34 /:1\char34},{}\<[E]%
+\\
+\>[22]{}\hsindent{3}{}\<[25]%
+\>[25]{}\Varid{wire}\;\text{\tt \char34 /\char34}\;\text{\tt \char34 out\char34}{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mskip1.5mu]{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}){}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mskip1.5mu]){}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mskip1.5mu]{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}[\mskip1.5mu \mbox{\onelinecomment  wires}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\Varid{wire}\;\text{\tt \char34 i\char34}\;{}\<[32]%
+\>[32]{}\text{\tt \char34 case:case\char34},{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\Varid{wire}\;\text{\tt \char34 i\char34}\;{}\<[32]%
+\>[32]{}\text{\tt \char34 case:in\char34},{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\Varid{wire}\;\text{\tt \char34 case:out\char34}\;\text{\tt \char34 out\char34}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{})){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mskip1.5mu]\;{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}[\mskip1.5mu \mbox{\onelinecomment  wires}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{wire}\;\text{\tt \char34 3\char34}\;\text{\tt \char34 for:N\char34},{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{wire}\;\text{\tt \char34 for:out\char34}\;\text{\tt \char34 result\char34}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+%END LYX DEMO

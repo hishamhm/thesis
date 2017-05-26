@@ -1,0 +1,398 @@
+%BEGIN LYX DEMO
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{import}\;\Conid{XlInterpreter}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Char}\;(\Varid{chr},\Varid{ord}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.\Conid{Map}.Strict}\;\Varid{as}\;\Conid{Map}\;(\Varid{foldlWithKey},\Varid{empty},\Varid{lookup},\Varid{toList},(\mathbin{!})){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Text}.\Conid{PrettyPrint}.Boxes}\;\Varid{as}\;\Conid{Box}\;(\Varid{render},\Varid{hcat},\Varid{vcat},\Varid{text}){}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Text}.\Conid{PrettyPrint}.Boxes}\;\Varid{as}\;\Conid{Alignment}\;(\Varid{left},\Varid{right}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Running the program produces the following output:
+
+\begin{footnotesize}\begin{tabbing}\tt
+~~~\char124{}A~~~~~~~~\char124{}B~~~~~~~~\char124{}C~~~~~~~~\char124{}D~~~~~~~~\char124{}E~~~~~~~~\char124{}F~~~~~~~~\char124{}G~~~~~~~~\\
+\tt ~~1\char124{}~~~~~~~15\char124{}~~~~~~~15\char124{}\char34{}B\char34{}~~~~~~\char124{}~~~~~~~75\char124{}~~~~~~~30\char124{}~~~~~~105\char124{}~~~~~1015\\
+\tt ~~2\char124{}~~~~~~~30\char124{}~~~~~~~15\char124{}~~~~~~~~1\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\\
+\tt ~~3\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\\
+\tt ~~4\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\\
+\tt ~~5\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}\char34{}\char35{}VALUE\char33{}\char34{}\char124{}~~~~~~115\char124{}~~~~~~~~~\char124{}~~~~~~~15\char124{}~~~~~~~~~\\
+\tt ~~6\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~130\char124{}~~~~~~~~~\char124{}~~~~~~~16\char124{}~~~~~~~~~\\
+\tt ~~7\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\\
+\tt ~~8\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}\char34{}\char35{}VALUE\char33{}\char34{}\\
+\tt ~~9\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\\
+\tt ~10\char124{}~~~~~~~10\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~10\char124{}~~~~~~\char45{}20\char124{}~~~~~~~30\char124{}~~~~~~~~~\\
+\tt ~11\char124{}\char34{}10\char34{}~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~20\char124{}~~~~~~~~~\char124{}~~~~~~~~~\\
+\tt ~12\char124{}False~~~~\char124{}\char34{}\char35{}DIV\char47{}0\char33{}\char34{}\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\\
+\tt ~13\char124{}True~~~~~\char124{}\char34{}\char35{}VALUE\char33{}\char34{}\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\\
+\tt ~14\char124{}True~~~~~\char124{}\char34{}\char35{}DIV\char47{}0\char33{}\char34{}\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~\char124{}~~~~~~~~~
+\end{tabbing}
+\end{footnotesize}
+
+
+\section{Formatting}
+
+In order to produce a more readable output, we define the instance \ensuremath{\Conid{Show}} for
+our \ensuremath{\Conid{XlState}} type, using the \ensuremath{\Conid{\Conid{Text}.PrettyPrint}} package to produce tabular
+outputs.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{23}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{23E}{@{}l@{}}%
+\column{26}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{35}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{45}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\mathbf{instance}\;\Conid{Show}\;\Conid{XlState}\;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{show}\;(\Conid{XlState}\;\Varid{cells}\;\Varid{values})\mathrel{=}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\text{\tt \char34 \char92 nCells:\char92 n\char34}\plus \Varid{listCells}\plus {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\text{\tt \char34 \char92 nValues:\char92 n\char34}\plus \Varid{tableValues}\plus {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\text{\tt \char34 \char92 n\char34}\plus \Varid{show}\;\Varid{values}\plus \text{\tt \char34 \char92 n\char34}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{where}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}r_{max}{}\<[23]%
+\>[23]{}\mathrel{=}{}\<[23E]%
+\>[26]{}\Varid{\Conid{Map}.foldlWithKey}\;(\lambda \Varid{mx}\;\llparenthesis \langle \Varid{r}\rangle , \anonymous \rrparenthesis \;\anonymous \to \Varid{max}\;\Varid{r}\;\Varid{mx})\;\mathrm{0}\;\Varid{values}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}c_{max}{}\<[23]%
+\>[23]{}\mathrel{=}{}\<[23E]%
+\>[26]{}\Varid{\Conid{Map}.foldlWithKey}\;(\lambda \Varid{mx}\;\llparenthesis \anonymous , \langle \Varid{c}\rangle \rrparenthesis \;\anonymous \to \Varid{max}\;\Varid{c}\;\Varid{mx})\;\mathrm{0}\;\Varid{values}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{listCells}{}\<[23]%
+\>[23]{}\mathrel{=}{}\<[23E]%
+\>[26]{}\Varid{\Conid{Box}.render}{}\<[E]%
+\\
+\>[26]{}\mathbin{\$}\Varid{\Conid{Box}.vcat}\;\Varid{\Conid{Alignment}.left}{}\<[E]%
+\\
+\>[26]{}\mathbin{\$}\Varid{map}\;\Varid{\Conid{Box}.text}{}\<[E]%
+\\
+\>[26]{}\mathbin{\$}\Varid{map}\;\Varid{show}\;(\Varid{\Conid{Map}.toList}\;\Varid{cells}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{tableValues}{}\<[23]%
+\>[23]{}\mathrel{=}{}\<[23E]%
+\>[26]{}\Varid{\Conid{Box}.render}{}\<[E]%
+\\
+\>[26]{}\mathbin{\$}\Varid{\Conid{Box}.hcat}\;\Varid{\Conid{Alignment}.left}{}\<[E]%
+\\
+\>[26]{}\mathbin{\$}\Varid{numsCol}\mathbin{:}\Varid{map}\;\Varid{doCol}\;[\mskip1.5mu \mathrm{0}\mathinner{\ldotp\ldotp}c_{max}\mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{numsCol}{}\<[23]%
+\>[23]{}\mathrel{=}{}\<[23E]%
+\>[26]{}\Varid{\Conid{Box}.vcat}\;\Varid{\Conid{Alignment}.right}{}\<[E]%
+\\
+\>[26]{}\mathbin{\$}\Varid{map}\;\Varid{\Conid{Box}.text}{}\<[E]%
+\\
+\>[26]{}\mathbin{\$}\text{\tt \char34 ~\char34}\mathbin{:}\Varid{map}\;\Varid{show}\;[\mskip1.5mu \mathrm{1}\mathinner{\ldotp\ldotp}(r_{max}\mathbin{+}\mathrm{1})\mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{doCol}\;\Varid{c}{}\<[23]%
+\>[23]{}\mathrel{=}{}\<[23E]%
+\>[26]{}\Varid{\Conid{Box}.vcat}\;\Varid{\Conid{Alignment}.left}{}\<[E]%
+\\
+\>[26]{}\mathbin{\$}\Varid{\Conid{Box}.text}\;[\mskip1.5mu \text{\tt '|'},\Varid{chr}\;(\Varid{c}\mathbin{+}\mathrm{65})\mskip1.5mu]\mathbin{:}{}\<[E]%
+\\
+\>[26]{}\hsindent{2}{}\<[28]%
+\>[28]{}\Varid{map}\;(\lambda \Varid{s}\to \Varid{\Conid{Box}.text}\;(\text{\tt '|'}\mathbin{:}\Varid{doRow}\;\Varid{s}\;\Varid{c}))\;[\mskip1.5mu \mathrm{0}\mathinner{\ldotp\ldotp}r_{max}\mskip1.5mu]{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{lpad}\;\Varid{m}\;\Varid{xs}{}\<[23]%
+\>[23]{}\mathrel{=}{}\<[23E]%
+\>[26]{}\Varid{reverse}{}\<[35]%
+\>[35]{}\mathbin{\$}\Varid{take}\;\Varid{m}\mathbin{\$}\Varid{reverse}{}\<[E]%
+\\
+\>[35]{}\mathbin{\$}(\Varid{take}\;\Varid{m}\mathbin{\$}\Varid{repeat}\;\text{\tt '~'})\plus (\Varid{take}\;\Varid{m}\;\Varid{xs}){}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\Varid{doRow}\;\Varid{r}\;\Varid{c}{}\<[23]%
+\>[23]{}\mathrel{=}{}\<[23E]%
+\>[26]{}\mathbf{case}\;\Varid{\Conid{Map}.lookup}\;(\llparenthesis \langle \Varid{r}\rangle , \langle \Varid{c}\rangle \rrparenthesis )\;\Varid{values}\;\mathbf{of}{}\<[E]%
+\\
+\>[26]{}\Conid{Just}\;(\Conid{XlNumber}\;\Varid{n}){}\<[45]%
+\>[45]{}\to \Varid{lpad}\;\mathrm{9}\;(\Varid{num2str}\;\Varid{n}){}\<[E]%
+\\
+\>[26]{}\Conid{Just}\;\Varid{v}{}\<[45]%
+\>[45]{}\to \Varid{show}\;\Varid{v}{}\<[E]%
+\\
+\>[26]{}\Conid{Nothing}{}\<[45]%
+\>[45]{}\to \text{\tt \char34 \char34}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\section{A test driver}
+
+We construct below a test driver function that runs test cases and compares
+their results to expected values.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{13}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{47}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{runTest}\mathbin{::}\Conid{String}\to [\mskip1.5mu (\Conid{XlEvent},\Conid{XlValue})\mskip1.5mu]\to \Conid{IO}\;(){}\<[E]%
+\\
+\>[B]{}\Varid{runTest}\;\Varid{name}\;\Varid{operations}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{let}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{env}\mathord{@}(\Conid{XlState}\;\Varid{cells}\;\Varid{values})\mathrel{=}\Varid{runEvents}\;{}\<[47]%
+\>[47]{}(\Conid{XlWorksheet}\;\Varid{\Conid{Map}.empty})\;{}\<[E]%
+\\
+\>[47]{}(\Varid{map}\;\Varid{fst}\;\Varid{operations}){}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{value}\mathbin{::}\Conid{String}\to \Conid{XlValue}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{value}\;\Varid{a1}\mathrel{=}\Varid{values}\mathbin{!}(\Varid{toRC}\;\Varid{a1}){}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{failures}\mathrel{=}\Varid{filter}\;(\lambda \Varid{v}\to \Varid{v}\not\equiv \Conid{Nothing})\mathbin{\$}\Varid{map}\;\Varid{doCheck}\;\Varid{operations}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{where}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{doCheck}\;(\Varid{op},\Varid{value})\mathrel{=}{}\<[E]%
+\\
+\>[13]{}\hsindent{3}{}\<[16]%
+\>[16]{}\mathbf{case}\;\Varid{op}\;\mathbf{of}{}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}\Conid{XlSetFormula}\;\Varid{rc}\;\Varid{fml}\to {}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mathbf{if}\;\Varid{values}\mathbin{!}\Varid{rc}\equiv \Varid{value}{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mathbf{then}\;\Conid{Nothing}{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mathbf{else}\;\Conid{Just}\;(\Varid{rc},\Varid{value}){}\<[E]%
+\\
+\>[16]{}\hsindent{3}{}\<[19]%
+\>[19]{}\Conid{XlSetArrayFormula}\;rc_{from}\;rc_{to}\;\Varid{fml}\to {}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mathbf{if}\;\Varid{values}\mathbin{!}rc_{from}\equiv \Varid{value}{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\mathbf{then}\;\Conid{Nothing}\;\mathbf{else}{}\<[E]%
+\\
+\>[19]{}\hsindent{3}{}\<[22]%
+\>[22]{}\Conid{Just}\;(rc_{from},\Varid{value}){}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{in}\;\mathbf{do}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{putStrLn}\;\text{\tt \char34 \char34}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{print}\;\Varid{name}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{print}\;\Varid{env}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{if}\;\Varid{null}\;\Varid{failures}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{then}\;\Varid{putStrLn}\;\text{\tt \char34 OK!~:-D\char34}{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\mathbf{else}{}\<[E]%
+\\
+\>[7]{}\hsindent{3}{}\<[10]%
+\>[10]{}\mathbf{do}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{putStrLn}\;\text{\tt \char34 Failed:~\char34}{}\<[E]%
+\\
+\>[10]{}\hsindent{3}{}\<[13]%
+\>[13]{}\Varid{print}\;\Varid{failures}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+We employ a few shortcuts to write down formulas more tersely:
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{str}\;\Varid{s}\mathrel{=}\Conid{XlString}\;\Varid{s}{}\<[E]%
+\\
+\>[B]{}\Varid{num}\;\Varid{n}\mathrel{=}\Conid{XlNumber}\;\Varid{n}{}\<[E]%
+\\
+\>[B]{}\Varid{err}\;\Varid{e}\mathrel{=}\Conid{XlError}\;\Varid{e}{}\<[E]%
+\\
+\>[B]{}\Varid{boo}\;\Varid{b}\mathrel{=}\Conid{XlBool}\;\Varid{b}{}\<[E]%
+\\
+\>[B]{}\Varid{lnum}\;\Varid{n}\mathrel{=}\Conid{XlLit}\;(\Conid{XlNumber}\;\Varid{n}){}\<[E]%
+\\
+\>[B]{}\Varid{lstr}\;\Varid{s}\mathrel{=}\Conid{XlLit}\;(\Conid{XlString}\;\Varid{s}){}\<[E]%
+\\
+\>[B]{}\Varid{lmtx}\;\Varid{mx}\mathrel{=}\Conid{XlLit}\;(\Conid{XlMatrix}\;(\Varid{map}\;(\Varid{map}\;\Conid{XlNumber})\;\Varid{mx})){}\<[E]%
+\\
+\>[B]{}\Varid{lmtxs}\;\Varid{mx}\mathrel{=}\Conid{XlLit}\;(\Conid{XlMatrix}\;(\Varid{map}\;(\Varid{map}\;\Conid{XlString})\;\Varid{mx})){}\<[E]%
+\\
+\>[B]{}\Varid{fun}\;\Varid{f}\;\Varid{args}\mathrel{=}\Conid{XlFun}\;\Varid{f}\;\Varid{args}{}\<[E]%
+\\
+\>[B]{}\Varid{ref}\;\Varid{a1}\mathrel{=}\Conid{XlRef}\;(\Varid{toRC}\;\Varid{a1}){}\<[E]%
+\\
+\>[B]{}\Varid{range}\;\Varid{a1}\;\Varid{b2}\mathrel{=}\Conid{XlRng}\;(\Varid{toRC}\;\Varid{a1})\;(\Varid{toRC}\;\Varid{b2}){}\<[E]%
+\\
+\>[B]{}\Varid{toRC}\;(\Varid{l}\mathbin{:}\Varid{num})\mathrel{=}\llparenthesis \langle ((\Varid{read}\;\Varid{num})\mathbin{-}\mathrm{1})\rangle , \langle ((\Varid{ord}\;\Varid{l})\mathbin{-}\mathrm{65})\rangle \rrparenthesis {}\<[E]%
+\\
+\>[B]{}\Varid{addF}\;\Varid{rc}\;\Varid{f}\;\Varid{v}\mathrel{=}(\Conid{XlSetFormula}\;(\Varid{toRC}\;\Varid{rc})\;\Varid{f},\Varid{v}){}\<[E]%
+\\
+\>[B]{}\Varid{addAF}\;rc_{from}\;rc_{to}\;\Varid{f}\;\Varid{v}\mathrel{=}(\Conid{XlSetArrayFormula}\;(\Varid{toRC}\;rc_{from})\;(\Varid{toRC}\;rc_{to})\;\Varid{f},\Varid{v}){}\<[E]%
+\\
+\>[B]{}\Varid{sumSqrt}\;\Varid{l}\mathrel{=}\Varid{num}\mathbin{\$}\Varid{foldr}\;(\mathbin{+})\;\mathrm{0}\;(\Varid{map}\;\Varid{sqrt}\;\Varid{l}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\section{The example spreadsheet}
+
+We then run the main program, using \ensuremath{\Varid{runTest}} to create a spreadsheet, taking
+a list of input events as a parameter. In this list, \ensuremath{\Varid{addF}} and \ensuremath{\Varid{addAF}} are
+events adding formulas and array formulas to cells. The last argument is the
+expected value. All tests here produce the indicated values.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{main}\mathbin{::}\Conid{IO}\;(){}\<[E]%
+\\
+\>[B]{}\Varid{main}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\mathbf{do}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{runTest}\;\text{\tt \char34 Example\char34}\;[\mskip1.5mu {}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 A1\char34}\;(\Varid{lnum}\;\mathrm{15})\;(\Varid{num}\;\mathrm{15}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 B1\char34}\;(\Varid{lnum}\;\mathrm{0})\;(\Varid{num}\;\mathrm{15}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 A2\char34}\;(\Varid{fun}\;\text{\tt \char34 +\char34}\;[\mskip1.5mu \Varid{ref}\;\text{\tt \char34 A1\char34},\Varid{ref}\;\text{\tt \char34 B1\char34}\mskip1.5mu])\;(\Varid{num}\;\mathrm{30}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 B1\char34}\;(\Varid{ref}\;\text{\tt \char34 A1\char34})\;(\Varid{num}\;\mathrm{15}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 C1\char34}\;(\Varid{lstr}\;\text{\tt \char34 B\char34})\;(\Varid{str}\;\text{\tt \char34 B\char34}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 C2\char34}\;(\Varid{lnum}\;\mathrm{1})\;(\Varid{num}\;\mathrm{1}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 B2\char34}\;(\Varid{fun}\;\text{\tt \char34 INDIRECT\char34}\;[\mskip1.5mu \Varid{fun}\;\text{\tt \char34 \&\char34}\;[\mskip1.5mu \Varid{ref}\;\text{\tt \char34 C1\char34},\Varid{ref}\;\text{\tt \char34 C2\char34}\mskip1.5mu]\mskip1.5mu])\;(\Varid{num}\;\mathrm{15}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 D1\char34}\;(\Varid{fun}\;\text{\tt \char34 SUM\char34}\;[\mskip1.5mu \Varid{range}\;\text{\tt \char34 A1\char34}\;\text{\tt \char34 B2\char34}\mskip1.5mu])\;(\Varid{num}\;\mathrm{75}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 E1\char34}\;(\Varid{fun}\;\text{\tt \char34 SUM\char34}\;[\mskip1.5mu \Varid{range}\;\text{\tt \char34 B1\char34}\;\text{\tt \char34 B2\char34}\mskip1.5mu])\;(\Varid{num}\;\mathrm{30}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 F1\char34}\;(\Varid{fun}\;\text{\tt \char34 SUM\char34}\;[\mskip1.5mu \Varid{range}\;\text{\tt \char34 D1\char34}\;\text{\tt \char34 E1\char34}\mskip1.5mu])\;(\Varid{num}\;\mathrm{105}),{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 D10\char34}\;(\Varid{lnum}\;\mathrm{10})\;(\Varid{num}\;\mathrm{10}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 E10\char34}\;(\Varid{lnum}\;(\mathbin{-}\mathrm{20}))\;(\Varid{num}\;(\mathbin{-}\mathrm{20})),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 F10\char34}\;(\Varid{lnum}\;\mathrm{30})\;(\Varid{num}\;\mathrm{30}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 E11\char34}\;(\Varid{fun}\;\text{\tt \char34 ABS\char34}\;[\mskip1.5mu \Varid{range}\;\text{\tt \char34 D10\char34}\;\text{\tt \char34 F10\char34}\mskip1.5mu])\;(\Varid{num}\;\mathrm{20}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 G8\char34}\;(\Varid{fun}\;\text{\tt \char34 ABS\char34}\;[\mskip1.5mu \Varid{range}\;\text{\tt \char34 D10\char34}\;\text{\tt \char34 F10\char34}\mskip1.5mu])\;(\Varid{err}\;\text{\tt \char34 \#VALUE!\char34}),{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 A10\char34}\;(\Varid{lnum}\;\mathrm{10})\;(\Varid{num}\;\mathrm{10}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 A11\char34}\;(\Varid{lstr}\;\text{\tt \char34 10\char34})\;(\Varid{str}\;\text{\tt \char34 10\char34}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 A12\char34}\;(\Varid{fun}\;\text{\tt \char34 =\char34}\;[\mskip1.5mu \Varid{ref}\;\text{\tt \char34 A10\char34},\Varid{ref}\;\text{\tt \char34 A11\char34}\mskip1.5mu])\;(\Varid{boo}\;\Conid{False}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 A13\char34}\;(\Varid{fun}\;\text{\tt \char34 =\char34}\;[\mskip1.5mu \Varid{ref}\;\text{\tt \char34 A10\char34},\Varid{lnum}\;\mathrm{10}\mskip1.5mu])\;(\Varid{boo}\;\Conid{True}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 A14\char34}\;(\Varid{fun}\;\text{\tt \char34 =\char34}\;[\mskip1.5mu \Varid{ref}\;\text{\tt \char34 A13\char34},\Varid{lnum}\;\mathrm{1}\mskip1.5mu])\;(\Varid{boo}\;\Conid{True}),{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 B12\char34}\;(\Varid{fun}\;\text{\tt \char34 /\char34}\;[\mskip1.5mu \Varid{lnum}\;\mathrm{1},\Varid{lnum}\;\mathrm{0}\mskip1.5mu])\;(\Varid{err}\;\text{\tt \char34 \#DIV/0!\char34}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 B13\char34}\;(\Varid{fun}\;\text{\tt \char34 =\char34}\;[\mskip1.5mu \Varid{ref}\;\text{\tt \char34 G8\char34},\Varid{ref}\;\text{\tt \char34 B12\char34}\mskip1.5mu])\;(\Varid{err}\;\text{\tt \char34 \#VALUE!\char34}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 B14\char34}\;(\Varid{fun}\;\text{\tt \char34 =\char34}\;[\mskip1.5mu \Varid{ref}\;\text{\tt \char34 B12\char34},\Varid{ref}\;\text{\tt \char34 G8\char34}\mskip1.5mu])\;(\Varid{err}\;\text{\tt \char34 \#DIV/0!\char34}),{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 G1\char34}\;(\Varid{fun}\;\text{\tt \char34 +\char34}\;[\mskip1.5mu \Varid{lnum}\;\mathrm{1000},\Varid{range}\;\text{\tt \char34 A1\char34}\;\text{\tt \char34 A2\char34}\mskip1.5mu])\;(\Varid{num}\;\mathrm{1015}),{}\<[E]%
+\\[\blanklineskip]%
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addF}\;\text{\tt \char34 C5\char34}\;(\Varid{range}\;\text{\tt \char34 A1\char34}\;\text{\tt \char34 A2\char34})\;(\Varid{err}\;\text{\tt \char34 \#VALUE!\char34}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addAF}\;\text{\tt \char34 F5\char34}\;\text{\tt \char34 F6\char34}\;(\Varid{lmtx}\;[\mskip1.5mu [\mskip1.5mu \mathrm{15}\mskip1.5mu],[\mskip1.5mu \mathrm{16}\mskip1.5mu]\mskip1.5mu])\;(\Varid{num}\;\mathrm{15}),{}\<[E]%
+\\
+\>[4]{}\hsindent{3}{}\<[7]%
+\>[7]{}\Varid{addAF}\;\text{\tt \char34 D5\char34}\;\text{\tt \char34 D6\char34}\;(\Varid{fun}\;\text{\tt \char34 +\char34}\;[\mskip1.5mu \Varid{range}\;\text{\tt \char34 A1\char34}\;\text{\tt \char34 A2\char34},\Varid{lnum}\;\mathrm{100}\mskip1.5mu])\;(\Varid{num}\;\mathrm{115})\mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+In \url{http://hisham.hm/thesis} one can find a number of tests using this
+test driver. These tests document the specific behavior of the interpreter and
+also serve as a list of corner cases which expose incompatibilities between
+real-world spreadsheet applications.
+
+%END LYX DEMO

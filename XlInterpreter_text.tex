@@ -113,7 +113,7 @@ $(0, 0)$. We will call this pair the offset of a cell in an array formula.
 \ColumnHook
 \end{hscode}\resethooks
 
-A formula, on its turn, may be a literal value, a reference to another cell, a
+A formula, in its turn, may be a literal value, a reference to another cell, a
 reference to a range of cells, or a function, which has a name and a list of
 arguments. Our interpreter, thus, manipulates expressions as trees of \ensuremath{\Conid{XlFun}}
 nodes, assuming that the textual formula language has already been parsed into
@@ -201,7 +201,8 @@ coordinates using strings such as \text{\tt B5}. In spreadsheets, such an identi
 actually represents a relative coordinate, with \text{\tt \char36{}B\char36{}5} being the absolute
 equivalent. The \text{\tt A1} notation hides the fact that coordinates in spreadsheets
 are relative by default (which explains their behavior when copying and
-pasting cells).}
+pasting cells). Note, however, that this is a simplification in presentation
+only; the interpreter itself supports both relative and absolute addresses.}
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -324,8 +325,9 @@ the resulting cells and their values.
 
 Unlike the interpreter modelling Pure Data in Chapter \ref{chap:Pure-Data}, we
 return only the final state, since inspecting the final result of the
-spreadsheet is usually sufficient for understanding its behavior. Tracing the
-intermediate results is an easy modification if desired.
+spreadsheet is usually sufficient for understanding its behavior (and cell
+evaluation has loop detection, so a final state is guaranteed to be obtained).
+Tracing the intermediate results is an easy modification if desired.
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
