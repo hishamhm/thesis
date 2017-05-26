@@ -1,24 +1,28 @@
 #!/usr/bin/env lua
 
 local input = arg[1]
-local chap_num = tonumber(arg[2])
+local chap_num = arg[2]
 
 local chap = 0
 local state = "looking"
 for line in io.lines(input) do
    if state == "looking" then
-      if chap_num == -1 and line:match("\\appendix") then
+      if chap_num == "appendix" and line:match("\\appendix") then
          print(line)
          state = "appendix"
+      elseif chap_num == "abstract" and line:match("\\chapter%*{Abstract}") then
+         state = "writing"
+      elseif chap_num == "resumo" and line:match("\\chapter%*{Resumo}") then
+         state = "writing"
       elseif line:match("\\chapter{") then
          chap = chap + 1
-         if chap == chap_num then
+         if chap == tonumber(chap_num) then
             print(line)
             state = "writing"
          end
       end
    elseif state == "writing" then
-      if line:match("\\chapter{") or line:match("\\bibliographystyle{") then
+      if line:match("^\\chapter%*?{") or line:match("\\bibliographystyle{") then
          break
       end
       print(line)
